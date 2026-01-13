@@ -56,6 +56,18 @@ function drawArtifacts(ctx, artifacts, player, carriedArtifactId, cameraX) {
   }
 }
 
+function drawDebris(ctx, debris, cameraX) {
+  if (!debris || !debris.length) {
+    return;
+  }
+  ctx.save();
+  ctx.fillStyle = "rgba(200, 220, 255, 0.8)";
+  debris.forEach((piece) => {
+    ctx.fillRect(piece.x - cameraX, piece.y, piece.size, piece.size);
+  });
+  ctx.restore();
+}
+
 function drawPlayer(ctx, player, cameraX) {
   let sprite = getAsset("playerIdle");
   if (!player.isGrounded) {
@@ -95,6 +107,7 @@ export function renderGame(ctx, state) {
   }
 
   drawTerrain(ctx, state.terrain, state.cameraX);
+  drawDebris(ctx, state.debris, state.cameraX);
   drawArtifacts(ctx, state.artifacts, state.player, state.carriedArtifactId, state.cameraX);
   state.vibecoders.forEach((coder) => drawVibeCoder(ctx, coder, state.cameraX));
   drawPlayer(ctx, state.player, state.cameraX);
@@ -138,6 +151,7 @@ function drawStartOverlay(ctx) {
     "dropping fresh unchecked code into the basement.",
     "You’re the Vibe Fixer —> grab as much as you can and toss it into the Code Review Bin.",
     "Hurry up: your sprint ends in 60 seconds, as requested by the demanding customers.",
+    "Press M to mute or unmute the music.",
   ];
   const startY = ctx.canvas.height / 2 - 40;
   lines.forEach((line, index) => {

@@ -3,6 +3,7 @@ import { renderGame } from "./renderer.js";
 import { handleAction } from "./interactions.js";
 import { applyPhysics } from "./physics.js";
 import { resolveTerrainCollision } from "./collision.js";
+import { createAudioManager } from "./audio.js";
 
 const PLAYER_WIDTH = 64;
 const PLAYER_HEIGHT = 64;
@@ -14,6 +15,7 @@ const TOAST_DURATION = 3.5;
 
 export async function startGame(canvas, input) {
   const ctx = canvas.getContext("2d");
+  const audio = createAudioManager();
   const state = {
     sessionId: null,
     durationSeconds: 120,
@@ -24,6 +26,7 @@ export async function startGame(canvas, input) {
     terrain: [],
     trashCan: null,
     levelWidth: 0,
+    levelHeight: 0,
     cameraX: 0,
     vibecoders: [],
     toast: null,
@@ -31,6 +34,7 @@ export async function startGame(canvas, input) {
     started: false,
     remainingArtifacts: 0,
     carriedArtifactId: null,
+    debris: [],
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -45,6 +49,7 @@ export async function startGame(canvas, input) {
     input,
     lastAction: false,
     ended: false,
+    lastCountdownSecond: null,
   };
 
   async function loadSession() {
@@ -67,6 +72,7 @@ export async function startGame(canvas, input) {
     state.carriedArtifactId = null;
     state.player.position = { x: 80, y: groundY };
     state.levelWidth = canvas.width;
+    state.levelHeight = canvas.height;
     state.player.velocity = { x: 0, y: 0 };
     state.player.isGrounded = true;
     state.player.isMoving = false;
@@ -77,6 +83,8 @@ export async function startGame(canvas, input) {
     state.vibecoders = [];
     state.toast = null;
     state.secondCoderEnabled = false;
+    state.lastCountdownSecond = null;
+    state.debris = [];
   }
 
   await loadSession();
@@ -88,10 +96,16 @@ export async function startGame(canvas, input) {
       return;
     }
 
+    if (state.input.toggleMute) {
+      audio.toggleMute();
+      state.input.toggleMute = false;
+    }
+
     if (!state.started) {
       if (state.input.action && !state.lastAction) {
         state.started = true;
         state.startTime = performance.now();
+        audio.setGameStarted();
       }
       state.lastAction = state.input.action;
       return;
@@ -101,16 +115,25 @@ export async function startGame(canvas, input) {
     if (state.timeRemaining <= 0) {
       state.ended = true;
       state.carriedArtifactId = null;
+      audio.stopMusic();
+      audio.playSfx("gameOver");
       await endSession(state.sessionId);
       return;
     }
 
     applyPhysics(state, dt);
-    resolveTerrainCollision(state, state.terrain);
+    const breakEvents = resolveTerrainCollision(state, state.terrain);
+    if (breakEvents.length) {
+      audio.playSfx("break");
+      breakEvents.forEach((event) => spawnDebris(state, event));
+    }
     updatePlayerAnimation(state, dt);
+    if (state.player.justJumped) {
+      audio.playSfx("jump");
+    }
 
-    updateVibeCoders(state, dt);
-    await updateArtifactDrops(state, dt);
+    updateVibeCoders(state, dt, audio);
+    await updateArtifactDrops(state, dt, audio);
 
     state.score = state.artifacts.filter((artifact) => artifact.status === "ground").length;
 
@@ -118,9 +141,24 @@ export async function startGame(canvas, input) {
 
     const justPressed = state.input.action && !state.lastAction;
     if (justPressed) {
-      await handleAction(state);
+      const actionResult = await handleAction(state);
+      if (actionResult === "trash") {
+        audio.playSfx("trash");
+      } else if (actionResult === "drop") {
+        audio.playSfx("drop");
+      }
     }
     state.lastAction = state.input.action;
+
+    if (state.timeRemaining <= 10) {
+      const second = Math.ceil(state.timeRemaining);
+      if (second > 0 && second !== state.lastCountdownSecond) {
+        audio.playSfx("countdown");
+        state.lastCountdownSecond = second;
+      }
+    }
+
+    updateDebris(state, dt);
   }
 
   function frame() {
@@ -137,6 +175,38 @@ export async function startGame(canvas, input) {
   }
 
   requestAnimationFrame(frame);
+}
+
+function spawnDebris(state, event) {
+  const count = 6;
+  for (let i = 0; i < count; i += 1) {
+    state.debris.push({
+      x: event.x + Math.random() * event.width,
+      y: event.y + Math.random() * event.height,
+      vx: (Math.random() - 0.5) * 80,
+      vy: -randomInRange(120, 220),
+      size: randomInRange(2, 4),
+      life: randomInRange(0.6, 1.1),
+    });
+  }
+}
+
+function updateDebris(state, dt) {
+  if (!state.debris.length) {
+    return;
+  }
+  const gravity = 520;
+  state.debris = state.debris.filter((piece) => {
+    piece.life -= dt;
+    piece.vy += gravity * dt;
+    piece.x += piece.vx * dt;
+    piece.y += piece.vy * dt;
+    return piece.life > 0 && piece.y < state.levelHeight + 40;
+  });
+}
+
+function randomInRange(min, max) {
+  return min + Math.random() * (max - min);
 }
 
 function updatePlayerAnimation(state, dt) {
@@ -165,7 +235,7 @@ function createVibeCoder({ x, direction }) {
   };
 }
 
-function updateVibeCoders(state, dt) {
+function updateVibeCoders(state, dt, audio) {
   const elapsed = (performance.now() - state.startTime) / 1000;
 
   if (!state.vibecoders.length) {
@@ -177,6 +247,7 @@ function updateVibeCoders(state, dt) {
       message: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
       until: performance.now() + TOAST_DURATION * 1000,
     };
+    audio.playSfx("warning");
   }
 
   if (!state.secondCoderEnabled && elapsed >= SECOND_CODER_TIME) {
@@ -210,7 +281,7 @@ function updateVibeCoders(state, dt) {
   });
 }
 
-async function updateArtifactDrops(state, dt) {
+async function updateArtifactDrops(state, dt, audio) {
   const now = performance.now() / 1000;
   for (const coder of state.vibecoders) {
     if (!coder.nextDropAt) {
@@ -226,6 +297,7 @@ async function updateArtifactDrops(state, dt) {
           ...spawnResponse.artifact,
           velocityY: 0,
         });
+        audio.playSfx("drop");
       }
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }

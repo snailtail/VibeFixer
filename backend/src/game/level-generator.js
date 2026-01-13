@@ -18,7 +18,7 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateTerrain() {
+function generateTerrain(trashBounds) {
   const terrain = [];
 
   terrain.push({
@@ -27,15 +27,35 @@ function generateTerrain() {
     bounds: { x: 0, y: GROUND_Y, width: LEVEL_WIDTH, height: LEVEL_HEIGHT - GROUND_Y },
   });
 
-  const obstacleCount = randomInt(6, 10);
-  const earlyCount = randomInt(2, 3);
+  const obstacleCount = randomInt(10, 14);
+  const earlyCount = randomInt(3, 4);
+  const elevatedTierOne = 2;
+  const elevatedTierTwo = 2;
   const totalCount = obstacleCount + earlyCount;
   const placed = [];
+  const floatOffsets = [];
+
+  for (let i = 0; i < elevatedTierOne; i += 1) {
+    floatOffsets.push(TILE_SIZE * 2);
+  }
+  for (let i = 0; i < elevatedTierTwo; i += 1) {
+    floatOffsets.push(TILE_SIZE * 4);
+  }
+  while (floatOffsets.length < totalCount) {
+    const roll = Math.random();
+    if (roll < 0.4) {
+      floatOffsets.push(0);
+    } else if (roll < 0.7) {
+      floatOffsets.push(TILE_SIZE * 2);
+    } else {
+      floatOffsets.push(TILE_SIZE * 4);
+    }
+  }
 
   for (let i = 0; i < totalCount; i += 1) {
     const width = randomInt(OBSTACLE_WIDTH_MIN, OBSTACLE_WIDTH_MAX);
     const height = OBSTACLE_HEIGHT_MAX;
-    const floatOffset = Math.random() < 0.35 ? randomInt(TILE_SIZE * 2, TILE_SIZE * 3) : 0;
+    const floatOffset = floatOffsets[i];
     let x = 0;
     let attempts = 0;
     while (attempts < 10) {
@@ -45,7 +65,11 @@ function generateTerrain() {
       const overlaps = placed.some((range) => {
         return x < range.end + MIN_OBSTACLE_GAP && x + width > range.start - MIN_OBSTACLE_GAP;
       });
-      if (!overlaps) {
+      const overlapsTrash = trashBounds
+        ? x < trashBounds.x + trashBounds.width + MIN_OBSTACLE_GAP &&
+          x + width > trashBounds.x - MIN_OBSTACLE_GAP
+        : false;
+      if (!overlaps && !overlapsTrash) {
         placed.push({ start: x, end: x + width });
         break;
       }
@@ -115,7 +139,7 @@ function generateLevel({ seed, validateLevel, includeArtifacts = true }) {
 
   let attempts = 0;
   while (attempts < 10) {
-    const terrain = generateTerrain();
+    const terrain = generateTerrain({ x: trashCanX, y: trashCanY, width: TRASH_CAN_WIDTH, height: TRASH_CAN_HEIGHT });
     const artifacts = includeArtifacts ? generateArtifacts(trashCanX, terrain) : [];
     const trashCan = {
       position: { x: trashCanX, y: trashCanY },
@@ -129,7 +153,7 @@ function generateLevel({ seed, validateLevel, includeArtifacts = true }) {
     attempts += 1;
   }
 
-  const terrain = generateTerrain();
+  const terrain = generateTerrain({ x: trashCanX, y: trashCanY, width: TRASH_CAN_WIDTH, height: TRASH_CAN_HEIGHT });
   const artifacts = includeArtifacts ? generateArtifacts(trashCanX, terrain) : [];
   const trashCan = {
     position: { x: trashCanX, y: trashCanY },
