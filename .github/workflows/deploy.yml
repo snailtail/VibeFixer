@@ -1,0 +1,80 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check deploy secrets
+        id: secrets
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Missing SSH secrets. Skipping deployment."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set up SSH agent
+        if: steps.secrets.outputs.skip != 'true'
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        if: steps.secrets.outputs.skip != 'true'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+
+      - name: Ensure remote directory
+        if: steps.secrets.outputs.skip != 'true'
+        run: |
+          ssh "$SSH_USER@$SSH_HOST" "mkdir -p ~/vibefixerapp"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+
+      - name: Sync repository
+        if: steps.secrets.outputs.skip != 'true'
+        run: |
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.specify' \
+            --exclude 'specs' \
+            --exclude 'node_modules' \
+            --exclude '.DS_Store' \
+            ./ "$SSH_USER@$SSH_HOST:~/vibefixerapp/"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+
+      - name: Restart services
+        if: steps.secrets.outputs.skip != 'true'
+        run: |
+          ssh "$SSH_USER@$SSH_HOST" "cd ~/vibefixerapp && docker compose up -d --build"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
