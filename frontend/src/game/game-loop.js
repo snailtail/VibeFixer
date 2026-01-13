@@ -6,6 +6,11 @@ import { resolveTerrainCollision } from "./collision.js";
 
 const PLAYER_WIDTH = 64;
 const PLAYER_HEIGHT = 64;
+const CODER_BASE_SPEED = 20;
+const CODER_DROP_INTERVAL = 6.0;
+const SECOND_CODER_TIME = 30;
+const TOAST_LEAD_TIME = 3;
+const TOAST_DURATION = 3.5;
 
 export async function startGame(canvas, input) {
   const ctx = canvas.getContext("2d");
@@ -20,8 +25,9 @@ export async function startGame(canvas, input) {
     trashCan: null,
     levelWidth: 0,
     cameraX: 0,
-    vibecoder: null,
-    nextDropAt: 0,
+    vibecoders: [],
+    toast: null,
+    secondCoderEnabled: false,
     started: false,
     remainingArtifacts: 0,
     carriedArtifactId: null,
@@ -68,6 +74,9 @@ export async function startGame(canvas, input) {
     state.player.walkTimer = 0;
     state.ended = false;
     state.started = false;
+    state.vibecoders = [];
+    state.toast = null;
+    state.secondCoderEnabled = false;
   }
 
   await loadSession();
@@ -100,7 +109,7 @@ export async function startGame(canvas, input) {
     resolveTerrainCollision(state, state.terrain);
     updatePlayerAnimation(state, dt);
 
-    updateVibeCoder(state, dt);
+    updateVibeCoders(state, dt);
     await updateArtifactDrops(state, dt);
 
     state.score = state.artifacts.filter((artifact) => artifact.status === "ground").length;
@@ -143,73 +152,83 @@ function updatePlayerAnimation(state, dt) {
   }
 }
 
-function updateVibeCoder(state, dt) {
+function createVibeCoder({ x, direction }) {
+  return {
+    position: { x, y: TOP_FLOOR_Y },
+    direction,
+    speed: CODER_BASE_SPEED,
+    width: 48,
+    height: 48,
+    frameIndex: 0,
+    frameTimer: 0,
+    nextDropAt: 0,
+  };
+}
+
+function updateVibeCoders(state, dt) {
   const elapsed = (performance.now() - state.startTime) / 1000;
-  let speed = 20;
-  if (elapsed >= 30) {
-    speed = 40;
-  } else if (elapsed >= 15) {
-    speed = 30;
+
+  if (!state.vibecoders.length) {
+    state.vibecoders.push(createVibeCoder({ x: 200, direction: 1 }));
   }
 
-  if (!state.vibecoder) {
-    state.vibecoder = {
-      position: { x: 200, y: TOP_FLOOR_Y },
-      direction: 1,
-      speed,
-      width: 48,
-      height: 48,
-      frameIndex: 0,
-      frameTimer: 0,
+  if (!state.secondCoderEnabled && !state.toast && elapsed >= SECOND_CODER_TIME - TOAST_LEAD_TIME) {
+    state.toast = {
+      message: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
+      until: performance.now() + TOAST_DURATION * 1000,
     };
   }
 
-  state.vibecoder.speed = speed;
-  state.vibecoder.position.x += state.vibecoder.direction * state.vibecoder.speed * dt;
-  state.vibecoder.frameTimer += dt;
-  if (state.vibecoder.frameTimer >= 0.2) {
-    state.vibecoder.frameTimer = 0;
-    state.vibecoder.frameIndex = state.vibecoder.frameIndex === 0 ? 1 : 0;
+  if (!state.secondCoderEnabled && elapsed >= SECOND_CODER_TIME) {
+    const firstDirection = state.vibecoders[0]?.direction || 1;
+    state.vibecoders.push(createVibeCoder({ x: state.levelWidth - 240, direction: firstDirection * -1 }));
+    state.secondCoderEnabled = true;
+  }
+
+  if (state.toast && performance.now() > state.toast.until) {
+    state.toast = null;
   }
 
   const minX = 80;
   const maxX = state.levelWidth - 80;
-  if (state.vibecoder.position.x <= minX) {
-    state.vibecoder.position.x = minX;
-    state.vibecoder.direction = 1;
-  }
-  if (state.vibecoder.position.x >= maxX) {
-    state.vibecoder.position.x = maxX;
-    state.vibecoder.direction = -1;
-  }
+  state.vibecoders.forEach((coder) => {
+    coder.position.x += coder.direction * coder.speed * dt;
+    coder.frameTimer += dt;
+    if (coder.frameTimer >= 0.2) {
+      coder.frameTimer = 0;
+      coder.frameIndex = coder.frameIndex === 0 ? 1 : 0;
+    }
+
+    if (coder.position.x <= minX) {
+      coder.position.x = minX;
+      coder.direction = 1;
+    }
+    if (coder.position.x >= maxX) {
+      coder.position.x = maxX;
+      coder.direction = -1;
+    }
+  });
 }
 
 async function updateArtifactDrops(state, dt) {
-  const elapsed = (performance.now() - state.startTime) / 1000;
-  let dropInterval = 6.0;
-  if (elapsed >= 30) {
-    dropInterval = 3.2;
-  } else if (elapsed >= 15) {
-    dropInterval = 4.4;
-  }
-
   const now = performance.now() / 1000;
-  if (!state.nextDropAt) {
-    state.nextDropAt = now + dropInterval;
-  }
-
-  if (now >= state.nextDropAt) {
-    const spawnResponse = await spawnArtifact(state.sessionId, {
-      x: state.vibecoder.position.x,
-      y: state.vibecoder.position.y + 8,
-    });
-    if (spawnResponse && spawnResponse.artifact) {
-      state.artifacts.push({
-        ...spawnResponse.artifact,
-        velocityY: 0,
-      });
+  for (const coder of state.vibecoders) {
+    if (!coder.nextDropAt) {
+      coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
-    state.nextDropAt = now + dropInterval;
+    if (now >= coder.nextDropAt) {
+      const spawnResponse = await spawnArtifact(state.sessionId, {
+        x: coder.position.x,
+        y: coder.position.y + 8,
+      });
+      if (spawnResponse && spawnResponse.artifact) {
+        state.artifacts.push({
+          ...spawnResponse.artifact,
+          velocityY: 0,
+        });
+      }
+      coder.nextDropAt = now + CODER_DROP_INTERVAL;
+    }
   }
 
   const GRAVITY = 700;

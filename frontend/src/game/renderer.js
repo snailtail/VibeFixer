@@ -73,9 +73,6 @@ function drawPlayer(ctx, player, cameraX) {
 }
 
 function drawVibeCoder(ctx, vibecoder, cameraX) {
-  if (!vibecoder) {
-    return;
-  }
   const coderSprite = vibecoder.frameIndex === 1 ? getAsset("vibecoderB") : getAsset("vibecoderA");
   drawImage(
     ctx,
@@ -99,16 +96,30 @@ export function renderGame(ctx, state) {
 
   drawTerrain(ctx, state.terrain, state.cameraX);
   drawArtifacts(ctx, state.artifacts, state.player, state.carriedArtifactId, state.cameraX);
-  drawVibeCoder(ctx, state.vibecoder, state.cameraX);
+  state.vibecoders.forEach((coder) => drawVibeCoder(ctx, coder, state.cameraX));
   drawPlayer(ctx, state.player, state.cameraX);
   if (!state.started && !state.ended) {
     drawStartOverlay(ctx);
+  }
+  if (state.toast) {
+    drawToast(ctx, state.toast.message);
   }
   drawHud(ctx, {
     score: state.score,
     timeRemaining: state.timeRemaining,
     isGameOver: state.ended,
   });
+}
+
+function drawToast(ctx, message) {
+  ctx.save();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(40, 40, ctx.canvas.width - 80, 44);
+  ctx.fillStyle = "#f5f5f5";
+  ctx.font = "14px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText(message, ctx.canvas.width / 2, 68);
+  ctx.restore();
 }
 
 function drawStartOverlay(ctx) {
