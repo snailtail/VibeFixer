@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-add-second-villain`  
 **Created**: 2026-01-13  
-**Status**: Draft  
+**Status**: Completed  
 **Input**: User description: "New feature number 003 (if thats not already used - check please): Instead of having the speed of the villain increase after 15 seconds. lets add a second villain after 30 seconds. keep the initial speed for the villan number 1, and let villain number 2 have the same speed also. but this effectively doubles the amount of code \"dropping\" after half the sprint. also, right before adding the second villain i want a message to flash on the game screen without disrupting the game play - the user should still be able to play while reading this \"toaster\" message saying: \"Uh oh, the customer has hired another vibe coder. Lets try to keep"
 
 ## User Scenarios & Testing *(mandatory)*
