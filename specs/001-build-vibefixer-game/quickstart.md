@@ -14,12 +14,14 @@
 ## Running a Session
 
 1. Press Space to start the round.
-2. Use left/right arrows to move, up arrow to jump, and space to pick up or drop artifacts (pickup works within ~15px).
+2. Use left/right arrows to move, up arrow to jump, and Space to pick up or drop artifacts (pickup works within ~15px).
 3. Collect dropped artifacts and deposit them at the trash can to reduce the ground-count score.
-4. When the 60-second timer ends, reload the page to start a new round.
+4. Jump into floating blocks from below to break them and drop any artifacts sitting on top.
+5. When the 60-second timer ends, reload the page to start a new round.
 
 ## Smoke Tests
 
 - Start a new session and verify terrain and artifact placements differ across restarts.
-- Pick up and deposit an artifact and confirm the score increases by its value.
+- Pick up and deposit an artifact and confirm the ground-count score decreases.
+- Break an obstacle block from below and confirm it disappears.
 - Allow the timer to expire and confirm the session ends.

@@ -66,7 +66,7 @@ export async function handleAction(state) {
       const response = await depositArtifact(state.sessionId, artifactId);
       state.score = response.score;
       state.remainingArtifacts = response.remainingArtifacts;
-      return;
+      return "trash";
     }
 
     const artifact = state.artifacts.find((item) => item.id === state.carriedArtifactId);
@@ -79,7 +79,7 @@ export async function handleAction(state) {
       await updateArtifactStatus(state.sessionId, artifact.id, "ground");
     }
     state.carriedArtifactId = null;
-    return;
+    return "drop";
   }
 
   let nearest = null;
@@ -99,5 +99,8 @@ export async function handleAction(state) {
     nearest.status = "carried";
     state.carriedArtifactId = nearest.id;
     await updateArtifactStatus(state.sessionId, nearest.id, "carried");
+    return "pickup";
   }
+
+  return null;
 }

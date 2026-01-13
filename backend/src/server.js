@@ -65,6 +65,12 @@ function getContentType(filePath) {
       return "text/css; charset=utf-8";
     case ".png":
       return "image/png";
+    case ".ogg":
+      return "audio/ogg";
+    case ".wav":
+      return "audio/wav";
+    case ".mp3":
+      return "audio/mpeg";
     case ".jpg":
     case ".jpeg":
       return "image/jpeg";

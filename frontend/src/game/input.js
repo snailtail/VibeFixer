@@ -4,6 +4,7 @@ export function createInputState() {
     right: false,
     jump: false,
     action: false,
+    toggleMute: false,
   };
 
   function updateKey(event, isDown) {
@@ -27,6 +28,12 @@ export function createInputState() {
       case "Space":
         event.preventDefault();
         state.action = isDown;
+        break;
+      case "KeyM":
+        if (isDown && !event.repeat) {
+          event.preventDefault();
+          state.toggleMute = true;
+        }
         break;
       default:
         break;
