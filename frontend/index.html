@@ -51,6 +51,25 @@
         font-size: 14px;
         color: #d7d7df;
       }
+      .language-selector {
+        max-width: 1024px;
+        margin: 8px auto 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #d7d7df;
+      }
+      .language-selector label {
+        letter-spacing: 1px;
+      }
+      .language-selector select {
+        background: #101425;
+        color: #f5f5f5;
+        border: 1px solid #2b4b6f;
+        padding: 2px 6px;
+        font-family: monospace;
+      }
       .intro-story {
         max-width: 505px;
         margin: 20px auto 0;
@@ -181,68 +200,76 @@
     <div class="page">
       <div class="logo"><span>Vibe Fixer</span></div>
       <div class="controls">
-        <strong>Controls:</strong> ← Move left, → Move right, ↑ Jump, Space Action (Pick up / Drop), M Mute
+        <strong id="controls-label">Controls:</strong>
+        <span id="controls-text">← Move left, → Move right, ↑ Jump, Space Action (Pick up / Drop), M Mute</span>
+      </div>
+      <div class="language-selector">
+        <label id="language-label" for="language-select">Language</label>
+        <select id="language-select">
+          <option value="en">English</option>
+          <option value="sv">Swedish</option>
+        </select>
       </div>
       <div id="game-shell">
         <aside id="side-panel">
           <div id="event-log">
-            <h3>Game Events</h3>
+            <h3 id="game-events-title">Game Events</h3>
             <ul id="event-log-list"></ul>
           </div>
           <div id="po-status">
-            <h3>PO Status</h3>
+            <h3 id="po-status-title">PO Status</h3>
             <img id="po-status-image" alt="Product Owner mood" />
           </div>
         </aside>
         <div id="game-wrap"></div>
       </div>
       <section class="intro-story">
-        <h3>Story</h3>
-        <p>
-          The Vibe Coders have seized the City Hall’s top floor, raining unchecked code into the basement.<br />
-          You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends.<br />
-          If the backlog piles up, the customers’ FOMO Demon wakes and the sprint turns grim.<br />
-          Clear blockers to keep the Product Owner calm, but beware Imp Ediment, who teleports in to stack new obstacles.<br />
-          Smash a blocker from below to break it, or vault over it if you care more about speed than the PO’s blood pressure...
+        <h3 id="story-title">Story</h3>
+        <p id="story-text">
+          The Vibe Coders have seized the City Hall’s top floor, raining unchecked code into the basement.
+          You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends.
+          If the backlog piles up, the customers’ FOMO Demon wakes and the sprint turns grim.
+          Clear blockers to keep the Product Owner calm, but beware Imp Ediment, who teleports in to stack new obstacles.
+          Smash a blocker from below to break it, or vault over it if you care more about speed than the PO’s blood pressure.
         </p>
       </section>
       <section class="cast">
-        <h3>Cast</h3>
+        <h3 id="cast-title">Cast</h3>
         <div class="cast-grid">
           <div class="cast-card">
-            <img src="/assets/kenney/Sprites/Characters/Double/character_green_idle.png" alt="The Fixer" />
-            <h4>The Fixer</h4>
-            <p>Municipality hero, fast on the keyboard and faster on the cleanup.</p>
+            <img id="cast-fixer-img" src="/assets/kenney/Sprites/Characters/Double/character_green_idle.png" alt="The Fixer" />
+            <h4 id="cast-fixer-name">The Fixer</h4>
+            <p id="cast-fixer-bio">Municipality hero, fast on the keyboard and faster on the cleanup.</p>
           </div>
           <div class="cast-card">
-            <img src="/assets/kenney/Sprites/Enemies/Default/barnacle_attack_a.png" alt="Vibe Coder" />
-            <h4>Vibe Coder</h4>
-            <p>Top-floor chaos agent dropping unchecked code at the worst times.</p>
+            <img id="cast-coder-img" src="/assets/kenney/Sprites/Enemies/Default/barnacle_attack_a.png" alt="Vibe Coder" />
+            <h4 id="cast-coder-name">Vibe Coder</h4>
+            <p id="cast-coder-bio">Top-floor chaos agent dropping unchecked code at the worst times.</p>
           </div>
           <div class="cast-card">
-            <img src="/src/assets/imp_ediment.png" alt="Imp Ediment" />
-            <h4>Imp Ediment</h4>
-            <p>Teleporting mischief-maker who stacks blockers in your way.</p>
+            <img id="cast-imp-img" src="/src/assets/imp_ediment.png" alt="Imp Ediment" />
+            <h4 id="cast-imp-name">Imp Ediment</h4>
+            <p id="cast-imp-bio">Teleporting mischief-maker who stacks blockers in your way.</p>
           </div>
           <div class="cast-card">
-            <img src="/src/assets/fomo_demon.png" alt="FOMO Demon" />
-            <h4>FOMO Demon</h4>
-            <p>Feeds on lingering code. Defeat it by keeping the ground clean.</p>
+            <img id="cast-fomo-img" src="/src/assets/fomo_demon.png" alt="FOMO Demon" />
+            <h4 id="cast-fomo-name">FOMO Demon</h4>
+            <p id="cast-fomo-bio">Feeds on lingering code. Defeat it by keeping the ground clean.</p>
           </div>
           <div class="cast-card">
-            <img src="/src/assets/po_happy.png" alt="Product Owner" />
-            <h4>Product Owner</h4>
-            <p>Guardian of scope and sanity, happiest when blockers hit zero.</p>
+            <img id="cast-po-img" src="/src/assets/po_happy.png" alt="Product Owner" />
+            <h4 id="cast-po-name">Product Owner</h4>
+            <p id="cast-po-bio">Guardian of scope and sanity, happiest when blockers hit zero.</p>
           </div>
         </div>
       </section>
       <section class="credits">
-        <h3>Credits</h3>
+        <h3 id="credits-title">Credits</h3>
         <ul>
-          <li>Kenney New Platformer Pack (CC0) — sprites for characters and tiles.</li>
-          <li>OpenGameArt CC0 audio — chiptune music and sound effects.</li>
-          <li>kommun_bg.png background — CC0 by Magnus.</li>
-          <li>Co-authors: Magnus &amp; Codex.</li>
+          <li id="credits-kenney">Kenney New Platformer Pack (CC0) — sprites for characters and tiles.</li>
+          <li id="credits-audio">OpenGameArt CC0 audio — chiptune music and sound effects.</li>
+          <li id="credits-bg">kommun_bg.png background — CC0 by Magnus.</li>
+          <li id="credits-authors">Co-authors: Magnus &amp; Codex.</li>
         </ul>
       </section>
     </div>
