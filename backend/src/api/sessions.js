@@ -37,7 +37,6 @@ function serializeSession(session) {
     score: session.score,
     artifacts: session.artifacts.map((artifact) => ({
       id: artifact.id,
-      value: artifact.value,
       position: artifact.position,
       status: artifact.status,
     })),
@@ -93,7 +92,6 @@ async function handleSessions(req, res, url) {
 
     const artifact = {
       id: `artifact_${session.artifacts.length}_${Date.now()}`,
-      value: Math.floor(Math.random() * 15) + 1,
       position: { x: body.x, y: body.y },
       status: "inAir",
     };

@@ -9,9 +9,16 @@ const PLAYER_WIDTH = 64;
 const PLAYER_HEIGHT = 64;
 const CODER_BASE_SPEED = 20;
 const CODER_DROP_INTERVAL = 6.0;
-const SECOND_CODER_TIME = 30;
+const CODER_SPEED_MIN_MULT = 0.5;
+const CODER_SPEED_MAX_MULT = 1.6;
+const CODER_SPEED_CHANGE_MIN = 1.0;
+const CODER_SPEED_CHANGE_MAX = 3.0;
+const SECOND_CODER_TIME_MIN = 27;
+const SECOND_CODER_TIME_MAX = 33;
 const TOAST_LEAD_TIME = 3;
 const TOAST_DURATION = 3.5;
+const CODER_SPAWN_BUFFER = 90;
+const CODER_SPAWN_GAP = 140;
 
 export async function startGame(canvas, input) {
   const ctx = canvas.getContext("2d");
@@ -31,6 +38,7 @@ export async function startGame(canvas, input) {
     vibecoders: [],
     toast: null,
     secondCoderEnabled: false,
+    secondCoderTime: SECOND_CODER_TIME_MIN,
     started: false,
     remainingArtifacts: 0,
     carriedArtifactId: null,
@@ -83,6 +91,7 @@ export async function startGame(canvas, input) {
     state.vibecoders = [];
     state.toast = null;
     state.secondCoderEnabled = false;
+    state.secondCoderTime = randomInRange(SECOND_CODER_TIME_MIN, SECOND_CODER_TIME_MAX);
     state.lastCountdownSecond = null;
     state.debris = [];
   }
@@ -223,15 +232,17 @@ function updatePlayerAnimation(state, dt) {
 }
 
 function createVibeCoder({ x, direction }) {
+  const speed = randomCoderSpeed();
   return {
     position: { x, y: TOP_FLOOR_Y },
     direction,
-    speed: CODER_BASE_SPEED,
+    speed,
     width: 48,
     height: 48,
     frameIndex: 0,
     frameTimer: 0,
     nextDropAt: 0,
+    nextSpeedChangeAt: 0,
   };
 }
 
@@ -239,10 +250,12 @@ function updateVibeCoders(state, dt, audio) {
   const elapsed = (performance.now() - state.startTime) / 1000;
 
   if (!state.vibecoders.length) {
-    state.vibecoders.push(createVibeCoder({ x: 200, direction: 1 }));
+    const spawnX = pickSpawnX(state.levelWidth);
+    const direction = Math.random() < 0.5 ? -1 : 1;
+    state.vibecoders.push(createVibeCoder({ x: spawnX, direction }));
   }
 
-  if (!state.secondCoderEnabled && !state.toast && elapsed >= SECOND_CODER_TIME - TOAST_LEAD_TIME) {
+  if (!state.secondCoderEnabled && !state.toast && elapsed >= state.secondCoderTime - TOAST_LEAD_TIME) {
     state.toast = {
       message: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
       until: performance.now() + TOAST_DURATION * 1000,
@@ -250,9 +263,11 @@ function updateVibeCoders(state, dt, audio) {
     audio.playSfx("warning");
   }
 
-  if (!state.secondCoderEnabled && elapsed >= SECOND_CODER_TIME) {
+  if (!state.secondCoderEnabled && elapsed >= state.secondCoderTime) {
     const firstDirection = state.vibecoders[0]?.direction || 1;
-    state.vibecoders.push(createVibeCoder({ x: state.levelWidth - 240, direction: firstDirection * -1 }));
+    const avoidX = state.vibecoders[0]?.position?.x ?? null;
+    const spawnX = pickSpawnX(state.levelWidth, avoidX);
+    state.vibecoders.push(createVibeCoder({ x: spawnX, direction: firstDirection * -1 }));
     state.secondCoderEnabled = true;
   }
 
@@ -260,9 +275,15 @@ function updateVibeCoders(state, dt, audio) {
     state.toast = null;
   }
 
-  const minX = 80;
-  const maxX = state.levelWidth - 80;
+  const minX = getSpawnBounds(state.levelWidth).minX;
+  const maxX = getSpawnBounds(state.levelWidth).maxX;
   state.vibecoders.forEach((coder) => {
+    if (!coder.nextSpeedChangeAt) {
+      coder.nextSpeedChangeAt = elapsed + randomInRange(CODER_SPEED_CHANGE_MIN, CODER_SPEED_CHANGE_MAX);
+    } else if (elapsed >= coder.nextSpeedChangeAt) {
+      coder.speed = randomCoderSpeed();
+      coder.nextSpeedChangeAt = elapsed + randomInRange(CODER_SPEED_CHANGE_MIN, CODER_SPEED_CHANGE_MAX);
+    }
     coder.position.x += coder.direction * coder.speed * dt;
     coder.frameTimer += dt;
     if (coder.frameTimer >= 0.2) {
@@ -349,6 +370,36 @@ function getSurfaceY(terrain, x) {
     }
   });
   return Number.isFinite(topY) ? topY : 0;
+}
+
+function getSpawnBounds(levelWidth) {
+  return {
+    minX: 80 + CODER_SPAWN_BUFFER,
+    maxX: levelWidth - 80 - CODER_SPAWN_BUFFER,
+  };
+}
+
+function pickSpawnX(levelWidth, avoidX = null) {
+  const bounds = getSpawnBounds(levelWidth);
+  let candidate = randomInRange(bounds.minX, bounds.maxX);
+  if (avoidX == null) {
+    return candidate;
+  }
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    if (Math.abs(candidate - avoidX) >= CODER_SPAWN_GAP) {
+      return candidate;
+    }
+    candidate = randomInRange(bounds.minX, bounds.maxX);
+  }
+  return clamp(avoidX + CODER_SPAWN_GAP, bounds.minX, bounds.maxX);
+}
+
+function randomCoderSpeed() {
+  return CODER_BASE_SPEED * randomInRange(CODER_SPEED_MIN_MULT, CODER_SPEED_MAX_MULT);
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 const BACKGROUND_WIDTH = 1536;
 const BACKGROUND_HEIGHT = 1024;

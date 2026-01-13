@@ -99,7 +99,7 @@ As a player, I want to break some obstacle blocks by jumping into them from belo
 
 - **Player**: The person playing a round, with controls and a score.
 - **Character (The Fixer)**: The in-game avatar controlled by the player, with position and carrying state.
-- **Artifact**: A collectible item representing bad code, with a point value and location.
+- **Artifact**: A collectible item representing unchecked code, with a location and status.
 - **Trash Can**: The deposit target for artifacts that converts artifacts into score.
 - **Level**: The side-scrolling map containing terrain and obstacles.
 - **Obstacle**: A terrain element the character must jump over, onto, or under.

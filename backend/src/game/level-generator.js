@@ -109,7 +109,6 @@ function generateArtifacts(trashCanX, terrain) {
       const y = surface.bounds.y;
       artifacts.push({
         id: `artifact_${i}`,
-        value: randomInt(1, 15),
         position: { x, y },
         status: "ground",
       });
@@ -124,7 +123,6 @@ function generateArtifacts(trashCanX, terrain) {
     const x = randomInt(40, maxX);
     artifacts.push({
       id: `artifact_${i}`,
-      value: randomInt(1, 15),
       position: { x, y: GROUND_Y },
       status: "ground",
     });
