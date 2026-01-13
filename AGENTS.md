@@ -25,9 +25,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 007-fomo-demon-log: Added JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins)
 - 006-imp-obstacle-npc: Added JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins)
 - 005-randomize-coder-drops: Added JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins)
-- 003-add-second-villain: Added JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering
 
 
 <!-- MANUAL ADDITIONS START -->

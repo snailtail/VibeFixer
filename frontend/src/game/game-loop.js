@@ -32,9 +32,10 @@ const IMP_OBSTACLE_SIZE = 32;
 const IMP_VISIBILITY_SECONDS = 4.0;
 const IMP_MAX_HEIGHT_TILES = 7;
 
-export async function startGame(canvas, input) {
+export async function startGame(canvas, input, ui = {}) {
   const ctx = canvas.getContext("2d");
   const audio = createAudioManager();
+  const logList = ui.logList || null;
   const state = {
     sessionId: null,
     durationSeconds: 120,
@@ -57,6 +58,11 @@ export async function startGame(canvas, input) {
     debris: [],
     groundY: 0,
     imp: null,
+    eventLog: [],
+    logDirty: false,
+    blockerCount: 0,
+    fomoState: null,
+    gameOverMessage: "",
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -110,6 +116,11 @@ export async function startGame(canvas, input) {
     state.lastCountdownSecond = null;
     state.debris = [];
     state.imp = createImpState();
+    state.eventLog = [];
+    state.logDirty = true;
+    state.blockerCount = countBlockers(state);
+    state.fomoState = null;
+    state.gameOverMessage = "";
   }
 
   await loadSession();
@@ -140,8 +151,18 @@ export async function startGame(canvas, input) {
     if (state.timeRemaining <= 0) {
       state.ended = true;
       state.carriedArtifactId = null;
+      const remainingUnchecked = state.artifacts.filter((artifact) => artifact.status !== "deposited").length;
+      state.fomoState = remainingUnchecked === 0 ? "defeated" : "enraged";
+      state.gameOverMessage = state.fomoState === "defeated"
+        ? "FOMO Demon defeated! The code is clean."
+        : "FOMO Demon enraged! Unchecked code remains.";
       audio.stopMusic();
-      audio.playSfx("gameOver");
+      if (state.fomoState === "enraged") {
+        audio.playSfx("fomoAngry");
+        addEventLog(state, "The FOMO Demon rises. Unchecked code feeds its rage.");
+      } else {
+        audio.playSfx("gameOver");
+      }
       await endSession(state.sessionId);
       return;
     }
@@ -151,6 +172,7 @@ export async function startGame(canvas, input) {
     if (breakEvents.length) {
       audio.playSfx("break");
       breakEvents.forEach((event) => spawnDebris(state, event));
+      addEventLog(state, `Broke ${breakEvents.length} blocker${breakEvents.length === 1 ? "" : "s"}.`);
     }
     updatePlayerAnimation(state, dt);
     if (state.player.justJumped) {
@@ -162,6 +184,7 @@ export async function startGame(canvas, input) {
     updateImp(state, dt, audio);
 
     state.score = state.artifacts.filter((artifact) => artifact.status === "ground").length;
+    state.blockerCount = countBlockers(state);
 
     state.cameraX = 0;
 
@@ -170,6 +193,7 @@ export async function startGame(canvas, input) {
       const actionResult = await handleAction(state);
       if (actionResult === "trash") {
         audio.playSfx("trash");
+        addEventLog(state, "Deposited unchecked code in the bin.");
       } else if (actionResult === "drop") {
         audio.playSfx("drop");
       }
@@ -185,6 +209,11 @@ export async function startGame(canvas, input) {
     }
 
     updateDebris(state, dt);
+
+    if (state.logDirty && logList) {
+      renderEventLog(logList, state.eventLog);
+      state.logDirty = false;
+    }
   }
 
   function frame() {
@@ -282,6 +311,7 @@ function updateVibeCoders(state, dt, audio) {
       until: performance.now() + TOAST_DURATION * 1000,
     };
     audio.playSfx("warning");
+    addEventLog(state, "Warning: vibe coder #2 is about to join.");
   }
 
   if (!state.secondCoderEnabled && elapsed >= state.secondCoderTime) {
@@ -290,6 +320,7 @@ function updateVibeCoders(state, dt, audio) {
     const spawnX = pickSpawnX(state.levelWidth, avoidX);
     state.vibecoders.push(createVibeCoder({ x: spawnX, direction: firstDirection * -1 }));
     state.secondCoderEnabled = true;
+    addEventLog(state, "Vibe coder #2 joined the chaos.");
   }
 
   if (state.toast && performance.now() > state.toast.until) {
@@ -325,7 +356,8 @@ function updateVibeCoders(state, dt, audio) {
 
 async function updateArtifactDrops(state, dt, audio) {
   const now = performance.now() / 1000;
-  for (const coder of state.vibecoders) {
+  for (let index = 0; index < state.vibecoders.length; index += 1) {
+    const coder = state.vibecoders[index];
     if (!coder.nextDropAt) {
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
@@ -340,6 +372,7 @@ async function updateArtifactDrops(state, dt, audio) {
           velocityY: 0,
         });
         audio.playSfx("drop");
+        addEventLog(state, `Vibe coder #${index + 1} dropped unchecked code.`);
       }
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
@@ -468,10 +501,11 @@ function triggerImpAppearance(state, audio, showToast) {
   state.imp.visibleUntil = performance.now() / 1000 + IMP_VISIBILITY_SECONDS;
   if (showToast) {
     state.toast = {
-      message: "Oh no Imp Ediment is out and about placing obstacles, look out!",
+      message: "Oh no Imp Ediment is out and about placing blockers, look out!",
       until: performance.now() + TOAST_DURATION * 1000 * 2,
     };
   }
+  addEventLog(state, `Imp Ediment appeared: placing ${placements.length} blocker${placements.length === 1 ? "" : "s"}.`);
   audio.playSfx("impWhoosh");
 }
 
@@ -568,6 +602,36 @@ function addImpObstacle(state, placement) {
     id: `imp_obstacle_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
     type: "stone",
     bounds: { ...placement },
+  });
+}
+
+function addEventLog(state, message) {
+  if (!message) {
+    return;
+  }
+  const timeMark = Math.max(0, Math.floor(state.durationSeconds - state.timeRemaining));
+  const entry = `[${timeMark}s] ${message}`;
+  state.eventLog.unshift(entry);
+  const maxEntries = 8;
+  if (state.eventLog.length > maxEntries) {
+    state.eventLog.length = maxEntries;
+  }
+  state.logDirty = true;
+}
+
+function countBlockers(state) {
+  return state.terrain.filter((segment) => segment.type !== "ground").length;
+}
+
+function renderEventLog(logList, entries) {
+  if (!logList) {
+    return;
+  }
+  logList.innerHTML = "";
+  entries.forEach((entry) => {
+    const item = document.createElement("li");
+    item.textContent = entry;
+    logList.appendChild(item);
   });
 }
 

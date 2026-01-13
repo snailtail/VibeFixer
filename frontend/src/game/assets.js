@@ -9,6 +9,7 @@ const ASSET_PATHS = {
   vibecoderB: "/assets/kenney/Sprites/Enemies/Default/barnacle_attack_b.png",
   background: "/src/assets/kommun_bg.png",
   impEdiment: "/src/assets/imp_ediment.png",
+  fomoDemon: "/src/assets/fomo_demon.png",
 };
 
 const images = new Map();

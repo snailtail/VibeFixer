@@ -109,6 +109,51 @@ function drawImpEdiment(ctx, imp, cameraX) {
   drawImage(ctx, sprite, imp.position.x - cameraX - size / 2, imp.position.y - size, size, size);
 }
 
+function drawFomoDemon(ctx, state) {
+  if (!state.ended || state.fomoState !== "enraged") {
+    return;
+  }
+  const sprite = getAsset("fomoDemon");
+  const size = 160;
+  const x = ctx.canvas.width / 2 - size / 2;
+  const y = ctx.canvas.height / 2 - size - 40;
+  drawImage(ctx, sprite, x, y, size, size);
+}
+
+function drawFomoEnragedOverlay(ctx, state) {
+  if (!state.ended || state.fomoState !== "enraged") {
+    return;
+  }
+  ctx.save();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  const sprite = getAsset("fomoDemon");
+  const size = 220;
+  const spriteX = ctx.canvas.width / 2 - size / 2;
+  const spriteY = ctx.canvas.height / 2 - size - 60;
+  drawImage(ctx, sprite, spriteX, spriteY, size, size);
+
+  const boxWidth = ctx.canvas.width - 120;
+  const boxHeight = 90;
+  const boxX = 60;
+  const boxY = ctx.canvas.height / 2 + 20;
+  ctx.fillStyle = "rgba(80, 0, 0, 0.75)";
+  ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+  ctx.strokeStyle = "#ff4b4b";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(boxX + 2, boxY + 2, boxWidth - 4, boxHeight - 4);
+  ctx.fillStyle = "#ffe5e5";
+  ctx.font = "bold 18px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME OVER", ctx.canvas.width / 2, boxY + 28);
+  ctx.font = "bold 16px monospace";
+  ctx.fillText("FOMO DEMON ENRAGED", ctx.canvas.width / 2, boxY + 50);
+  ctx.font = "14px monospace";
+  ctx.fillText("Unchecked code remains. The demon is furious.", ctx.canvas.width / 2, boxY + 72);
+  ctx.restore();
+}
+
 export function renderGame(ctx, state) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const background = getAsset("background");
@@ -131,10 +176,14 @@ export function renderGame(ctx, state) {
   if (state.toast) {
     drawToast(ctx, state.toast.message);
   }
+  drawFomoEnragedOverlay(ctx, state);
   drawHud(ctx, {
     score: state.score,
     timeRemaining: state.timeRemaining,
     isGameOver: state.ended,
+    blockerCount: state.blockerCount,
+    gameOverMessage: state.gameOverMessage,
+    fomoState: state.fomoState,
   });
 }
 
