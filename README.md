@@ -35,7 +35,10 @@ VibeFixer is a browser-based arcade game with a lightweight Node.js backend. Thi
    - Frontend sends API requests to create artifacts, update artifact status, deposit code, and end sessions.
    - Backend updates in-memory session state and returns responses.
 
-4. **Deployment updates**
+4. **Session stats**
+   - Frontend polls `GET /api/sessions/stats` to display active session totals and outcomes.
+
+5. **Deployment updates**
    - On pushes to `main`, GitHub Actions syncs the repo to `~/vibefixerapp`.
    - Docker rebuilds and runs the backend, exposing port 3333.
 
@@ -97,6 +100,14 @@ Base URL: `https://<your-domain>` (proxied to backend)
 
 `POST /api/sessions/{sessionId}/end`
 
+**Request body (optional)**:
+
+```json
+{ "result": "won" }
+```
+
+`result` may be `won` or `lost`. Missing/invalid values are treated as abandoned.
+
 **Response** `200`:
 
 ```json
@@ -133,6 +144,24 @@ Base URL: `https://<your-domain>` (proxied to backend)
 
 ```json
 { "ok": true }
+```
+
+### Session stats
+
+`GET /api/sessions/stats`
+
+**Response** `200`:
+
+```json
+{
+  "activeCount": 0,
+  "startedCount": 0,
+  "endedCount": 0,
+  "staleEndedCount": 0,
+  "wonCount": 0,
+  "lostCount": 0,
+  "abandonedCount": 0
+}
 ```
 
 ### Health check

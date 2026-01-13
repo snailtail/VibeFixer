@@ -26,6 +26,7 @@ http://localhost:3000
 ```
 
 The backend serves the frontend assets directly.
+Session stats are available at `http://localhost:3000/api/sessions/stats`.
 
 ## Adding Features or Fixing Bugs
 
@@ -70,3 +71,4 @@ docker-compose up -d --no-build
 
 - Update `README.md` when architecture, API, or deployment changes.
 - Keep API reference in sync with `backend/src/api/sessions.js`.
+- If session stats or outcomes change, update the stats response example.
