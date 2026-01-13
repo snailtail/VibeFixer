@@ -27,9 +27,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 009-po-happiness: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 - 008-deploy-ssh-action: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 - 007-fomo-demon-log: Added JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins)
-- 006-imp-obstacle-npc: Added JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins)
 
 
 <!-- MANUAL ADDITIONS START -->

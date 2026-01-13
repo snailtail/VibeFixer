@@ -31,11 +31,17 @@ const IMP_PLACEMENT_INTERVAL = 0.35;
 const IMP_OBSTACLE_SIZE = 32;
 const IMP_VISIBILITY_SECONDS = 4.0;
 const IMP_MAX_HEIGHT_TILES = 7;
+const PO_IMAGES = {
+  happy: "/src/assets/po_happy.png",
+  content: "/src/assets/po_content.png",
+  sad: "/src/assets/po_sad.png",
+};
 
 export async function startGame(canvas, input, ui = {}) {
   const ctx = canvas.getContext("2d");
   const audio = createAudioManager();
   const logList = ui.logList || null;
+  const poImage = ui.poImage || null;
   const state = {
     sessionId: null,
     durationSeconds: 120,
@@ -61,6 +67,7 @@ export async function startGame(canvas, input, ui = {}) {
     eventLog: [],
     logDirty: false,
     blockerCount: 0,
+    poMood: null,
     fomoState: null,
     gameOverMessage: "",
     player: {
@@ -121,6 +128,7 @@ export async function startGame(canvas, input, ui = {}) {
     state.blockerCount = countBlockers(state);
     state.fomoState = null;
     state.gameOverMessage = "";
+    updatePOMood(state, poImage);
   }
 
   await loadSession();
@@ -185,6 +193,7 @@ export async function startGame(canvas, input, ui = {}) {
 
     state.score = state.artifacts.filter((artifact) => artifact.status === "ground").length;
     state.blockerCount = countBlockers(state);
+    updatePOMood(state, poImage);
 
     state.cameraX = 0;
 
@@ -621,6 +630,29 @@ function addEventLog(state, message) {
 
 function countBlockers(state) {
   return state.terrain.filter((segment) => segment.type !== "ground").length;
+}
+
+function getPOMood(blockerCount) {
+  if (blockerCount === 0) {
+    return "happy";
+  }
+  if (blockerCount <= 3) {
+    return "content";
+  }
+  return "sad";
+}
+
+function updatePOMood(state, poImage) {
+  const nextMood = getPOMood(state.blockerCount);
+  if (nextMood === state.poMood) {
+    return;
+  }
+  state.poMood = nextMood;
+  if (!poImage) {
+    return;
+  }
+  poImage.src = PO_IMAGES[nextMood];
+  poImage.alt = `Product Owner (${nextMood})`;
 }
 
 function renderEventLog(logList, entries) {

@@ -40,3 +40,12 @@
 - **Owner**: Project author
 - **License**: CC0 1.0 Universal
 - **Local path**: `frontend/src/assets/kommun_bg.png`
+
+## PO Mood Images
+
+- **Owner**: Project author
+- **License**: CC0 1.0 Universal
+- **Local paths**:
+  - `frontend/src/assets/po_happy.png`
+  - `frontend/src/assets/po_content.png`
+  - `frontend/src/assets/po_sad.png`
