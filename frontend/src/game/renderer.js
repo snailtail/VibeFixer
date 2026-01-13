@@ -96,6 +96,19 @@ function drawVibeCoder(ctx, vibecoder, cameraX) {
   );
 }
 
+function drawImpEdiment(ctx, imp, cameraX) {
+  if (!imp || !imp.position) {
+    return;
+  }
+  const now = performance.now() / 1000;
+  if (imp.visibleUntil && now > imp.visibleUntil) {
+    return;
+  }
+  const sprite = getAsset("impEdiment");
+  const size = 96;
+  drawImage(ctx, sprite, imp.position.x - cameraX - size / 2, imp.position.y - size, size, size);
+}
+
 export function renderGame(ctx, state) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const background = getAsset("background");
@@ -110,6 +123,7 @@ export function renderGame(ctx, state) {
   drawDebris(ctx, state.debris, state.cameraX);
   drawArtifacts(ctx, state.artifacts, state.player, state.carriedArtifactId, state.cameraX);
   state.vibecoders.forEach((coder) => drawVibeCoder(ctx, coder, state.cameraX));
+  drawImpEdiment(ctx, state.imp, state.cameraX);
   drawPlayer(ctx, state.player, state.cameraX);
   if (!state.started && !state.ended) {
     drawStartOverlay(ctx);
@@ -126,12 +140,19 @@ export function renderGame(ctx, state) {
 
 function drawToast(ctx, message) {
   ctx.save();
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(40, 40, ctx.canvas.width - 80, 44);
-  ctx.fillStyle = "#f5f5f5";
-  ctx.font = "14px monospace";
+  const boxWidth = ctx.canvas.width - 80;
+  const boxHeight = 64;
+  const boxX = 40;
+  const boxY = 32;
+  ctx.fillStyle = "rgba(12, 12, 24, 0.85)";
+  ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+  ctx.strokeStyle = "#5fd1ff";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(boxX + 2, boxY + 2, boxWidth - 4, boxHeight - 4);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 16px monospace";
   ctx.textAlign = "center";
-  ctx.fillText(message, ctx.canvas.width / 2, 68);
+  ctx.fillText(message, ctx.canvas.width / 2, boxY + 40);
   ctx.restore();
 }
 

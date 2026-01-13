@@ -4,6 +4,7 @@ const SFX_SOURCES = {
   countdown: "/assets/audio/sfx_countdown.wav",
   drop: "/assets/audio/sfx_drop.wav",
   gameOver: "/assets/audio/game_over.mp3",
+  impWhoosh: "/assets/audio/sfx_imp_whoosh.wav",
   jump: "/assets/audio/sfx_jump.wav",
   trash: "/assets/audio/sfx_trash.wav",
   warning: "/assets/audio/sfx_warning.wav",

@@ -19,6 +19,18 @@ const TOAST_LEAD_TIME = 3;
 const TOAST_DURATION = 3.5;
 const CODER_SPAWN_BUFFER = 90;
 const CODER_SPAWN_GAP = 140;
+const IMP_FIRST_APPEAR_MIN = 10;
+const IMP_FIRST_APPEAR_MAX = 20;
+const IMP_SECOND_APPEAR_TIME = 40;
+const IMP_SECOND_APPEAR_WINDOW = 10;
+const IMP_SECOND_APPEAR_CHANCE = 0.5;
+const IMP_MAX_PLACEMENTS = 5;
+const IMP_MIN_PLACEMENTS = 1;
+const IMP_PLACEMENT_WINDOW = 2.0;
+const IMP_PLACEMENT_INTERVAL = 0.35;
+const IMP_OBSTACLE_SIZE = 32;
+const IMP_VISIBILITY_SECONDS = 4.0;
+const IMP_MAX_HEIGHT_TILES = 7;
 
 export async function startGame(canvas, input) {
   const ctx = canvas.getContext("2d");
@@ -43,6 +55,8 @@ export async function startGame(canvas, input) {
     remainingArtifacts: 0,
     carriedArtifactId: null,
     debris: [],
+    groundY: 0,
+    imp: null,
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -81,6 +95,7 @@ export async function startGame(canvas, input) {
     state.player.position = { x: 80, y: groundY };
     state.levelWidth = canvas.width;
     state.levelHeight = canvas.height;
+    state.groundY = groundY;
     state.player.velocity = { x: 0, y: 0 };
     state.player.isGrounded = true;
     state.player.isMoving = false;
@@ -94,6 +109,7 @@ export async function startGame(canvas, input) {
     state.secondCoderTime = randomInRange(SECOND_CODER_TIME_MIN, SECOND_CODER_TIME_MAX);
     state.lastCountdownSecond = null;
     state.debris = [];
+    state.imp = createImpState();
   }
 
   await loadSession();
@@ -143,6 +159,7 @@ export async function startGame(canvas, input) {
 
     updateVibeCoders(state, dt, audio);
     await updateArtifactDrops(state, dt, audio);
+    updateImp(state, dt, audio);
 
     state.score = state.artifacts.filter((artifact) => artifact.status === "ground").length;
 
@@ -216,6 +233,10 @@ function updateDebris(state, dt) {
 
 function randomInRange(min, max) {
   return min + Math.random() * (max - min);
+}
+
+function randomInt(min, max) {
+  return Math.floor(randomInRange(min, max + 1));
 }
 
 function updatePlayerAnimation(state, dt) {
@@ -370,6 +391,197 @@ function getSurfaceY(terrain, x) {
     }
   });
   return Number.isFinite(topY) ? topY : 0;
+}
+
+function createImpState() {
+  const firstAppearance = randomInRange(IMP_FIRST_APPEAR_MIN, IMP_FIRST_APPEAR_MAX);
+  const secondAppearance = Math.random() < IMP_SECOND_APPEAR_CHANCE
+    ? randomInRange(IMP_SECOND_APPEAR_TIME, IMP_SECOND_APPEAR_TIME + IMP_SECOND_APPEAR_WINDOW)
+    : null;
+
+  return {
+    firstAppearance,
+    secondAppearance,
+    active: false,
+    placements: [],
+    nextPlacementAt: 0,
+    visibleUntil: 0,
+    position: null,
+    firstTriggered: false,
+    secondTriggered: false,
+  };
+}
+
+function updateImp(state, dt, audio) {
+  const elapsed = (performance.now() - state.startTime) / 1000;
+  if (!state.imp) {
+    state.imp = createImpState();
+  }
+
+  if (!state.imp.firstTriggered && elapsed >= state.imp.firstAppearance) {
+    state.imp.firstTriggered = true;
+    triggerImpAppearance(state, audio, true);
+  }
+
+  if (
+    state.imp.secondAppearance !== null &&
+    !state.imp.secondTriggered &&
+    elapsed >= state.imp.secondAppearance
+  ) {
+    state.imp.secondTriggered = true;
+    triggerImpAppearance(state, audio, true);
+  }
+
+  if (state.imp.active && state.imp.placements.length) {
+    const now = performance.now() / 1000;
+    if (now >= state.imp.nextPlacementAt) {
+      const placement = state.imp.placements.shift();
+      if (placement) {
+        addImpObstacle(state, placement);
+        state.imp.position = {
+          x: placement.x + placement.width / 2,
+          y: placement.y,
+        };
+        state.imp.visibleUntil = now + IMP_VISIBILITY_SECONDS;
+        audio.playSfx("impWhoosh");
+      }
+      state.imp.nextPlacementAt = now + IMP_PLACEMENT_INTERVAL;
+      if (!state.imp.placements.length) {
+        state.imp.active = false;
+      }
+    }
+  }
+}
+
+function triggerImpAppearance(state, audio, showToast) {
+  const placements = buildImpPlacements(state);
+  if (!placements.length) {
+    return;
+  }
+  state.imp.active = true;
+  state.imp.placements = placements;
+  state.imp.nextPlacementAt = performance.now() / 1000;
+  state.imp.position = {
+    x: placements[0].x + placements[0].width / 2,
+    y: placements[0].y,
+  };
+  state.imp.visibleUntil = performance.now() / 1000 + IMP_VISIBILITY_SECONDS;
+  if (showToast) {
+    state.toast = {
+      message: "Oh no Imp Ediment is out and about placing obstacles, look out!",
+      until: performance.now() + TOAST_DURATION * 1000 * 2,
+    };
+  }
+  audio.playSfx("impWhoosh");
+}
+
+function buildImpPlacements(state) {
+  const count = randomInt(IMP_MIN_PLACEMENTS, IMP_MAX_PLACEMENTS);
+  const placements = [];
+  const start = performance.now() / 1000;
+  const attemptsPerPlacement = 20;
+
+  for (let i = 0; i < count; i += 1) {
+    let placed = false;
+    for (let attempt = 0; attempt < attemptsPerPlacement; attempt += 1) {
+      if (performance.now() / 1000 - start > IMP_PLACEMENT_WINDOW) {
+        return placements;
+      }
+      const candidate = pickImpPlacement(state);
+      if (candidate && !overlapsPlacement(candidate, placements)) {
+        placements.push(candidate);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      continue;
+    }
+  }
+
+  return placements;
+}
+
+function pickImpPlacement(state) {
+  const bounds = getSpawnBounds(state.levelWidth);
+  const trashTop = state.trashCan.bounds.y;
+  const minY = trashTop - 96;
+  const maxY = trashTop;
+  if (maxY <= minY) {
+    return null;
+  }
+  const x = clamp(alignToTile(randomInRange(bounds.minX, bounds.maxX)), bounds.minX, bounds.maxX - IMP_OBSTACLE_SIZE);
+  const y = clamp(alignToTile(randomInRange(minY, maxY)), minY, maxY);
+  const placement = { x, y, width: IMP_OBSTACLE_SIZE, height: IMP_OBSTACLE_SIZE };
+
+  if (!isPlacementValid(state, placement)) {
+    return null;
+  }
+  return placement;
+}
+
+function isPlacementValid(state, placement) {
+  if (rectsOverlap(placement, state.trashCan.bounds)) {
+    return false;
+  }
+
+  const playerBounds = {
+    x: state.player.position.x,
+    y: state.player.position.y - state.player.height,
+    width: state.player.width,
+    height: state.player.height,
+  };
+  if (rectsOverlap(placement, playerBounds)) {
+    return false;
+  }
+
+  for (const segment of state.terrain) {
+    if (segment.type !== "ground" && rectsOverlap(placement, segment.bounds)) {
+      return false;
+    }
+  }
+
+  for (const artifact of state.artifacts) {
+    if (artifact.status === "deposited") {
+      continue;
+    }
+    const artifactBounds = {
+      x: artifact.position.x,
+      y: artifact.position.y - 36,
+      width: 48,
+      height: 48,
+    };
+    if (rectsOverlap(placement, artifactBounds)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function overlapsPlacement(candidate, placements) {
+  return placements.some((placement) => rectsOverlap(candidate, placement));
+}
+
+function addImpObstacle(state, placement) {
+  state.terrain.push({
+    id: `imp_obstacle_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+    type: "stone",
+    bounds: { ...placement },
+  });
+}
+
+function rectsOverlap(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+function alignToTile(value) {
+  return Math.round(value / IMP_OBSTACLE_SIZE) * IMP_OBSTACLE_SIZE;
 }
 
 function getSpawnBounds(levelWidth) {
