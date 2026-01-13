@@ -2,16 +2,30 @@ const { generateLevel } = require("./level-generator");
 const { validateLevel } = require("./level-validator");
 
 const sessions = new Map();
+const stats = {
+  startedCount: 0,
+  endedCount: 0,
+  staleEndedCount: 0,
+  wonCount: 0,
+  lostCount: 0,
+  abandonedCount: 0,
+};
+
+const STALE_MULTIPLIER = 2;
+const CLEANUP_INTERVAL_MS = 30_000;
 
 function createSession({ durationSeconds = 60 } = {}) {
+  cleanupStaleSessions();
   const sessionId = `session_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
   const seed = `${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`;
   const level = generateLevel({ seed, validateLevel, includeArtifacts: false });
+  const startedAtMs = Date.now();
 
   const session = {
     id: sessionId,
     seed,
-    startedAt: new Date().toISOString(),
+    startedAt: new Date(startedAtMs).toISOString(),
+    startedAtMs,
     durationSeconds,
     score: 0,
     status: "active",
@@ -21,6 +35,7 @@ function createSession({ durationSeconds = 60 } = {}) {
     trashCan: level.trashCan,
   };
 
+  stats.startedCount += 1;
   sessions.set(sessionId, session);
   return session;
 }
@@ -45,9 +60,68 @@ function saveSession(session) {
   return session;
 }
 
+function endSession(sessionId, { reason = "ended", result = null } = {}) {
+  const session = sessions.get(sessionId);
+  if (!session) {
+    return null;
+  }
+  session.status = "ended";
+  session.endedAt = new Date().toISOString();
+  session.endReason = reason;
+  session.result = result;
+  sessions.delete(sessionId);
+  stats.endedCount += 1;
+  if (reason === "stale") {
+    stats.staleEndedCount += 1;
+    stats.abandonedCount += 1;
+  } else if (result === "won") {
+    stats.wonCount += 1;
+  } else if (result === "lost") {
+    stats.lostCount += 1;
+  } else {
+    stats.abandonedCount += 1;
+  }
+  return session;
+}
+
+function cleanupStaleSessions(nowMs = Date.now()) {
+  const staleIds = [];
+  sessions.forEach((session, sessionId) => {
+    if (session.status !== "active") {
+      return;
+    }
+    const maxAgeMs = session.durationSeconds * STALE_MULTIPLIER * 1000;
+    if (nowMs - session.startedAtMs > maxAgeMs) {
+      staleIds.push(sessionId);
+    }
+  });
+  staleIds.forEach((sessionId) => endSession(sessionId, { reason: "stale" }));
+  return staleIds.length;
+}
+
+function getSessionStats() {
+  cleanupStaleSessions();
+  return {
+    activeCount: sessions.size,
+    startedCount: stats.startedCount,
+    endedCount: stats.endedCount,
+    staleEndedCount: stats.staleEndedCount,
+    wonCount: stats.wonCount,
+    lostCount: stats.lostCount,
+    abandonedCount: stats.abandonedCount,
+  };
+}
+
+setInterval(() => {
+  cleanupStaleSessions();
+}, CLEANUP_INTERVAL_MS).unref();
+
 module.exports = {
   createSession,
   getSession,
   updateSession,
   saveSession,
+  endSession,
+  cleanupStaleSessions,
+  getSessionStats,
 };

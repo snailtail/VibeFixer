@@ -8,6 +8,15 @@ async function bootstrap() {
   const logList = document.getElementById("event-log-list");
   const poImage = document.getElementById("po-status-image");
   const languageSelect = document.getElementById("language-select");
+  const sessionStats = {
+    active: document.getElementById("session-stats-active"),
+    started: document.getElementById("session-stats-started"),
+    ended: document.getElementById("session-stats-ended"),
+    stale: document.getElementById("session-stats-stale"),
+    won: document.getElementById("session-stats-won"),
+    lost: document.getElementById("session-stats-lost"),
+    abandoned: document.getElementById("session-stats-abandoned"),
+  };
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 683;
@@ -47,6 +56,14 @@ async function bootstrap() {
     setText("language-label", nextStrings.ui.languageLabel);
     setText("game-events-title", nextStrings.ui.gameEventsTitle);
     setText("po-status-title", nextStrings.ui.poStatusTitle);
+    setText("session-stats-title", nextStrings.ui.sessionStatsTitle);
+    setText("session-stats-active-label", nextStrings.ui.sessionStatsActive);
+    setText("session-stats-started-label", nextStrings.ui.sessionStatsStarted);
+    setText("session-stats-ended-label", nextStrings.ui.sessionStatsEnded);
+    setText("session-stats-stale-label", nextStrings.ui.sessionStatsStale);
+    setText("session-stats-won-label", nextStrings.ui.sessionStatsWon);
+    setText("session-stats-lost-label", nextStrings.ui.sessionStatsLost);
+    setText("session-stats-abandoned-label", nextStrings.ui.sessionStatsAbandoned);
     setText("story-title", nextStrings.story.title);
     setText("story-text", nextStrings.story.text);
     setText("cast-title", nextStrings.cast.title);
@@ -108,6 +125,49 @@ async function bootstrap() {
       applyLanguage(normalized);
     });
   }
+
+  function updateSessionStats(data) {
+    if (!data) {
+      return;
+    }
+    if (sessionStats.active) {
+      sessionStats.active.textContent = String(data.activeCount ?? 0);
+    }
+    if (sessionStats.started) {
+      sessionStats.started.textContent = String(data.startedCount ?? 0);
+    }
+    if (sessionStats.ended) {
+      sessionStats.ended.textContent = String(data.endedCount ?? 0);
+    }
+    if (sessionStats.stale) {
+      sessionStats.stale.textContent = String(data.staleEndedCount ?? 0);
+    }
+    if (sessionStats.won) {
+      sessionStats.won.textContent = String(data.wonCount ?? 0);
+    }
+    if (sessionStats.lost) {
+      sessionStats.lost.textContent = String(data.lostCount ?? 0);
+    }
+    if (sessionStats.abandoned) {
+      sessionStats.abandoned.textContent = String(data.abandonedCount ?? 0);
+    }
+  }
+
+  async function fetchSessionStats() {
+    try {
+      const response = await fetch("/api/sessions/stats");
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      updateSessionStats(data);
+    } catch (error) {
+      // Ignore transient failures.
+    }
+  }
+
+  fetchSessionStats();
+  setInterval(fetchSessionStats, 10000);
 }
 
 window.addEventListener("DOMContentLoaded", bootstrap);
