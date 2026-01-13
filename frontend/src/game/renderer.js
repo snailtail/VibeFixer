@@ -120,10 +120,11 @@ function drawFomoDemon(ctx, state) {
   drawImage(ctx, sprite, x, y, size, size);
 }
 
-function drawFomoEnragedOverlay(ctx, state) {
+function drawFomoEnragedOverlay(ctx, state, strings) {
   if (!state.ended || state.fomoState !== "enraged") {
     return;
   }
+  const overlayStrings = strings?.overlays || {};
   ctx.save();
   ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -146,11 +147,15 @@ function drawFomoEnragedOverlay(ctx, state) {
   ctx.fillStyle = "#ffe5e5";
   ctx.font = "bold 18px monospace";
   ctx.textAlign = "center";
-  ctx.fillText("GAME OVER", ctx.canvas.width / 2, boxY + 28);
+  ctx.fillText(overlayStrings.fomoGameOver || "GAME OVER", ctx.canvas.width / 2, boxY + 28);
   ctx.font = "bold 16px monospace";
-  ctx.fillText("FOMO DEMON ENRAGED", ctx.canvas.width / 2, boxY + 50);
+  ctx.fillText(overlayStrings.fomoTitle || "FOMO DEMON ENRAGED", ctx.canvas.width / 2, boxY + 50);
   ctx.font = "14px monospace";
-  ctx.fillText("Unchecked code remains. The demon is furious.", ctx.canvas.width / 2, boxY + 72);
+  ctx.fillText(
+    overlayStrings.fomoLine || "Unchecked code remains. The demon is furious.",
+    ctx.canvas.width / 2,
+    boxY + 72
+  );
   ctx.restore();
 }
 
@@ -171,12 +176,12 @@ export function renderGame(ctx, state) {
   drawImpEdiment(ctx, state.imp, state.cameraX);
   drawPlayer(ctx, state.player, state.cameraX);
   if (!state.started && !state.ended) {
-    drawStartOverlay(ctx);
+    drawStartOverlay(ctx, state.strings);
   }
   if (state.toast) {
     drawToast(ctx, state.toast.message);
   }
-  drawFomoEnragedOverlay(ctx, state);
+  drawFomoEnragedOverlay(ctx, state, state.strings);
   drawHud(ctx, {
     score: state.score,
     timeRemaining: state.timeRemaining,
@@ -185,6 +190,7 @@ export function renderGame(ctx, state) {
     gameOverMessage: state.gameOverMessage,
     fomoState: state.fomoState,
     soundOn: !state.isMuted,
+    strings: state.strings,
   });
 }
 
@@ -206,7 +212,8 @@ function drawToast(ctx, message) {
   ctx.restore();
 }
 
-function drawStartOverlay(ctx) {
+function drawStartOverlay(ctx, strings) {
+  const overlayStrings = strings?.overlays || {};
   ctx.save();
   ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -214,10 +221,14 @@ function drawStartOverlay(ctx) {
   ctx.fillStyle = "#f5f5f5";
   ctx.font = "20px monospace";
   ctx.textAlign = "center";
-  ctx.fillText("Press Space to Start", ctx.canvas.width / 2, ctx.canvas.height / 2 - 80);
+  ctx.fillText(
+    overlayStrings.pressStart || "Press Space to Start",
+    ctx.canvas.width / 2,
+    ctx.canvas.height / 2 - 80
+  );
 
   ctx.font = "14px monospace";
-  const lines = [
+  const lines = overlayStrings.startLines || [
     "A vibe coder is on the loose on the top floor of the municipality,",
     "dropping fresh unchecked code into the basement.",
     "You’re the Vibe Fixer —> grab as much as you can and toss it into the Code Review Bin.",

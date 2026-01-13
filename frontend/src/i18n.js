@@ -1,0 +1,244 @@
+const STORAGE_KEY = "vibefixer:lang";
+const DEFAULT_LANGUAGE = "en";
+const LANGUAGES = ["en", "sv"];
+
+const STRINGS = {
+  en: {
+    ui: {
+      languageLabel: "Language",
+      languageEnglish: "English",
+      languageSwedish: "Swedish",
+      controlsLabel: "Controls:",
+      controlsText: "← Move left, → Move right, ↑ Jump, Space Action (Pick up / Drop), M Mute",
+      gameEventsTitle: "Game Events",
+      poStatusTitle: "PO Status",
+    },
+    story: {
+      title: "Story",
+      text:
+        "The Vibe Coders have seized the City Hall’s top floor, raining unchecked code into the basement. " +
+        "You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends. " +
+        "If the backlog piles up, the customers’ FOMO Demon wakes and the sprint turns grim. " +
+        "Clear blockers to keep the Product Owner calm, but beware Imp Ediment, who teleports in to stack new obstacles. " +
+        "Smash a blocker from below to break it, or vault over it if you care more about speed than the PO’s blood pressure.",
+    },
+    cast: {
+      title: "Cast",
+      fixer: {
+        name: "The Fixer",
+        bio: "Municipality hero, fast on the keyboard and faster on the cleanup.",
+        alt: "The Fixer",
+      },
+      coder: {
+        name: "Vibe Coder",
+        bio: "Top-floor chaos agent dropping unchecked code at the worst times.",
+        alt: "Vibe Coder",
+      },
+      imp: {
+        name: "Imp Ediment",
+        bio: "Teleporting mischief-maker who stacks blockers in your way.",
+        alt: "Imp Ediment",
+      },
+      fomo: {
+        name: "FOMO Demon",
+        bio: "Feeds on lingering code. Defeat it by keeping the ground clean.",
+        alt: "FOMO Demon",
+      },
+      po: {
+        name: "Product Owner",
+        bio: "Guardian of scope and sanity, happiest when blockers hit zero.",
+        alt: "Product Owner",
+      },
+    },
+    credits: {
+      title: "Credits",
+      items: [
+        "Kenney New Platformer Pack (CC0) — sprites for characters and tiles.",
+        "OpenGameArt CC0 audio — chiptune music and sound effects.",
+        "kommun_bg.png background — CC0 by Magnus.",
+        "Co-authors: Magnus & Codex.",
+      ],
+    },
+    hud: {
+      unchecked: "Unchecked code on ground",
+      blockers: "Blockers",
+      sound: "Sound",
+      on: "On",
+      off: "Off",
+      sprintEndsIn: "Sprint ends in",
+      gameOver: "Game Over",
+      reload: "Reload the page to try again",
+    },
+    overlays: {
+      pressStart: "Press Space to Start",
+      startLines: [
+        "A vibe coder is on the loose on the top floor of the municipality,",
+        "dropping fresh unchecked code into the basement.",
+        "You’re the Vibe Fixer —> grab as much as you can and toss it into the Code Review Bin.",
+        "Hurry up: your sprint ends in 60 seconds, as requested by the demanding customers.",
+        "Press M to mute or unmute the music.",
+      ],
+      fomoGameOver: "GAME OVER",
+      fomoTitle: "FOMO DEMON ENRAGED",
+      fomoLine: "Unchecked code remains. The demon is furious.",
+    },
+    toast: {
+      secondCoderWarning: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
+      impWarning: "Oh no Imp Ediment is out and about placing blockers, look out!",
+    },
+    gameOver: {
+      defeated: "FOMO Demon defeated! The code is clean.",
+      enraged: "FOMO Demon enraged! Unchecked code remains.",
+    },
+    log: {
+      brokeBlockers: (count) => `Broke ${count} blocker${count === 1 ? "" : "s"}.`,
+      deposited: "Deposited unchecked code in the bin.",
+      coderDrop: (id) => `Vibe coder #${id} dropped unchecked code.`,
+      warningSecond: "Warning: vibe coder #2 is about to join.",
+      secondJoined: "Vibe coder #2 joined the chaos.",
+      impAppeared: (count) =>
+        `Imp Ediment appeared: placing ${count} blocker${count === 1 ? "" : "s"}.`,
+      fomoRise: "The FOMO Demon rises. Unchecked code feeds its rage.",
+    },
+    poMood: {
+      happy: "Happy",
+      content: "Content",
+      sad: "Worried",
+    },
+  },
+  sv: {
+    ui: {
+      languageLabel: "Språk",
+      languageEnglish: "Engelska",
+      languageSwedish: "Svenska",
+      controlsLabel: "Kontroller:",
+      controlsText: "← Gå vänster, → Gå höger, ↑ Hoppa, Mellanslag Åtgärd (Plocka upp / Släpp), M Ljud av/på",
+      gameEventsTitle: "Spelhändelser",
+      poStatusTitle: "PO-status",
+    },
+    story: {
+      title: "Historia",
+      text:
+        "Vibe-kodarna har intagit Stadshusets övre våning och det regnar ner okontrollerad kod i källaren. " +
+        "Du är Vibe Fixer — spring snabbt, granska snabbare och håll flödet igång innan sprinten tar slut. " +
+        "Om backloggen växer vaknar kundernas FOMO-demon och sprinten blir till ett mörker. " +
+        "Röj undan blockers för att hålla Product Owner lugn, men se upp för Imp Ediment som teleporterar in och sätter upp nya blockers. " +
+        "Slå sönder en blocker underifrån, eller hoppa över den om du bryr dig mer om fart än PO:ns blodtryck.",
+    },
+    cast: {
+      title: "Rollista",
+      fixer: {
+        name: "Fixaren",
+        bio: "Kommunal hjälte, snabb på tangenterna och ännu snabbare på städning.",
+        alt: "Fixaren",
+      },
+      coder: {
+        name: "Vibe-kodare",
+        bio: "Kaosagent på övre plan som släpper okontrollerad kod där det gör som mest ont.",
+        alt: "Vibe-kodare",
+      },
+      imp: {
+        name: "Imp Ediment",
+        bio: "Teleportande mini-djävul som ställer blockers i din väg.",
+        alt: "Imp Ediment",
+      },
+      fomo: {
+        name: "FOMO-demon",
+        bio: "Livnär sig på kvarlämnad kod. Besegra den genom att hålla golvet rent från okontrollerad kod.",
+        alt: "FOMO-demon",
+      },
+      po: {
+        name: "Product Owner",
+        bio: "Vaktar scope och sinnesro, lyckligast när blockers är noll.",
+        alt: "Product Owner",
+      },
+    },
+    credits: {
+      title: "Tack",
+      items: [
+        "Kenney New Platformer Pack (CC0) — sprites för karaktärer och tiles.",
+        "OpenGameArt CC0-ljud — chiptune-musik och ljudeffekter.",
+        "kommun_bg.png bakgrund — CC0 av Magnus.",
+        "Medskapare: Magnus & Codex.",
+      ],
+    },
+    hud: {
+      unchecked: "Okontrollerad kod på golvet",
+      blockers: "Blockers",
+      sound: "Ljud",
+      on: "På",
+      off: "Av",
+      sprintEndsIn: "Sprinten slutar om",
+      gameOver: "Spelet är slut",
+      reload: "Ladda om sidan för att försöka igen",
+    },
+    overlays: {
+      pressStart: "Tryck Mellanslag för att starta",
+      startLines: [
+        "En vibe-kodare har tagit över kommunens övervåning",
+        "och släpper ner färsk okontrollerad kod i källaren.",
+        "Du är Vibe Fixer —> samla så mycket du kan och släng i Code Review Bin.",
+        "Skynda: sprinten slutar om 60 sekunder, som de längtande kunderna krävde.",
+        "Tryck M för att slå av/på musiken.",
+      ],
+      fomoGameOver: "SPELET ÄR SLUT",
+      fomoTitle: "FOMO-DEMONEN RASAR",
+      fomoLine: "Okontrollerad kod finns kvar. Demonen rasar.",
+    },
+    toast: {
+      secondCoderWarning: "Aj då, kunden har hyrt in en till vibe-kodare. Försök hänga med!",
+      impWarning: "Åh nej, Imp Ediment är ute och placerar blockers, akta dig!",
+    },
+    gameOver: {
+      defeated: "FOMO-demonen besegrad! Koden är ren.",
+      enraged: "FOMO-demonen rasar! Okontrollerad kod finns kvar.",
+    },
+    log: {
+      brokeBlockers: (count) => `Krossade ${count} blocker${count === 1 ? "" : "s"}.`,
+      deposited: "Lade okontrollerad kod till granskning.",
+      coderDrop: (id) => `Vibe-kodare #${id} släppte ny okontrollerad kod.`,
+      warningSecond: "Varning: vibe-kodare #2 är på väg in.",
+      secondJoined: "Vibe-kodare #2 anslöt till kaoset.",
+      impAppeared: (count) =>
+        `Imp Ediment dök upp: placerar ${count} blocker${count === 1 ? "" : "s"}.`,
+      fomoRise: "FOMO-demonen reser sig. Okontrollerad kod göder dess raseri.",
+    },
+    poMood: {
+      happy: "Glad",
+      content: "Nöjd",
+      sad: "Orolig",
+    },
+  },
+};
+
+function normalizeLanguage(lang) {
+  if (!lang) {
+    return DEFAULT_LANGUAGE;
+  }
+  const normalized = String(lang).toLowerCase();
+  return LANGUAGES.includes(normalized) ? normalized : DEFAULT_LANGUAGE;
+}
+
+function loadLanguage() {
+  try {
+    return normalizeLanguage(localStorage.getItem(STORAGE_KEY));
+  } catch (error) {
+    return DEFAULT_LANGUAGE;
+  }
+}
+
+function saveLanguage(lang) {
+  const normalized = normalizeLanguage(lang);
+  try {
+    localStorage.setItem(STORAGE_KEY, normalized);
+  } catch (error) {
+    // Ignore storage errors to keep the game usable.
+  }
+  return normalized;
+}
+
+function getStrings(lang) {
+  return STRINGS[normalizeLanguage(lang)];
+}
+
+export { DEFAULT_LANGUAGE, LANGUAGES, getStrings, loadLanguage, saveLanguage, normalizeLanguage };

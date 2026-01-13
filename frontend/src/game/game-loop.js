@@ -42,6 +42,7 @@ export async function startGame(canvas, input, ui = {}) {
   const audio = createAudioManager();
   const logList = ui.logList || null;
   const poImage = ui.poImage || null;
+  const initialStrings = ui.strings || null;
   const state = {
     sessionId: null,
     durationSeconds: 120,
@@ -71,6 +72,7 @@ export async function startGame(canvas, input, ui = {}) {
     isMuted: false,
     fomoState: null,
     gameOverMessage: "",
+    strings: initialStrings,
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -164,13 +166,15 @@ export async function startGame(canvas, input, ui = {}) {
       state.carriedArtifactId = null;
       const remainingUnchecked = state.artifacts.filter((artifact) => artifact.status !== "deposited").length;
       state.fomoState = remainingUnchecked === 0 ? "defeated" : "enraged";
+      const gameOverStrings = state.strings?.gameOver || {};
       state.gameOverMessage = state.fomoState === "defeated"
-        ? "FOMO Demon defeated! The code is clean."
-        : "FOMO Demon enraged! Unchecked code remains.";
+        ? gameOverStrings.defeated || "FOMO Demon defeated! The code is clean."
+        : gameOverStrings.enraged || "FOMO Demon enraged! Unchecked code remains.";
       audio.stopMusic();
       if (state.fomoState === "enraged") {
         audio.playSfx("fomoAngry");
-        addEventLog(state, "The FOMO Demon rises. Unchecked code feeds its rage.");
+        const logStrings = state.strings?.log || {};
+        addEventLog(state, logStrings.fomoRise || "The FOMO Demon rises. Unchecked code feeds its rage.");
       } else {
         audio.playSfx("gameOver");
       }
@@ -183,7 +187,14 @@ export async function startGame(canvas, input, ui = {}) {
     if (breakEvents.length) {
       audio.playSfx("break");
       breakEvents.forEach((event) => spawnDebris(state, event));
-      addEventLog(state, `Broke ${breakEvents.length} blocker${breakEvents.length === 1 ? "" : "s"}.`);
+      const logStrings = state.strings?.log || {};
+      const breaker = logStrings.brokeBlockers;
+      addEventLog(
+        state,
+        typeof breaker === "function"
+          ? breaker(breakEvents.length)
+          : `Broke ${breakEvents.length} blocker${breakEvents.length === 1 ? "" : "s"}.`
+      );
     }
     updatePlayerAnimation(state, dt);
     if (state.player.justJumped) {
@@ -205,7 +216,8 @@ export async function startGame(canvas, input, ui = {}) {
       const actionResult = await handleAction(state);
       if (actionResult === "trash") {
         audio.playSfx("trash");
-        addEventLog(state, "Deposited unchecked code in the bin.");
+        const logStrings = state.strings?.log || {};
+        addEventLog(state, logStrings.deposited || "Deposited unchecked code in the bin.");
       } else if (actionResult === "drop") {
         audio.playSfx("drop");
       }
@@ -242,6 +254,14 @@ export async function startGame(canvas, input, ui = {}) {
   }
 
   requestAnimationFrame(frame);
+
+  return {
+    setStrings(nextStrings) {
+      state.strings = nextStrings;
+      state.poMood = null;
+      updatePOMood(state, poImage);
+    },
+  };
 }
 
 function spawnDebris(state, event) {
@@ -318,12 +338,16 @@ function updateVibeCoders(state, dt, audio) {
   }
 
   if (!state.secondCoderEnabled && !state.toast && elapsed >= state.secondCoderTime - TOAST_LEAD_TIME) {
+    const toastStrings = state.strings?.toast || {};
     state.toast = {
-      message: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
+      message:
+        toastStrings.secondCoderWarning ||
+        "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
       until: performance.now() + TOAST_DURATION * 1000,
     };
     audio.playSfx("warning");
-    addEventLog(state, "Warning: vibe coder #2 is about to join.");
+    const logStrings = state.strings?.log || {};
+    addEventLog(state, logStrings.warningSecond || "Warning: vibe coder #2 is about to join.");
   }
 
   if (!state.secondCoderEnabled && elapsed >= state.secondCoderTime) {
@@ -332,7 +356,8 @@ function updateVibeCoders(state, dt, audio) {
     const spawnX = pickSpawnX(state.levelWidth, avoidX);
     state.vibecoders.push(createVibeCoder({ x: spawnX, direction: firstDirection * -1 }));
     state.secondCoderEnabled = true;
-    addEventLog(state, "Vibe coder #2 joined the chaos.");
+    const logStrings = state.strings?.log || {};
+    addEventLog(state, logStrings.secondJoined || "Vibe coder #2 joined the chaos.");
   }
 
   if (state.toast && performance.now() > state.toast.until) {
@@ -384,7 +409,14 @@ async function updateArtifactDrops(state, dt, audio) {
           velocityY: 0,
         });
         audio.playSfx("drop");
-        addEventLog(state, `Vibe coder #${index + 1} dropped unchecked code.`);
+        const logStrings = state.strings?.log || {};
+        const coderDrop = logStrings.coderDrop;
+        addEventLog(
+          state,
+          typeof coderDrop === "function"
+            ? coderDrop(index + 1)
+            : `Vibe coder #${index + 1} dropped unchecked code.`
+        );
       }
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
@@ -512,12 +544,21 @@ function triggerImpAppearance(state, audio, showToast) {
   };
   state.imp.visibleUntil = performance.now() / 1000 + IMP_VISIBILITY_SECONDS;
   if (showToast) {
+    const toastStrings = state.strings?.toast || {};
     state.toast = {
-      message: "Oh no Imp Ediment is out and about placing blockers, look out!",
+      message:
+        toastStrings.impWarning || "Oh no Imp Ediment is out and about placing blockers, look out!",
       until: performance.now() + TOAST_DURATION * 1000 * 2,
     };
   }
-  addEventLog(state, `Imp Ediment appeared: placing ${placements.length} blocker${placements.length === 1 ? "" : "s"}.`);
+  const logStrings = state.strings?.log || {};
+  const impAppeared = logStrings.impAppeared;
+  addEventLog(
+    state,
+    typeof impAppeared === "function"
+      ? impAppeared(placements.length)
+      : `Imp Ediment appeared: placing ${placements.length} blocker${placements.length === 1 ? "" : "s"}.`
+  );
   audio.playSfx("impWhoosh");
 }
 
@@ -655,9 +696,11 @@ function updatePOMood(state, poImage) {
     return;
   }
   poImage.src = PO_IMAGES[nextMood];
-  const label = nextMood.charAt(0).toUpperCase() + nextMood.slice(1);
-  poImage.alt = `Product Owner mood: ${label}`;
-  poImage.title = `Product Owner mood: ${label}`;
+  const moodStrings = state.strings?.poMood || {};
+  const label = moodStrings[nextMood] || nextMood.charAt(0).toUpperCase() + nextMood.slice(1);
+  const prefix = state.strings?.ui?.poStatusTitle || "PO Status";
+  poImage.alt = `${prefix}: ${label}`;
+  poImage.title = `${prefix}: ${label}`;
 }
 
 function renderEventLog(logList, entries) {

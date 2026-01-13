@@ -27,9 +27,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 012-language-toggle: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 - 011-intro-story: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 - 010-tech-docs: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
-- 009-po-happiness: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 
 
 <!-- MANUAL ADDITIONS START -->
