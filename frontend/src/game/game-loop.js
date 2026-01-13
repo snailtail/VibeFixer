@@ -68,6 +68,7 @@ export async function startGame(canvas, input, ui = {}) {
     logDirty: false,
     blockerCount: 0,
     poMood: null,
+    isMuted: false,
     fomoState: null,
     gameOverMessage: "",
     player: {
@@ -128,6 +129,7 @@ export async function startGame(canvas, input, ui = {}) {
     state.blockerCount = countBlockers(state);
     state.fomoState = null;
     state.gameOverMessage = "";
+    state.isMuted = audio.isMuted();
     updatePOMood(state, poImage);
   }
 
@@ -143,6 +145,7 @@ export async function startGame(canvas, input, ui = {}) {
     if (state.input.toggleMute) {
       audio.toggleMute();
       state.input.toggleMute = false;
+      state.isMuted = audio.isMuted();
     }
 
     if (!state.started) {
@@ -652,7 +655,9 @@ function updatePOMood(state, poImage) {
     return;
   }
   poImage.src = PO_IMAGES[nextMood];
-  poImage.alt = `Product Owner (${nextMood})`;
+  const label = nextMood.charAt(0).toUpperCase() + nextMood.slice(1);
+  poImage.alt = `Product Owner mood: ${label}`;
+  poImage.title = `Product Owner mood: ${label}`;
 }
 
 function renderEventLog(logList, entries) {

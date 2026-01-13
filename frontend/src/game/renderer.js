@@ -184,6 +184,7 @@ export function renderGame(ctx, state) {
     blockerCount: state.blockerCount,
     gameOverMessage: state.gameOverMessage,
     fomoState: state.fomoState,
+    soundOn: !state.isMuted,
   });
 }
 
