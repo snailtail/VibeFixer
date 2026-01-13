@@ -26,6 +26,7 @@
   - `frontend/assets/audio/sfx_warning.wav`
   - `frontend/assets/audio/sfx_countdown.wav`
   - `frontend/assets/audio/sfx_imp_whoosh.wav`
+  - `frontend/assets/audio/sfx_fomo_angry.wav`
   - `frontend/assets/audio/sfx_break.mp3`
 
 ## game_over.mp3 (Game Over Sound)

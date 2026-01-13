@@ -43,9 +43,7 @@ function generateTerrain(trashBounds) {
   }
   while (floatOffsets.length < totalCount) {
     const roll = Math.random();
-    if (roll < 0.4) {
-      floatOffsets.push(0);
-    } else if (roll < 0.7) {
+    if (roll < 0.6) {
       floatOffsets.push(TILE_SIZE * 2);
     } else {
       floatOffsets.push(TILE_SIZE * 4);
