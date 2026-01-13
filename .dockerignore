@@ -1,0 +1,6 @@
+.git
+.github
+.specify
+specs
+node_modules
+.DS_Store
