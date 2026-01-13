@@ -1,4 +1,11 @@
-const { createSession, getSession, saveSession } = require("../game/session-store");
+const {
+  createSession,
+  getSession,
+  saveSession,
+  endSession,
+  cleanupStaleSessions,
+  getSessionStats,
+} = require("../game/session-store");
 
 function sendJson(res, statusCode, payload) {
   const body = JSON.stringify(payload);
@@ -46,6 +53,13 @@ function serializeSession(session) {
 }
 
 async function handleSessions(req, res, url) {
+  cleanupStaleSessions();
+
+  if (req.method === "GET" && url.pathname === "/api/sessions/stats") {
+    sendJson(res, 200, getSessionStats());
+    return true;
+  }
+
   if (req.method === "POST" && url.pathname === "/api/sessions") {
     const body = await collectJson(req);
     if (body && body.__invalidJson) {
@@ -76,10 +90,20 @@ async function handleSessions(req, res, url) {
   }
 
   if (action === "end") {
-    session.status = "ended";
-    const deposited = session.artifacts.filter((artifact) => artifact.status === "deposited");
-    saveSession(session);
-    sendJson(res, 200, { finalScore: session.score, artifactsDeposited: deposited.length });
+    const body = await collectJson(req);
+    if (body && body.__invalidJson) {
+      sendJson(res, 400, { error: "Invalid JSON" });
+      return true;
+    }
+    const result = body && typeof body.result === "string" ? body.result.toLowerCase() : null;
+    const normalizedResult = result === "won" || result === "lost" ? result : null;
+    const ended = endSession(sessionId, { reason: "ended", result: normalizedResult });
+    if (!ended) {
+      sendJson(res, 404, { error: "Session not found" });
+      return true;
+    }
+    const deposited = ended.artifacts.filter((artifact) => artifact.status === "deposited");
+    sendJson(res, 200, { finalScore: ended.score, artifactsDeposited: deposited.length });
     return true;
   }
 

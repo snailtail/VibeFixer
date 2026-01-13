@@ -178,7 +178,7 @@ export async function startGame(canvas, input, ui = {}) {
       } else {
         audio.playSfx("gameOver");
       }
-      await endSession(state.sessionId);
+      await endSession(state.sessionId, state.fomoState === "defeated" ? "won" : "lost");
       return;
     }
 

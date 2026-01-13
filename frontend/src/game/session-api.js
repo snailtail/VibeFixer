@@ -29,9 +29,11 @@ export function depositArtifact(sessionId, artifactId) {
   });
 }
 
-export function endSession(sessionId) {
+export function endSession(sessionId, result) {
+  const body = result ? { result } : undefined;
   return request(`/api/sessions/${sessionId}/end`, {
     method: "POST",
+    body: body ? JSON.stringify(body) : undefined,
   });
 }
 
