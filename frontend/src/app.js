@@ -17,6 +17,14 @@ async function bootstrap() {
     lost: document.getElementById("session-stats-lost"),
     abandoned: document.getElementById("session-stats-abandoned"),
   };
+  const touchControls = {
+    left: document.getElementById("touch-left"),
+    right: document.getElementById("touch-right"),
+    jump: document.getElementById("touch-jump"),
+    action: document.getElementById("touch-action"),
+  };
+  const touchToggleButton = document.getElementById("touch-toggle-button");
+  const touchOverlay = document.getElementById("touch-controls");
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 683;
@@ -33,10 +41,20 @@ async function bootstrap() {
   const strings = getStrings(initialLanguage);
   const gameApi = await startGame(canvas, input, { logList, poImage, strings });
 
-  function setText(id, value) {
+  function setText(id, value, { allowNewlines = false } = {}) {
     const element = document.getElementById(id);
     if (element && value !== undefined) {
-      element.textContent = value;
+      if (allowNewlines) {
+        element.innerHTML = "";
+        const parts = String(value).split(/\n+/);
+        parts.forEach((part) => {
+          const line = document.createElement("span");
+          line.textContent = part;
+          element.appendChild(line);
+        });
+      } else {
+        element.textContent = value;
+      }
     }
   }
 
@@ -47,12 +65,18 @@ async function bootstrap() {
     }
   }
 
+  function setAriaLabel(element, value) {
+    if (element && value) {
+      element.setAttribute("aria-label", value);
+    }
+  }
+
   function applyStrings(nextStrings) {
     if (!nextStrings) {
       return;
     }
     setText("controls-label", nextStrings.ui.controlsLabel);
-    setText("controls-text", nextStrings.ui.controlsText);
+    setText("controls-text", nextStrings.ui.controlsText, { allowNewlines: true });
     setText("language-label", nextStrings.ui.languageLabel);
     setText("game-events-title", nextStrings.ui.gameEventsTitle);
     setText("po-status-title", nextStrings.ui.poStatusTitle);
@@ -64,6 +88,13 @@ async function bootstrap() {
     setText("session-stats-won-label", nextStrings.ui.sessionStatsWon);
     setText("session-stats-lost-label", nextStrings.ui.sessionStatsLost);
     setText("session-stats-abandoned-label", nextStrings.ui.sessionStatsAbandoned);
+    setAriaLabel(touchControls.left, nextStrings.ui.touchLeft);
+    setAriaLabel(touchControls.right, nextStrings.ui.touchRight);
+    setAriaLabel(touchControls.jump, nextStrings.ui.touchJump);
+    setAriaLabel(touchControls.action, nextStrings.ui.touchAction);
+    if (touchToggleButton) {
+      touchToggleButton.textContent = nextStrings.ui.touchToggleShow;
+    }
     setText("story-title", nextStrings.story.title);
     setText("story-text", nextStrings.story.text);
     setText("cast-title", nextStrings.cast.title);
@@ -124,6 +155,48 @@ async function bootstrap() {
       const normalized = saveLanguage(selected);
       applyLanguage(normalized);
     });
+  }
+
+  function bindTouchButton(button, key) {
+    if (!button) {
+      return;
+    }
+    const setPressed = (value, event) => {
+      if (event) {
+        event.preventDefault();
+      }
+      input[key] = value;
+    };
+    button.addEventListener("pointerdown", (event) => {
+      setPressed(true, event);
+      button.setPointerCapture(event.pointerId);
+    });
+    ["pointerup", "pointercancel", "pointerleave", "pointerout"].forEach((type) => {
+      button.addEventListener(type, (event) => setPressed(false, event));
+    });
+  }
+
+  bindTouchButton(touchControls.left, "left");
+  bindTouchButton(touchControls.right, "right");
+  bindTouchButton(touchControls.jump, "jump");
+  bindTouchButton(touchControls.action, "action");
+
+  function updateTouchToggleLabel(nextStrings) {
+    if (!touchToggleButton || !touchOverlay || !nextStrings) {
+      return;
+    }
+    const label = touchOverlay.classList.contains("visible")
+      ? nextStrings.ui.touchToggleHide
+      : nextStrings.ui.touchToggleShow;
+    touchToggleButton.textContent = label;
+  }
+
+  if (touchToggleButton && touchOverlay) {
+    touchToggleButton.addEventListener("click", () => {
+      touchOverlay.classList.toggle("visible");
+      updateTouchToggleLabel(getStrings(loadLanguage()));
+    });
+    updateTouchToggleLabel(getStrings(loadLanguage()));
   }
 
   function updateSessionStats(data) {
