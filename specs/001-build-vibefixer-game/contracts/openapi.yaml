@@ -1,0 +1,200 @@
+openapi: 3.0.3
+info:
+  title: VibeFixer Session API
+  version: 1.0.0
+paths:
+  /api/sessions:
+    post:
+      summary: Start a new game session
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestedDurationSeconds:
+                  type: integer
+                  minimum: 30
+                  maximum: 600
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameSession"
+  /api/sessions/{sessionId}/deposit:
+    post:
+      summary: Deposit a carried artifact
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - artifactId
+              properties:
+                artifactId:
+                  type: string
+      responses:
+        "200":
+          description: Score updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreUpdate"
+  /api/sessions/{sessionId}/end:
+    post:
+      summary: End a game session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session ended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionResult"
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+components:
+  schemas:
+    GameSession:
+      type: object
+      required:
+        - sessionId
+        - durationSeconds
+        - score
+        - artifacts
+        - terrain
+        - trashCan
+      properties:
+        sessionId:
+          type: string
+        seed:
+          type: string
+        durationSeconds:
+          type: integer
+          example: 120
+        score:
+          type: integer
+          example: 0
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+        terrain:
+          type: array
+          items:
+            $ref: "#/components/schemas/TerrainSegment"
+        trashCan:
+          $ref: "#/components/schemas/TrashCan"
+    Artifact:
+      type: object
+      required:
+        - id
+        - value
+        - position
+      properties:
+        id:
+          type: string
+        value:
+          type: integer
+          minimum: 1
+          maximum: 15
+        position:
+          $ref: "#/components/schemas/Position"
+    TerrainSegment:
+      type: object
+      required:
+        - id
+        - type
+        - bounds
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [stone, earth, grass]
+        bounds:
+          $ref: "#/components/schemas/Bounds"
+    TrashCan:
+      type: object
+      required:
+        - position
+        - bounds
+      properties:
+        position:
+          $ref: "#/components/schemas/Position"
+        bounds:
+          $ref: "#/components/schemas/Bounds"
+    ScoreUpdate:
+      type: object
+      required:
+        - score
+        - remainingArtifacts
+      properties:
+        score:
+          type: integer
+        remainingArtifacts:
+          type: integer
+    SessionResult:
+      type: object
+      required:
+        - finalScore
+        - artifactsDeposited
+      properties:
+        finalScore:
+          type: integer
+        artifactsDeposited:
+          type: integer
+    Position:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+    Bounds:
+      type: object
+      required:
+        - x
+        - y
+        - width
+        - height
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
