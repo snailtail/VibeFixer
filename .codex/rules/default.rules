@@ -1,0 +1,8 @@
+prefix_rule(pattern=["git", "fetch", "--all", "--prune"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "https://opengameart.org/content/nes-platformer-tiles"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "https://opengameart.org/api/1.0/contents?title=platformer"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "-I", "https://kenney.nl/content/1/Platformer%20Pack%20Redux.zip"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "-I", "https://kenney.nl/content/1/kenney_platformer-pack-redux.zip"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "https://kenney.nl/assets/platformer-pack"], decision="allow")
+prefix_rule(pattern=["curl", "-L", "https://kenney.nl/assets?query=platformer"], decision="allow")
+prefix_rule(pattern=["git", "add", "."], decision="allow")
