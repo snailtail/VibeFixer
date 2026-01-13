@@ -86,6 +86,17 @@
         text-transform: uppercase;
         color: #5fd1ff;
       }
+      #po-status {
+        display: flex;
+        flex-direction: column;
+      }
+      #po-status img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: 0 auto;
+        image-rendering: pixelated;
+      }
       #event-log ul {
         list-style: none;
         padding: 0;
@@ -162,6 +173,7 @@
           </div>
           <div id="po-status">
             <h3>PO Status</h3>
+            <img id="po-status-image" alt="Product Owner mood" />
           </div>
         </aside>
         <div id="game-wrap"></div>
