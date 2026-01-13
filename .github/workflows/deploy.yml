@@ -74,7 +74,7 @@ jobs:
       - name: Restart services
         if: steps.secrets.outputs.skip != 'true'
         run: |
-          ssh "$SSH_USER@$SSH_HOST" "cd ~/vibefixerapp && DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker compose up -d --build"
+          ssh "$SSH_USER@$SSH_HOST" "cd ~/vibefixerapp && export DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 && docker-compose up -d --build"
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
