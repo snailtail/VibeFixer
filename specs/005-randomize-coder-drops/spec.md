@@ -18,37 +18,39 @@ As a player, I want the vibe coders to start in different horizontal positions e
 **Acceptance Scenarios**:
 
 1. **Given** a new round starts, **When** the first vibe coder appears, **Then** their starting X position differs from the previous round.
-2. **Given** a second coder appears mid-round, **When** it spawns, **Then** its starting X position is not the same as the first coder’s current position.
+2. **Given** a new round starts, **When** the first coder begins moving, **Then** its initial direction is randomized (left or right).
+3. **Given** a second coder appears mid-round, **When** it spawns, **Then** its starting X position is not the same as the first coder’s current position.
+4. **Given** a round in progress, **When** the second coder appears, **Then** the spawn time varies within a small random window.
 
 ---
 
-### User Story 2 - Randomized drop timing (Priority: P2)
+### User Story 2 - Variable coder speed (Priority: P2)
 
-As a player, I want artifact drops to happen at varying intervals so I cannot predict the next drop.
+As a player, I want vibe coders to change speed during the round so their movement and drops feel less predictable.
 
-**Why this priority**: Variable timing prevents predictable patterns and increases difficulty.
+**Why this priority**: Speed variation creates less predictable drop locations without changing the core drop cadence.
 
-**Independent Test**: Can be tested by observing drop timestamps in a single round and confirming intervals vary.
+**Independent Test**: Can be tested by observing a coder’s movement and confirming speed changes occur during a round.
 
 **Acceptance Scenarios**:
 
-1. **Given** a round in progress, **When** drops occur, **Then** the time between consecutive drops varies within a defined range.
-2. **Given** a round in progress, **When** multiple drops happen, **Then** there is no fixed repeating cadence.
+1. **Given** a round in progress, **When** time passes, **Then** each coder changes speed at least once.
+2. **Given** a round in progress, **When** a coder changes speed, **Then** movement remains within the playable X range.
 
 ---
 
-### User Story 3 - Randomized drop positions (Priority: P3)
+### User Story 3 - Drops follow coder position (Priority: P3)
 
-As a player, I want artifacts to fall in different horizontal positions so cleanup paths change every round.
+As a player, I want artifacts to drop from wherever the coder currently stands so movement changes the drop locations.
 
-**Why this priority**: Spatial variety makes each round feel unique.
+**Why this priority**: Coder movement directly drives spatial variety in drop locations.
 
-**Independent Test**: Can be tested by observing drop locations in one round and confirming multiple distinct X positions.
+**Independent Test**: Can be tested by observing drops over time and confirming they align with coder positions.
 
 **Acceptance Scenarios**:
 
-1. **Given** a round in progress, **When** artifacts are dropped, **Then** drops land at multiple distinct X positions within the play area.
-2. **Given** consecutive drops, **When** the next artifact spawns, **Then** its X position is not identical to the previous drop.
+1. **Given** a round in progress, **When** a coder drops an artifact, **Then** the drop X matches the coder’s current X position.
+2. **Given** a round in progress, **When** the coder moves, **Then** subsequent drops occur at different X positions.
 
 ---
 
@@ -64,12 +66,13 @@ As a player, I want artifacts to fall in different horizontal positions so clean
 
 - **FR-001**: The system MUST randomize the starting X position of each vibe coder at the beginning of a round.
 - **FR-002**: The randomized spawn X positions MUST be within the playable X range.
-- **FR-003**: The second coder’s spawn X MUST NOT overlap the first coder’s current X position.
-- **FR-004**: Artifact drop intervals MUST be randomized within a defined range each round.
-- **FR-005**: Artifact drop timing MUST avoid a fixed repeating cadence.
-- **FR-006**: Artifact drop X positions MUST be randomized within the playable X range.
-- **FR-007**: Consecutive drop X positions MUST NOT be identical.
-- **FR-008**: Randomization MUST still allow all drops to land on reachable surfaces.
+- **FR-003**: The first coder’s initial direction MUST be randomized.
+- **FR-004**: The second coder’s spawn X MUST NOT overlap the first coder’s current X position.
+- **FR-005**: The second coder’s spawn time MUST vary within a bounded random window around the nominal time.
+- **FR-006**: Each coder’s movement speed MUST vary during the round within a bounded range.
+- **FR-007**: Speed changes MUST keep coders within the playable X range.
+- **FR-008**: Artifact drops MUST occur at the coder’s current X position.
+- **FR-009**: Randomization MUST still allow all drops to land on reachable surfaces.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -86,6 +89,6 @@ As a player, I want artifacts to fall in different horizontal positions so clean
 ### Measurable Outcomes
 
 - **SC-001**: In 10 consecutive new rounds, at least 8 spawn positions differ from the immediately previous round.
-- **SC-002**: In a 60-second round, at least 4 distinct drop intervals are observed.
+- **SC-002**: In a 60-second round, each coder changes speed at least once.
 - **SC-003**: In a 60-second round, at least 5 distinct drop X positions are observed.
 - **SC-004**: No drops occur outside the playable X range.
