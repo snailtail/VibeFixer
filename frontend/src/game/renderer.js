@@ -86,6 +86,13 @@ function drawPlayer(ctx, player, cameraX) {
 
 function drawVibeCoder(ctx, vibecoder, cameraX) {
   const coderSprite = vibecoder.frameIndex === 1 ? getAsset("vibecoderB") : getAsset("vibecoderA");
+  const now = performance.now() / 1000;
+  const isStunned = vibecoder.stunnedUntil && vibecoder.stunnedUntil > now;
+  const flicker = isStunned && Math.floor(performance.now() / 120) % 2 === 0;
+  if (flicker) {
+    ctx.save();
+    ctx.globalAlpha = 0.4;
+  }
   drawImage(
     ctx,
     coderSprite,
@@ -94,6 +101,9 @@ function drawVibeCoder(ctx, vibecoder, cameraX) {
     vibecoder.width,
     vibecoder.height
   );
+  if (flicker) {
+    ctx.restore();
+  }
 }
 
 function drawImpEdiment(ctx, imp, cameraX) {

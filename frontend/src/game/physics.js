@@ -1,5 +1,5 @@
 const MOVE_SPEED = 324;
-const JUMP_SPEED = -480;
+const JUMP_SPEED = -520;
 const GRAVITY = 900;
 
 export function applyPhysics(state, dt) {

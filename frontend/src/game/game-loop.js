@@ -19,6 +19,7 @@ const SECOND_CODER_TIME_MAX = 33;
 const TOAST_LEAD_TIME = 3;
 const TOAST_DURATION = 3.5;
 const SECOND_CODER_TOAST_DURATION = TOAST_DURATION + 2;
+const CODER_STUN_DURATION = 10;
 const CODER_SPAWN_BUFFER = 90;
 const CODER_SPAWN_GAP = 140;
 const IMP_FIRST_APPEAR_MIN = 10;
@@ -213,6 +214,8 @@ export async function startGame(canvas, input, ui = {}) {
       audio.playSfx("jump");
     }
 
+    updateCoderStuns(state);
+    tryStunCoder(state);
     updateVibeCoders(state, dt, audio);
     await updateArtifactDrops(state, dt, audio);
     updateImp(state, dt, audio);
@@ -337,11 +340,69 @@ function createVibeCoder({ x, direction }) {
     frameTimer: 0,
     nextDropAt: 0,
     nextSpeedChangeAt: 0,
+    stunnedUntil: 0,
   };
+}
+
+function getPlayerBounds(player) {
+  return {
+    x: player.position.x,
+    y: player.position.y - player.height,
+    width: player.width,
+    height: player.height,
+  };
+}
+
+function getCoderBounds(coder) {
+  return {
+    x: coder.position.x - coder.width / 2,
+    y: coder.position.y - coder.height,
+    width: coder.width,
+    height: coder.height,
+  };
+}
+
+function updateCoderStuns(state) {
+  const now = performance.now() / 1000;
+  const logStrings = state.strings?.log || {};
+  state.vibecoders.forEach((coder, index) => {
+    if (!coder.stunnedUntil) {
+      return;
+    }
+    if (now >= coder.stunnedUntil) {
+      coder.stunnedUntil = 0;
+      const message = typeof logStrings.coderRecovered === "function"
+        ? logStrings.coderRecovered(index + 1)
+        : `Vibe coder #${index + 1} is back on duty.`;
+      addEventLog(state, message);
+    }
+  });
+}
+
+function tryStunCoder(state) {
+  if (!state.carriedArtifactId) {
+    return;
+  }
+  const playerBounds = getPlayerBounds(state.player);
+  const now = performance.now() / 1000;
+  const logStrings = state.strings?.log || {};
+  state.vibecoders.forEach((coder, index) => {
+    if (coder.stunnedUntil && coder.stunnedUntil > now) {
+      return;
+    }
+    if (rectsOverlap(playerBounds, getCoderBounds(coder))) {
+      coder.stunnedUntil = now + CODER_STUN_DURATION;
+      const message = typeof logStrings.coderStunned === "function"
+        ? logStrings.coderStunned(index + 1)
+        : `Vibe coder #${index + 1} is stunned.`;
+      addEventLog(state, message);
+    }
+  });
 }
 
 function updateVibeCoders(state, dt, audio) {
   const elapsed = (performance.now() - state.startTime) / 1000;
+  const now = performance.now() / 1000;
 
   if (!state.vibecoders.length) {
     const spawnX = pickSpawnX(state.levelWidth);
@@ -379,6 +440,9 @@ function updateVibeCoders(state, dt, audio) {
   const minX = getSpawnBounds(state.levelWidth).minX;
   const maxX = getSpawnBounds(state.levelWidth).maxX;
   state.vibecoders.forEach((coder) => {
+    if (coder.stunnedUntil && coder.stunnedUntil > now) {
+      return;
+    }
     if (!coder.nextSpeedChangeAt) {
       coder.nextSpeedChangeAt = elapsed + randomInRange(CODER_SPEED_CHANGE_MIN, CODER_SPEED_CHANGE_MAX);
     } else if (elapsed >= coder.nextSpeedChangeAt) {
@@ -407,6 +471,9 @@ async function updateArtifactDrops(state, dt, audio) {
   const now = performance.now() / 1000;
   for (let index = 0; index < state.vibecoders.length; index += 1) {
     const coder = state.vibecoders[index];
+    if (coder.stunnedUntil && coder.stunnedUntil > now) {
+      continue;
+    }
     if (!coder.nextDropAt) {
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
