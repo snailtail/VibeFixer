@@ -17,6 +17,7 @@ const SECOND_CODER_TIME_MIN = 27;
 const SECOND_CODER_TIME_MAX = 33;
 const TOAST_LEAD_TIME = 3;
 const TOAST_DURATION = 3.5;
+const SECOND_CODER_TOAST_DURATION = TOAST_DURATION + 2;
 const CODER_SPAWN_BUFFER = 90;
 const CODER_SPAWN_GAP = 140;
 const IMP_FIRST_APPEAR_MIN = 10;
@@ -343,7 +344,7 @@ function updateVibeCoders(state, dt, audio) {
       message:
         toastStrings.secondCoderWarning ||
         "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
-      until: performance.now() + TOAST_DURATION * 1000,
+      until: performance.now() + SECOND_CODER_TOAST_DURATION * 1000,
     };
     audio.playSfx("warning");
     const logStrings = state.strings?.log || {};
