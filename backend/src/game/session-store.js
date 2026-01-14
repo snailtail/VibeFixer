@@ -2,6 +2,7 @@ const { generateLevel } = require("./level-generator");
 const { validateLevel } = require("./level-validator");
 const { SECURITY_POLICY } = require("../security/policy");
 const highScoreRepo = require("../storage/high-score-repo");
+const { logGameplayEvent } = require("../security/logger");
 
 const sessions = new Map();
 let stats = {
@@ -67,6 +68,7 @@ function createSession({ durationSeconds = 60 } = {}) {
 
   stats.startedCount += 1;
   recordActivity(startedAtMs);
+  logGameplayEvent("session_started", { sessionId });
   sessions.set(sessionId, session);
   if (repository) {
     repository.saveSession(session);
@@ -127,6 +129,7 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
     stats.abandonedCount += 1;
   }
   recordActivity();
+  logGameplayEvent("session_ended", { sessionId, reason, result });
   if (repository) {
     repository.saveSession(session);
     repository.saveStats(stats);

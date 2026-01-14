@@ -185,6 +185,12 @@ Base URL: `https://<your-domain>` (proxied to backend)
 - Automated dependency audits run on every main-branch update and weekly.
 - No admin or moderation endpoints are exposed in the current scope.
 
+### Admin log viewer
+
+- Admin log access is protected by username and password via HTTP Basic Auth.
+- Set `ADMIN_USER` and `ADMIN_PASSWORD` environment variables in deployment.
+- Logs include security and gameplay events with a 7-day view window.
+
 ### System stats
 
 `GET /api/system/stats`

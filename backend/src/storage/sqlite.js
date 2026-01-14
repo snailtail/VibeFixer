@@ -65,6 +65,16 @@ function initSchema(database) {
     CREATE TABLE IF NOT EXISTS schema_version (
       version INTEGER PRIMARY KEY
     );
+    CREATE TABLE IF NOT EXISTS logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp TEXT NOT NULL,
+      category TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      message TEXT NOT NULL,
+      details TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
   `);
 
   const row = database.prepare("SELECT id FROM session_stats WHERE id = 1").get();
@@ -81,7 +91,11 @@ function initSchema(database) {
   if (!versionRow) {
     database.prepare("INSERT INTO schema_version (version) VALUES (?)").run(SCHEMA_VERSION);
     schemaStatus = { version: SCHEMA_VERSION, status: "initialized" };
-  } else if (versionRow.version !== SCHEMA_VERSION) {
+  } else if (versionRow.version < SCHEMA_VERSION) {
+    migrateSchema(database, versionRow.version);
+    database.prepare("UPDATE schema_version SET version = ?").run(SCHEMA_VERSION);
+    schemaStatus = { version: SCHEMA_VERSION, status: "migrated" };
+  } else if (versionRow.version > SCHEMA_VERSION) {
     schemaStatus = { version: versionRow.version, status: "mismatch" };
     const error = new Error(
       `Schema version mismatch (expected ${SCHEMA_VERSION}, found ${versionRow.version}).`
@@ -93,6 +107,23 @@ function initSchema(database) {
   }
 
   console.log(`[storage] Schema integrity check OK (version ${SCHEMA_VERSION}).`);
+}
+
+function migrateSchema(database, fromVersion) {
+  if (fromVersion < 2) {
+    database.exec(`
+      CREATE TABLE IF NOT EXISTS logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp TEXT NOT NULL,
+        category TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        message TEXT NOT NULL,
+        details TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
+    `);
+  }
 }
 
 function backupCorruptDb() {
