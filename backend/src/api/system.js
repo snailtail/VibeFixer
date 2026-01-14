@@ -8,6 +8,7 @@ function sendJson(res, statusCode, payload) {
 }
 
 const { getSystemSessionStats, cleanupStaleSessions } = require("../game/session-store");
+const { APP_VERSION } = require("../version");
 
 const systemStartedAtMs = Date.now();
 const systemStartedAt = new Date(systemStartedAtMs).toISOString();
@@ -22,6 +23,7 @@ function getSystemStats() {
     sessionsActive: sessionStats.activeCount,
     sessionsEnded: sessionStats.endedCount,
     latestActivityAt: sessionStats.latestActivityAt,
+    serverVersion: APP_VERSION,
   };
 }
 

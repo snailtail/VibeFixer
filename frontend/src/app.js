@@ -2,6 +2,7 @@ import { createInputState } from "./game/input.js";
 import { startGame } from "./game/game-loop.js";
 import { preloadAssets } from "./game/assets.js";
 import { getStrings, loadLanguage, saveLanguage, LANGUAGES } from "./i18n.js";
+import { APP_VERSION } from "./version.js";
 
 async function bootstrap() {
   const gameWrap = document.getElementById("game-wrap");
@@ -39,6 +40,8 @@ async function bootstrap() {
   };
   const touchToggleButton = document.getElementById("touch-toggle-button");
   const touchOverlay = document.getElementById("touch-controls");
+  const frontendVersion = document.getElementById("frontend-version");
+  const serverVersion = document.getElementById("server-version");
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 683;
@@ -182,6 +185,10 @@ async function bootstrap() {
       gameApi.setStrings(nextStrings);
     }
     fetchHighScores();
+  }
+
+  if (frontendVersion) {
+    frontendVersion.textContent = `Client v${APP_VERSION}`;
   }
 
   applyLanguage(initialLanguage);
@@ -399,8 +406,27 @@ async function bootstrap() {
     }
   }
 
+  async function fetchServerVersion() {
+    if (!serverVersion) {
+      return;
+    }
+    try {
+      const response = await fetch("/api/system/stats");
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      if (data && data.serverVersion) {
+        serverVersion.textContent = `Server v${data.serverVersion}`;
+      }
+    } catch (error) {
+      // Ignore transient failures.
+    }
+  }
+
   fetchHighScores();
   setInterval(fetchHighScores, 15000);
+  fetchServerVersion();
 
   function hideHighScorePrompt() {
     if (highScorePrompt.container) {
