@@ -82,10 +82,23 @@ function saveManySessions(sessions) {
   });
 }
 
+function cleanupEndedSessions(retentionDays) {
+  if (!retentionDays) {
+    return 0;
+  }
+  const db = getDb();
+  const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+  const result = db
+    .prepare("DELETE FROM sessions WHERE status = 'ended' AND ended_at IS NOT NULL AND ended_at < ?")
+    .run(cutoff);
+  return result.changes || 0;
+}
+
 module.exports = {
   loadActiveSessions,
   loadStats,
   saveStats,
   saveSession,
   saveManySessions,
+  cleanupEndedSessions,
 };

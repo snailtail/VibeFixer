@@ -43,7 +43,18 @@ function saveHighScore({ playerTag, result, remainingUnchecked = 0 }) {
   };
 }
 
+function cleanupHighScores(retentionDays) {
+  if (!retentionDays) {
+    return 0;
+  }
+  const db = getDb();
+  const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+  const result = db.prepare("DELETE FROM high_scores WHERE created_at < ?").run(cutoff);
+  return result.changes || 0;
+}
+
 module.exports = {
   listHighScores,
   saveHighScore,
+  cleanupHighScores,
 };
