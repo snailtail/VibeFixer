@@ -27,9 +27,7 @@ function parseQuery(url) {
 function normalizeRange({ start, end }) {
   const now = new Date();
   const endDate = end ? new Date(end) : now;
-  const startDate = start
-    ? new Date(start)
-    : new Date(now.getTime() - SECURITY_POLICY.adminLogViewDays * 24 * 60 * 60 * 1000);
+  const startDate = start ? new Date(start) : new Date(0);
   return {
     start: startDate.toISOString(),
     end: endDate.toISOString(),

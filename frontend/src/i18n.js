@@ -145,6 +145,7 @@ const STRINGS = {
       coderDrop: (id) => `Vibe coder #${id} dropped unchecked code.`,
       warningSecond: "Warning: vibe coder #2 is about to join.",
       secondJoined: "Vibe coder #2 joined the chaos.",
+      poMoodChange: (label) => `PO mood is now ${label}.`,
       impAppeared: (count) =>
         `Imp Ediment appeared: placing ${count} blocker${count === 1 ? "" : "s"}.`,
       fomoRise: "The FOMO Demon rises. Unchecked code feeds its rage.",
@@ -297,6 +298,7 @@ const STRINGS = {
       coderDrop: (id) => `Vibe-kodare #${id} släppte ny okontrollerad kod.`,
       warningSecond: "Varning: vibe-kodare #2 är på väg in.",
       secondJoined: "Vibe-kodare #2 anslöt till kaoset.",
+      poMoodChange: (label) => `PO är nu ${label}.`,
       impAppeared: (count) =>
         `Imp Ediment dök upp: placerar ${count} blocker${count === 1 ? "" : "s"}.`,
       fomoRise: "FOMO-demonen reser sig. Okontrollerad kod göder dess raseri.",

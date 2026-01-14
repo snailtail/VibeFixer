@@ -723,6 +723,11 @@ function updatePOMood(state, poImage) {
   const prefix = state.strings?.ui?.poStatusTitle || "PO Status";
   poImage.alt = `${prefix}: ${label}`;
   poImage.title = `${prefix}: ${label}`;
+  const logStrings = state.strings?.log || {};
+  const moodMessage = typeof logStrings.poMoodChange === "function"
+    ? logStrings.poMoodChange(label)
+    : `PO mood is now ${label}.`;
+  addEventLog(state, moodMessage);
 }
 
 function renderEventLog(logList, entries) {
