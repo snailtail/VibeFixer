@@ -100,9 +100,11 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
   session.endedAt = new Date().toISOString();
   session.endReason = reason;
   session.result = result;
-  stats.latestCompletedAt = session.endedAt;
   sessions.delete(sessionId);
   stats.endedCount += 1;
+  if (reason === "ended") {
+    stats.latestCompletedAt = session.endedAt;
+  }
   if (reason === "stale") {
     stats.staleEndedCount += 1;
     stats.abandonedCount += 1;
