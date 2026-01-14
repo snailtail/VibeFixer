@@ -3,6 +3,7 @@ const fs = require("fs");
 
 const defaultDbPath = path.resolve(__dirname, "..", "..", "..", ".data", "vibefixer.sqlite");
 const dbPath = process.env.VIBEFIXER_DB_PATH || defaultDbPath;
+const SCHEMA_VERSION = 1;
 
 function ensureDataDir() {
   const dir = path.dirname(dbPath);
@@ -12,4 +13,5 @@ function ensureDataDir() {
 module.exports = {
   dbPath,
   ensureDataDir,
+  SCHEMA_VERSION,
 };

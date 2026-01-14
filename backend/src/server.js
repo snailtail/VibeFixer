@@ -13,6 +13,7 @@ const sessionStore = require("./game/session-store");
 const sessionRepo = require("./storage/session-repo");
 
 const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || "development";
 const FRONTEND_ROOT = path.resolve(__dirname, "..", "..", "frontend");
 const rateLimiter = createRateLimiter({
   windowMs: 60_000,
@@ -147,5 +148,10 @@ function getContentType(filePath) {
 }
 
 server.listen(PORT, () => {
-  console.log(`VibeFixer server running on port ${PORT}`);
+  console.log(`VibeFixer server running on port ${PORT} (${NODE_ENV})`);
+  if (!process.env.NODE_ENV) {
+    console.warn("[startup] NODE_ENV is not set; defaulting to development.");
+  } else if (NODE_ENV !== "production") {
+    console.warn(`[startup] Warning: NODE_ENV is '${NODE_ENV}', not 'production'.`);
+  }
 });

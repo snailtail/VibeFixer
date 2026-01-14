@@ -12,6 +12,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-13
 - SQLite database file on a host-mounted volume (017-persist-session-storage)
 - JavaScript (Node.js 20) + Node.js built-in HTTP server; better-sqlite3 (existing) (018-security-hardening)
 - SQLite for sessions/high scores (existing) (018-security-hardening)
+- JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage (019-owasp-hardening)
+- SQLite database on persistent volume (019-owasp-hardening)
 
 - JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering (001-build-vibefixer-game)
 
@@ -31,9 +33,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 019-owasp-hardening: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
 - 018-security-hardening: Added JavaScript (Node.js 20) + Node.js built-in HTTP server; better-sqlite3 (existing)
 - 017-persist-session-storage: Added Node.js 20 (current runtime) + SQLite driver for Node.js (selected in research), existing Node HTTP server
-- 012-language-toggle: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 
 
 <!-- MANUAL ADDITIONS START -->

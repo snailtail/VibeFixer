@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const Database = require("better-sqlite3");
-const { dbPath, ensureDataDir } = require("./config");
+const { dbPath, ensureDataDir, SCHEMA_VERSION } = require("./config");
 
 let db = null;
+let schemaStatus = { version: null, status: "unknown" };
 
 function getDb() {
   if (!db) {
@@ -20,6 +21,10 @@ function openDb() {
     initSchema(database);
     return database;
   } catch (error) {
+    if (error && error.code === "SCHEMA_MISMATCH") {
+      console.error("[storage] Schema version mismatch:", error.message);
+      throw error;
+    }
     console.warn("[storage] Failed to open database, recreating:", error.message);
     backupCorruptDb();
     const database = new Database(dbPath);
@@ -74,8 +79,20 @@ function initSchema(database) {
 
   const versionRow = database.prepare("SELECT version FROM schema_version LIMIT 1").get();
   if (!versionRow) {
-    database.prepare("INSERT INTO schema_version (version) VALUES (1)").run();
+    database.prepare("INSERT INTO schema_version (version) VALUES (?)").run(SCHEMA_VERSION);
+    schemaStatus = { version: SCHEMA_VERSION, status: "initialized" };
+  } else if (versionRow.version !== SCHEMA_VERSION) {
+    schemaStatus = { version: versionRow.version, status: "mismatch" };
+    const error = new Error(
+      `Schema version mismatch (expected ${SCHEMA_VERSION}, found ${versionRow.version}).`
+    );
+    error.code = "SCHEMA_MISMATCH";
+    throw error;
+  } else {
+    schemaStatus = { version: versionRow.version, status: "ok" };
   }
+
+  console.log(`[storage] Schema integrity check OK (version ${SCHEMA_VERSION}).`);
 }
 
 function backupCorruptDb() {
@@ -102,4 +119,5 @@ function withTransaction(fn) {
 module.exports = {
   getDb,
   withTransaction,
+  getSchemaStatus: () => ({ ...schemaStatus }),
 };

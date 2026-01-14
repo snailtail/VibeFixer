@@ -1,5 +1,6 @@
 services:
   vibefixer:
+    build: .
     image: vibefixerapp:latest
     container_name: vibefixer
     restart: unless-stopped

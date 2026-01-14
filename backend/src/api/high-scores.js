@@ -1,7 +1,13 @@
 const highScoresRepo = require("../storage/high-score-repo");
 const { SECURITY_POLICY } = require("../security/policy");
-const { parseJsonBody, requireString, requireEnum, optionalNumber } = require("../security/validate");
-const { sendError } = require("../security/errors");
+const {
+  parseJsonBody,
+  requireString,
+  requireEnum,
+  optionalNumber,
+  recordValidationFailure,
+} = require("../security/validate");
+const { sendError, sendDbError } = require("../security/errors");
 const { logSecurityEvent } = require("../security/logger");
 const { buildRequestContext } = require("../security/context");
 
@@ -20,8 +26,12 @@ function handleHighScores(req, res, url) {
   const context = buildRequestContext(req, url);
 
   if (req.method === "GET" && url.pathname === "/api/high-scores") {
-    const scores = highScoresRepo.listHighScores();
-    sendJson(res, 200, { scores });
+    try {
+      const scores = highScoresRepo.listHighScores();
+      sendJson(res, 200, { scores });
+    } catch (error) {
+      sendDbError(res, context, error);
+    }
     return true;
   }
 
@@ -29,11 +39,13 @@ function handleHighScores(req, res, url) {
     return parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes }).then((parsed) => {
       if (parsed.error === "payload_too_large") {
         logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+        recordValidationFailure("payload_too_large");
         sendError(res, 413, "Payload too large");
         return true;
       }
       if (parsed.error === "invalid_json") {
         logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+        recordValidationFailure("invalid_json");
         sendError(res, 400, "Invalid JSON");
         return true;
       }
@@ -44,26 +56,33 @@ function handleHighScores(req, res, url) {
 
       if (!tagCheck.ok) {
         logSecurityEvent("validation_failed", context, { reason: "invalid_player_tag" });
+        recordValidationFailure("invalid_player_tag");
         sendError(res, 400, "playerTag is required");
         return true;
       }
       if (!resultCheck.ok) {
         logSecurityEvent("validation_failed", context, { reason: "invalid_result" });
+        recordValidationFailure("invalid_result");
         sendError(res, 400, "result must be won or lost");
         return true;
       }
       if (!remainingCheck.ok) {
         logSecurityEvent("validation_failed", context, { reason: "invalid_remaining_unchecked" });
+        recordValidationFailure("invalid_remaining_unchecked");
         sendError(res, 400, "remainingUnchecked must be a non-negative number");
         return true;
       }
 
-      const saved = highScoresRepo.saveHighScore({
-        playerTag: tagCheck.value,
-        result: resultCheck.value,
-        remainingUnchecked: remainingCheck.value ?? 0,
-      });
-      sendJson(res, 201, { score: saved });
+      try {
+        const saved = highScoresRepo.saveHighScore({
+          playerTag: tagCheck.value,
+          result: resultCheck.value,
+          remainingUnchecked: remainingCheck.value ?? 0,
+        });
+        sendJson(res, 201, { score: saved });
+      } catch (error) {
+        sendDbError(res, context, error);
+      }
       return true;
     });
   }

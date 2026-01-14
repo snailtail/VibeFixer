@@ -12,6 +12,7 @@ let stats = {
   lostCount: 0,
   abandonedCount: 0,
   latestCompletedAt: null,
+  latestActivityAt: null,
 };
 let repository = null;
 
@@ -39,6 +40,10 @@ function initSessionStore() {
   });
 }
 
+function recordActivity(nowMs = Date.now()) {
+  stats.latestActivityAt = new Date(nowMs).toISOString();
+}
+
 function createSession({ durationSeconds = 60 } = {}) {
   cleanupStaleSessions();
   const sessionId = `session_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
@@ -61,6 +66,7 @@ function createSession({ durationSeconds = 60 } = {}) {
   };
 
   stats.startedCount += 1;
+  recordActivity(startedAtMs);
   sessions.set(sessionId, session);
   if (repository) {
     repository.saveSession(session);
@@ -81,6 +87,7 @@ function updateSession(sessionId, updates) {
 
   const updated = { ...session, ...updates };
   sessions.set(sessionId, updated);
+  recordActivity();
   if (repository) {
     repository.saveSession(updated);
   }
@@ -89,6 +96,7 @@ function updateSession(sessionId, updates) {
 
 function saveSession(session) {
   sessions.set(session.id, session);
+  recordActivity();
   if (repository) {
     repository.saveSession(session);
   }
@@ -118,6 +126,7 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
   } else {
     stats.abandonedCount += 1;
   }
+  recordActivity();
   if (repository) {
     repository.saveSession(session);
     repository.saveStats(stats);
@@ -159,6 +168,17 @@ function getSessionStats() {
     lostCount: stats.lostCount,
     abandonedCount: stats.abandonedCount,
     latestCompletedAt: stats.latestCompletedAt,
+    latestActivityAt: stats.latestActivityAt,
+  };
+}
+
+function getSystemSessionStats() {
+  cleanupStaleSessions();
+  return {
+    activeCount: sessions.size,
+    startedCount: stats.startedCount,
+    endedCount: stats.endedCount,
+    latestActivityAt: stats.latestActivityAt,
   };
 }
 
@@ -174,6 +194,7 @@ module.exports = {
   endSession,
   cleanupStaleSessions,
   getSessionStats,
+  getSystemSessionStats,
   initSessionStore,
   setRepository,
 };
