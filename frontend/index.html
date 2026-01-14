@@ -448,6 +448,13 @@
         letter-spacing: 1px;
         text-transform: uppercase;
       }
+      .version-footer a {
+        color: #7df9ff;
+        text-decoration: none;
+      }
+      .version-footer a:hover {
+        text-decoration: underline;
+      }
       .cast-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -622,6 +629,10 @@
       <footer class="version-footer">
         <span id="frontend-version">Client v—</span>
         <span id="server-version">Server v—</span>
+        <span>
+          <a href="/version-history.html">Version History</a> ·
+          <a href="https://github.com/snailtail/VibeFixer" target="_blank" rel="noreferrer">GitHub Repo</a>
+        </span>
       </footer>
     </div>
     <script type="module" src="/src/app.js"></script>
