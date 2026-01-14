@@ -514,7 +514,8 @@ async function updateArtifactDrops(state, dt, audio) {
       continue;
     }
     if (!coder.nextDropAt) {
-      coder.nextDropAt = now + CODER_DROP_INTERVAL;
+      const dropMultiplier = coder.speedMultiplier === ALLERGY_SPEED_MULTIPLIER ? 1.4 : 1;
+      coder.nextDropAt = now + CODER_DROP_INTERVAL * dropMultiplier;
     }
     if (now >= coder.nextDropAt) {
       try {
@@ -542,7 +543,8 @@ async function updateArtifactDrops(state, dt, audio) {
           triggerRateLimitToast(state);
         }
       }
-      coder.nextDropAt = now + CODER_DROP_INTERVAL;
+      const dropMultiplier = coder.speedMultiplier === ALLERGY_SPEED_MULTIPLIER ? 1.4 : 1;
+      coder.nextDropAt = now + CODER_DROP_INTERVAL * dropMultiplier;
     }
   }
 
