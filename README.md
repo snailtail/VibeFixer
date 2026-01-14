@@ -8,8 +8,8 @@ VibeFixer is a browser-based arcade game with a lightweight Node.js backend. Thi
 
 ### Components
 
-- **Frontend (Browser)**: Static HTML, JS, and assets rendered in the browser.
-- **Backend (Node.js)**: Serves the frontend assets and provides session/game APIs.
+- **Frontend (Browser)**: Static HTML, vanilla ES2022 JS, and assets rendered in the browser.
+- **Backend (Node.js)**: Node.js 20 server using built-in HTTP and `better-sqlite3` for persistence.
 - **Deployment (GitHub Actions + SSH)**: Pushes updated code to the Ubuntu server and restarts Docker services.
 - **Docker Runtime**: Runs the backend service on the server.
 - **Reverse Proxy (Caddy/Cloudflare)**: Terminates TLS and routes traffic to the backend on port 3333 (managed separately).
@@ -33,17 +33,17 @@ VibeFixer is a browser-based arcade game with a lightweight Node.js backend. Thi
 
 3. **Gameplay updates**
    - Frontend sends API requests to create artifacts, update artifact status, deposit code, and end sessions.
-   - Backend updates in-memory session state and returns responses.
+   - Backend updates session state in the SQLite-backed store and returns responses.
 
 4. **Session stats**
    - Frontend polls `GET /api/sessions/stats` to display active session totals and outcomes.
 
 5. **High scores**
    - After a won/lost game, the frontend optionally posts a gamer tag to `POST /api/high-scores`.
-   - The high score list is read from `GET /api/high-scores` and rendered below the credits.
+   - The high score list is read from `GET /api/high-scores` and rendered above the credits.
 
 6. **Security controls**
-   - Write endpoints are rate-limited to 60 requests/minute per IP.
+   - Write endpoints are rate-limited to 600 requests/minute per IP.
    - Requests over 100 KB are rejected with a safe error response.
    - Responses include baseline security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy).
    - Completed sessions are retained for 30 days; high scores for 180 days.
@@ -214,6 +214,7 @@ Sets an HTTP-only admin session cookie (30-minute TTL).
 ```
 
 `GET /api/admin/logs/export` returns the same payload with a JSON attachment header.
+When no filters are provided, the API returns up to the default limit of logs.
 
 ### Admin high scores
 
@@ -279,7 +280,7 @@ Sets an HTTP-only admin session cookie (30-minute TTL).
 
 ### Security behavior
 
-- Write endpoints enforce 60 requests/minute per IP.
+- Write endpoints enforce 600 requests/minute per IP.
 - Request bodies over 100 KB return `413 Payload Too Large`.
 - Validation failures return `400` with a safe JSON error.
 - Automated dependency audits run on every main-branch update and weekly.
@@ -290,7 +291,7 @@ Sets an HTTP-only admin session cookie (30-minute TTL).
 - Admin access starts at `/admin/login` and uses a 30-minute session cookie.
 - Admin sections live at `/admin/logs`, `/admin/high-scores`, `/admin/notices`, and `/admin/game-settings`.
 - Set `ADMIN_USER` and `ADMIN_PASSWORD` environment variables in deployment.
-- Logs include security and gameplay events with a 7-day view window.
+- Logs include security and gameplay events (default limit 200 unless overridden).
 - Repeated failed login attempts are temporarily blocked to slow brute-force attempts.
 
 ### System stats
@@ -306,7 +307,8 @@ Sets an HTTP-only admin session cookie (30-minute TTL).
   "sessionsStarted": 0,
   "sessionsActive": 0,
   "sessionsEnded": 0,
-  "latestActivityAt": "2026-01-14T12:34:56.000Z"
+  "latestActivityAt": "2026-01-14T12:34:56.000Z",
+  "serverVersion": "0.78.0217"
 }
 ```
 
