@@ -71,6 +71,22 @@ function isAdminAuthorized(req) {
   );
 }
 
+function verifyAdminCredentials({ username, password, ip } = {}) {
+  if (!isAdminConfigured()) {
+    return { ok: false, status: 503, error: "Admin access not configured" };
+  }
+  const state = getFailureState(ip || "unknown");
+  if (state.blockedUntil && Date.now() < state.blockedUntil) {
+    return { ok: false, status: 429, error: "Too many attempts, try later" };
+  }
+  if (username !== SECURITY_POLICY.adminUser || password !== SECURITY_POLICY.adminPassword) {
+    recordFailure(ip || "unknown", "invalid_credentials");
+    return { ok: false, status: 401, error: "Unauthorized" };
+  }
+  clearFailures(ip || "unknown");
+  return { ok: true };
+}
+
 function requireAdminAuth(req, res, context = {}) {
   if (!isAdminConfigured()) {
     res.writeHead(503, { "Content-Type": "application/json" });
@@ -101,4 +117,5 @@ module.exports = {
   requireAdminAuth,
   isAdminAuthorized,
   isAdminConfigured,
+  verifyAdminCredentials,
 };

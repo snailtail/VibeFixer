@@ -177,17 +177,118 @@ Base URL: `https://<your-domain>` (proxied to backend)
 
 `latestCompletedAt` only updates for completed games (`won` or `lost`).
 
+### Admin authentication
+
+`POST /api/admin/login`
+
+**Request body**:
+
+```json
+{ "username": "admin", "password": "secret" }
+```
+
+**Response** `200`:
+
+```json
+{ "expiresAt": "2026-01-14T12:34:56.000Z" }
+```
+
+Sets an HTTP-only admin session cookie (30-minute TTL).
+
+`POST /api/admin/logout`
+
+**Response** `200`:
+
+```json
+{ "ok": true }
+```
+
+### Admin logs
+
+`GET /api/admin/logs?start=...&end=...&category=security&severity=high&q=...&limit=200`
+
+**Response** `200`:
+
+```json
+{ "logs": [] }
+```
+
+`GET /api/admin/logs/export` returns the same payload with a JSON attachment header.
+
+### Admin high scores
+
+`GET /api/admin/high-scores`
+
+**Response** `200`:
+
+```json
+{ "scores": [] }
+```
+
+`PATCH /api/admin/high-scores/{id}` updates `playerTag`, `result`, or `remainingUnchecked`.
+
+`DELETE /api/admin/high-scores/{id}` removes the entry.
+
+### Admin notices
+
+`GET /api/admin/notices`
+
+`POST /api/admin/notices`
+
+**Request body**:
+
+```json
+{
+  "message": "Maintenance window",
+  "validFrom": "2026-01-14T12:00:00.000Z",
+  "validTo": "2026-01-14T13:00:00.000Z"
+}
+```
+
+`PATCH /api/admin/notices/{id}` updates the message/time window.
+
+`DELETE /api/admin/notices/{id}` removes the notice.
+
+### Admin game settings
+
+`GET /api/admin/game-settings`
+
+**Response** `200`:
+
+```json
+{ "settings": { "playerSpeedPercent": 100 } }
+```
+
+`PUT /api/admin/game-settings`
+
+**Request body**:
+
+```json
+{ "playerSpeedPercent": 120 }
+```
+
+### Active notices
+
+`GET /api/notices/active`
+
+**Response** `200`:
+
+```json
+{ "notices": [] }
+```
+
 ### Security behavior
 
 - Write endpoints enforce 60 requests/minute per IP.
 - Request bodies over 100 KB return `413 Payload Too Large`.
 - Validation failures return `400` with a safe JSON error.
 - Automated dependency audits run on every main-branch update and weekly.
-- No admin or moderation endpoints are exposed in the current scope.
+- Admin endpoints require an authenticated admin session cookie.
 
-### Admin log viewer
+### Admin console
 
-- Admin log access is available at `/admin` and is protected by username and password via HTTP Basic Auth.
+- Admin access starts at `/admin/login` and uses a 30-minute session cookie.
+- Admin sections live at `/admin/logs`, `/admin/high-scores`, `/admin/notices`, and `/admin/game-settings`.
 - Set `ADMIN_USER` and `ADMIN_PASSWORD` environment variables in deployment.
 - Logs include security and gameplay events with a 7-day view window.
 - Repeated failed login attempts are temporarily blocked to slow brute-force attempts.

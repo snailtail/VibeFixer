@@ -43,6 +43,61 @@ function saveHighScore({ playerTag, result, remainingUnchecked = 0 }) {
   };
 }
 
+function getHighScoreById(id) {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `
+      SELECT id, created_at, player_tag, result, remaining_unchecked
+      FROM high_scores
+      WHERE id = ?
+    `
+    )
+    .get(id);
+  if (!row) {
+    return null;
+  }
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    playerTag: row.player_tag,
+    result: row.result,
+    remainingUnchecked: row.remaining_unchecked,
+  };
+}
+
+function updateHighScore(id, { playerTag, result, remainingUnchecked }) {
+  const existing = getHighScoreById(id);
+  if (!existing) {
+    return null;
+  }
+  const normalizedResult = result ? (result === "won" ? "won" : "lost") : existing.result;
+  const normalizedRemaining = Number.isFinite(remainingUnchecked)
+    ? Math.max(0, remainingUnchecked)
+    : existing.remainingUnchecked;
+  const nextPlayerTag = playerTag ? playerTag : existing.playerTag;
+  const db = getDb();
+  db.prepare(
+    `
+    UPDATE high_scores
+    SET player_tag = ?, result = ?, remaining_unchecked = ?
+    WHERE id = ?
+  `
+  ).run(nextPlayerTag, normalizedResult, normalizedRemaining, id);
+  return {
+    ...existing,
+    playerTag: nextPlayerTag,
+    result: normalizedResult,
+    remainingUnchecked: normalizedRemaining,
+  };
+}
+
+function deleteHighScore(id) {
+  const db = getDb();
+  const result = db.prepare("DELETE FROM high_scores WHERE id = ?").run(id);
+  return result.changes > 0;
+}
+
 function cleanupHighScores(retentionDays) {
   if (!retentionDays) {
     return 0;
@@ -56,5 +111,8 @@ function cleanupHighScores(retentionDays) {
 module.exports = {
   listHighScores,
   saveHighScore,
+  getHighScoreById,
+  updateHighScore,
+  deleteHighScore,
   cleanupHighScores,
 };

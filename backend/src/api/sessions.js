@@ -33,6 +33,7 @@ function serializeSession(session) {
     seed: session.seed,
     durationSeconds: session.durationSeconds,
     score: session.score,
+    playerSpeedPercent: session.playerSpeedPercent,
     artifacts: session.artifacts.map((artifact) => ({
       id: artifact.id,
       position: artifact.position,
@@ -44,11 +45,11 @@ function serializeSession(session) {
 }
 
 async function handleSessions(req, res, url) {
-  cleanupStaleSessions();
   const context = buildRequestContext(req, url);
 
   if (req.method === "GET" && url.pathname === "/api/sessions/stats") {
     try {
+      cleanupStaleSessions();
       sendJson(res, 200, getSessionStats());
     } catch (error) {
       sendDbError(res, context, error);
@@ -83,6 +84,7 @@ async function handleSessions(req, res, url) {
       return true;
     }
     try {
+      cleanupStaleSessions();
       const session = createSession({ durationSeconds: durationCheck.value ?? undefined });
       sendJson(res, 201, serializeSession(session));
     } catch (error) {

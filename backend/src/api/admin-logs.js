@@ -1,5 +1,5 @@
 const { SECURITY_POLICY } = require("../security/policy");
-const { requireAdminAuth } = require("../security/admin-auth");
+const { requireAdminSession } = require("../security/admin-session");
 const { buildRequestContext } = require("../security/context");
 const logRepo = require("../storage/log-repo");
 
@@ -58,7 +58,7 @@ function handleAdminLogs(req, res, url) {
   }
 
   const context = buildRequestContext(req, url);
-  if (!requireAdminAuth(req, res, context)) {
+  if (!requireAdminSession(req, res, context)) {
     return true;
   }
 

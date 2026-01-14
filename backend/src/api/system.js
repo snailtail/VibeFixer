@@ -7,12 +7,13 @@ function sendJson(res, statusCode, payload) {
   res.end(body);
 }
 
-const { getSystemSessionStats } = require("../game/session-store");
+const { getSystemSessionStats, cleanupStaleSessions } = require("../game/session-store");
 
 const systemStartedAtMs = Date.now();
 const systemStartedAt = new Date(systemStartedAtMs).toISOString();
 
 function getSystemStats() {
+  cleanupStaleSessions();
   const sessionStats = getSystemSessionStats();
   return {
     startedAt: systemStartedAt,

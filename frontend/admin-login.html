@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="admin-wrap">
+      <section class="admin-panel">
+        <h2>Admin Login</h2>
+        <form id="admin-login-form" class="admin-grid">
+          <label class="admin-field">
+            <span>Username</span>
+            <input id="admin-login-user" type="text" autocomplete="username" required />
+          </label>
+          <label class="admin-field">
+            <span>Password</span>
+            <input id="admin-login-pass" type="password" autocomplete="current-password" required />
+          </label>
+          <div class="admin-actions">
+            <button type="submit">Log In</button>
+            <a href="/">Back to Game</a>
+          </div>
+        </form>
+        <p class="admin-status" id="admin-login-status"></p>
+      </section>
+    </main>
+    <script type="module" src="/src/admin/login.js"></script>
+  </body>
+</html>

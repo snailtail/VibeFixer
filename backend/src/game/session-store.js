@@ -2,6 +2,7 @@ const { generateLevel } = require("./level-generator");
 const { validateLevel } = require("./level-validator");
 const { SECURITY_POLICY } = require("../security/policy");
 const highScoreRepo = require("../storage/high-score-repo");
+const gameSettingsRepo = require("../storage/game-settings-repo");
 const { logGameplayEvent } = require("../security/logger");
 
 const sessions = new Map();
@@ -51,6 +52,7 @@ function createSession({ durationSeconds = 60 } = {}) {
   const seed = `${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`;
   const level = generateLevel({ seed, validateLevel, includeArtifacts: false });
   const startedAtMs = Date.now();
+  const playerSpeedPercent = gameSettingsRepo.getSetting("playerSpeedPercent") ?? 100;
 
   const session = {
     id: sessionId,
@@ -59,6 +61,7 @@ function createSession({ durationSeconds = 60 } = {}) {
     startedAtMs,
     durationSeconds,
     score: 0,
+    playerSpeedPercent,
     status: "active",
     remainingArtifactCount: 0,
     artifacts: [],
@@ -161,7 +164,6 @@ function cleanupStaleSessions(nowMs = Date.now()) {
 }
 
 function getSessionStats() {
-  cleanupStaleSessions();
   return {
     activeCount: sessions.size,
     startedCount: stats.startedCount,
@@ -176,7 +178,6 @@ function getSessionStats() {
 }
 
 function getSystemSessionStats() {
-  cleanupStaleSessions();
   return {
     activeCount: sessions.size,
     startedCount: stats.startedCount,

@@ -4,7 +4,12 @@ const path = require("path");
 const { handleSessions } = require("./api/sessions");
 const { handleSystemStats } = require("./api/system");
 const { handleHighScores } = require("./api/high-scores");
+const { handleAdminAuth } = require("./api/admin-auth");
 const { handleAdminLogs } = require("./api/admin-logs");
+const { handleAdminHighScores } = require("./api/admin-high-scores");
+const { handleAdminNotices } = require("./api/admin-notices");
+const { handleNotices } = require("./api/notices");
+const { handleAdminGameSettings } = require("./api/admin-game-settings");
 const { SECURITY_POLICY } = require("./security/policy");
 const { createRateLimiter } = require("./security/rate-limit");
 const { sendError } = require("./security/errors");
@@ -59,15 +64,35 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (handleSystemStats(req, res, url)) {
+    if (await handleSystemStats(req, res, url)) {
       return;
     }
 
-    if (handleHighScores(req, res, url)) {
+    if (await handleHighScores(req, res, url)) {
       return;
     }
 
-    if (handleAdminLogs(req, res, url)) {
+    if (await handleAdminAuth(req, res, url)) {
+      return;
+    }
+
+    if (await handleAdminLogs(req, res, url)) {
+      return;
+    }
+
+    if (await handleAdminHighScores(req, res, url)) {
+      return;
+    }
+
+    if (await handleAdminNotices(req, res, url)) {
+      return;
+    }
+
+    if (await handleAdminGameSettings(req, res, url)) {
+      return;
+    }
+
+    if (await handleNotices(req, res, url)) {
       return;
     }
 
@@ -109,12 +134,16 @@ function isRateLimitedWrite(req, url) {
 }
 
 async function serveStatic(requestPath, res) {
-  const safePath =
-    requestPath === "/"
-      ? "/index.html"
-      : requestPath === "/admin"
-        ? "/admin.html"
-        : requestPath;
+  const adminMap = {
+    "/admin": "admin.html",
+    "/admin/login": "admin-login.html",
+    "/admin/logs": "admin-logs.html",
+    "/admin/high-scores": "admin-high-scores.html",
+    "/admin/notices": "admin-notices.html",
+    "/admin/game-settings": "admin-game-settings.html",
+  };
+  const normalizedPath = adminMap[requestPath] || requestPath.replace(/^\/+/, "");
+  const safePath = requestPath === "/" ? "index.html" : normalizedPath;
   const filePath = path.normalize(path.join(FRONTEND_ROOT, safePath));
 
   if (!filePath.startsWith(FRONTEND_ROOT)) {
@@ -122,9 +151,12 @@ async function serveStatic(requestPath, res) {
   }
 
   try {
-    const data = await fs.promises.readFile(filePath);
     const contentType = getContentType(filePath);
-    res.writeHead(200, { "Content-Type": contentType });
+    const data = await fs.promises.readFile(filePath);
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Content-Length": data.length,
+    });
     res.end(data);
     return true;
   } catch (error) {

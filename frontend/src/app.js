@@ -26,6 +26,8 @@ async function bootstrap() {
     sessionsEnded: document.getElementById("system-stats-sessions-ended"),
     latestActivity: document.getElementById("system-stats-latest-activity"),
   };
+  const noticeContainer = document.getElementById("basement-notices");
+  const dismissedNotices = new Set();
   const highScorePrompt = {
     container: document.getElementById("high-score-prompt"),
     title: document.getElementById("high-score-prompt-title"),
@@ -198,6 +200,52 @@ async function bootstrap() {
   }
 
   applyLanguage(initialLanguage);
+  loadBasementNotices();
+
+  async function loadBasementNotices() {
+    if (!noticeContainer) {
+      return;
+    }
+    try {
+      const response = await fetch("/api/notices/active", { cache: "no-store" });
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      renderBasementNotices(data.notices || []);
+    } catch (error) {
+      // Silent failure for notices to avoid blocking gameplay.
+    }
+  }
+
+  function renderBasementNotices(notices) {
+    if (!noticeContainer) {
+      return;
+    }
+    noticeContainer.innerHTML = "";
+    notices
+      .filter((notice) => !dismissedNotices.has(notice.id))
+      .slice(0, 3)
+      .forEach((notice) => {
+        const card = document.createElement("div");
+        card.className = "basement-notice";
+        const title = document.createElement("h4");
+        title.textContent = notice.title || "A message from the basement troll";
+        const message = document.createElement("p");
+        message.textContent = notice.message || "";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Dismiss";
+        button.addEventListener("click", () => {
+          dismissedNotices.add(notice.id);
+          card.remove();
+        });
+        card.appendChild(title);
+        card.appendChild(message);
+        card.appendChild(button);
+        noticeContainer.appendChild(card);
+      });
+  }
 
   if (languageSelect) {
     languageSelect.addEventListener("change", (event) => {

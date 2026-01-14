@@ -33,9 +33,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 021-admin-console: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
 - 019-owasp-hardening: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
 - 018-security-hardening: Added JavaScript (Node.js 20) + Node.js built-in HTTP server; better-sqlite3 (existing)
-- 017-persist-session-storage: Added Node.js 20 (current runtime) + SQLite driver for Node.js (selected in research), existing Node HTTP server
 
 
 <!-- MANUAL ADDITIONS START -->

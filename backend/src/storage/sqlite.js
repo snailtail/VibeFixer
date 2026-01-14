@@ -75,6 +75,28 @@ function initSchema(database) {
       details TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
+    CREATE TABLE IF NOT EXISTS admin_sessions (
+      session_id TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at);
+    CREATE TABLE IF NOT EXISTS admin_notices (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      valid_from TEXT NOT NULL,
+      valid_to TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_admin_notices_valid_from ON admin_notices(valid_from);
+    CREATE INDEX IF NOT EXISTS idx_admin_notices_valid_to ON admin_notices(valid_to);
+    CREATE TABLE IF NOT EXISTS game_settings (
+      key TEXT PRIMARY KEY,
+      value REAL NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
 
   const row = database.prepare("SELECT id FROM session_stats WHERE id = 1").get();
@@ -122,6 +144,32 @@ function migrateSchema(database, fromVersion) {
         details TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
+    `);
+  }
+  if (fromVersion < 3) {
+    database.exec(`
+      CREATE TABLE IF NOT EXISTS admin_sessions (
+        session_id TEXT PRIMARY KEY,
+        created_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at);
+      CREATE TABLE IF NOT EXISTS admin_notices (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        valid_from TEXT NOT NULL,
+        valid_to TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_admin_notices_valid_from ON admin_notices(valid_from);
+      CREATE INDEX IF NOT EXISTS idx_admin_notices_valid_to ON admin_notices(valid_to);
+      CREATE TABLE IF NOT EXISTS game_settings (
+        key TEXT PRIMARY KEY,
+        value REAL NOT NULL,
+        updated_at TEXT NOT NULL
+      );
     `);
   }
 }
