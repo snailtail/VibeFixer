@@ -60,10 +60,10 @@ const STRINGS = {
     story: {
       title: "Story",
       text:
-        "The Vibe Coders roam free in the top floor of City Hall." +
-        "They have a habit of raining unchecked code down into the basement." +
-        "You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends." +
-        "If the backlog piles up, the customers’ FOMO Demon awakens and the sprint turns grim." +
+        "The Vibe Coders roam free in the top floor of City Hall.\n" +
+        "They have a habit of raining unchecked code down into the basement.\n" +
+        "You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends.\n" +
+        "If the backlog piles up, the customers’ FOMO Demon awakens and the sprint turns grim.\n" +
         "" +
         "You can try to clear blockers to keep the Product Owner calm, but beware the tiny demon Imp Ediment, who teleports in to stack up new obstacles. Smash a blocker from below to break it, or vault over it if you care more about speed than the Product Owners blood pressure...",
     },
@@ -116,7 +116,7 @@ const STRINGS = {
         `${tag} tried to clear the sprint but left ${remaining} unchecked code block${remaining === 1 ? "" : "s"} behind.`,
     },
     hud: {
-      unchecked: "Unchecked code on ground",
+      unchecked: "Unchecked code",
       blockers: "Blockers",
       sound: "Sound",
       on: "On",
@@ -177,11 +177,11 @@ const STRINGS = {
       controlsText: "← Gå vänster\n→ Gå höger\n↑ Hoppa\nMellanslag Åtgärd (Plocka upp / Släpp)\nM Ljud av/på",
       instructionsTitle: "Instruktioner",
       instructionsText:
-        "Ditt uppdrag ar att plocka upp alla kodblock som vibe-kodarna slapper, ta dem till Code review bin och slapp dem dar.\n" +
-        "Du kan bara plocka upp och bara ett kodblock at gangen.\n" +
-        "Du kan krossa blockers for att fa PO att bli mindre orolig, men det paverkar inte spelet direkt forutom att det kan bli enklare att komma at kodblocken.\n" +
-        "Forsok att halla banan fri fran okontrollerade kodblock. For att vinna maste du ha 0 okontrollerade kodblock nar timern tar slut.\n" +
-        "Om du haller ett kodblock och kan hoppa tillrackligt hogt for att nudda en vibe-kodare med det, blir vibe-kodaren tillfalligt paralyserad.",
+        "Ditt uppdrag är att plocka upp alla kodblock som vibe-kodarna släpper, ta dem till Code review bin och släpp dem där.\n" +
+        "Du kan bara plocka upp och bära ett kodblock åt gången.\n" +
+        "Du kan krossa blockers för att få PO att bli mindre orolig, men det påverkar inte spelet direkt förutom att det kan bli enklare att komma åt kodblocken.\n" +
+        "Försök att hålla banan fri från okontrollerade kodblock. För att vinna måste du ha 0 okontrollerade kodblock kvar när timern tar slut.\n" +
+        "Om du håller i ett kodblock och kan hoppa tillrackligt högt för att nudda en vibe-kodare med det, blir vibe-kodaren tillfälligt paralyserad.",
       gameEventsTitle: "Spelhändelser",
       poStatusTitle: "PO-status",
       sessionStatsTitle: "Sessionstatistik",
@@ -225,11 +225,11 @@ const STRINGS = {
     story: {
       title: "Historia",
       text:
-        "Vibekodarna springer lösa på Stadshusets övre våning." +
-        "De har för vana att kasta ner okontrollerad kod till källaren. " +
-        "Du är Vibe Fixer — spring snabbt, granska snabbare och håll flödet igång innan sprinten tar slut. " +
-        "Om backloggen växer vaknar kundernas FOMO-demon och sprinten blir till ett mörker. " +
-        "Röj undan blockers för att hålla Product Owner lugn, men se upp för mini-demonen Imp Ediment som teleporterar in och sätter upp nya blockers. " +
+        "Vibekodarna springer lösa på övre plan i Stadshuset.\n" +
+        "De har för vana att kasta ner okontrollerad kod till källaren.\n" +
+        "Du är Vibe Fixer — spring snabbt, granska snabbare och håll flödet igång innan sprinten tar slut.\n" +
+        "Om backloggen växer vaknar kundernas FOMO-demon och sprinten blir till ett mörker.\n\n" +
+        "Röj undan blockers för att hålla Product Owner lugn, men se upp för mini-demonen Imp Ediment som teleporterar in och sätter upp nya blockers.\n" +
         "Slå sönder en blocker underifrån, eller hoppa över den om du bryr dig mer om fart än Produktägarens blodtryck.",
     },
     cast: {
@@ -281,7 +281,7 @@ const STRINGS = {
         `${tag} försökte rädda sprinten men lämnade ${remaining} okontrollerad${remaining === 1 ? "" : "e"} kodblock kvar.`,
     },
     hud: {
-      unchecked: "Okontrollerad kod på golvet",
+      unchecked: "Okontrollerad kod",
       blockers: "Blockers",
       sound: "Ljud",
       on: "På",
