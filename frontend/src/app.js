@@ -121,7 +121,7 @@ async function bootstrap() {
       touchToggleButton.textContent = nextStrings.ui.touchToggleShow;
     }
     setText("story-title", nextStrings.story.title);
-    setText("story-text", nextStrings.story.text);
+    setText("story-text", nextStrings.story.text, { allowNewlines: true });
     setText("cast-title", nextStrings.cast.title);
     setText("cast-fixer-name", nextStrings.cast.fixer.name);
     setText("cast-fixer-bio", nextStrings.cast.fixer.bio);
