@@ -20,10 +20,11 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-- Now that we have logging implemented - especially after the OWASP hardening. Should we create some way for an admin to inspect these logs? Draft a spec and a plan for this scenario.
+- Change the Logo of the game, i want the same font and color feel as the header for the High Scores - neon and retro. but we need to keep it in touch with the rest of the game interfaces colors, so just adjust the text - let the border keep it's current color.
 
 ## Done
 
+- Now that we have logging implemented - especially after the OWASP hardening. Should we create some way for an admin to inspect these logs? Draft a spec and a plan for this scenario. (2026-01-14 13:00 UTC)
 - Add system stats to `/api/system/stats`: backend started at, uptime seconds. (2026-01-14 10:30 UTC)
 - Add system stats to `/api/system/stats`: total sessions created, active sessions, ended sessions. (2026-01-14 10:30 UTC)
 - Add system stats to `/api/system/stats`: timestamp of latest activity (any session event). (2026-01-14 10:30 UTC)
