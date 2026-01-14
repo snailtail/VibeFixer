@@ -29,6 +29,15 @@ const STRINGS = {
       touchToggleHide: "Hide touch controls",
       systemStatsTitle: "System Stats",
       systemStatsStarted: "Backend started",
+      highScoresTitle: "High Scores",
+      highScorePromptTitle: "Save Your Run",
+      highScorePromptWon: "You saved the sprint! Add your gamer tag?",
+      highScorePromptLost: "You fought bravely. Add your gamer tag?",
+      highScoreNameLabel: "Gamer tag",
+      highScoreNamePlaceholder: "Enter your name",
+      highScoreSave: "Save",
+      highScoreSkip: "Skip",
+      highScoreEmpty: "No high scores yet.",
     },
     story: {
       title: "Story",
@@ -75,6 +84,11 @@ const STRINGS = {
         "kommun_bg.png background — CC0 by Magnus.",
         "Co-authors: Magnus & Codex.",
       ],
+    },
+    highScores: {
+      won: (tag) => `Hooray, the sprint was saved by ${tag}.`,
+      lost: (tag, remaining) =>
+        `${tag} tried to clear the sprint but left ${remaining} unchecked code block${remaining === 1 ? "" : "s"} behind.`,
     },
     hud: {
       unchecked: "Unchecked code on ground",
@@ -149,6 +163,15 @@ const STRINGS = {
       touchToggleHide: "Dölj touchkontroller",
       systemStatsTitle: "Systemstatus",
       systemStatsStarted: "Backend startad",
+      highScoresTitle: "Topplista",
+      highScorePromptTitle: "Spara ditt försök",
+      highScorePromptWon: "Du räddade sprinten! Lägg till ditt gamer-tag?",
+      highScorePromptLost: "Du kämpade tappert. Lägg till ditt gamer-tag?",
+      highScoreNameLabel: "Gamer-tag",
+      highScoreNamePlaceholder: "Skriv ditt namn",
+      highScoreSave: "Spara",
+      highScoreSkip: "Hoppa över",
+      highScoreEmpty: "Inga topplistor ännu.",
     },
     story: {
       title: "Historia",
@@ -195,6 +218,11 @@ const STRINGS = {
         "kommun_bg.png bakgrund — CC0 av Magnus.",
         "Medskapare: Magnus & Codex.",
       ],
+    },
+    highScores: {
+      won: (tag) => `Hurra, sprinten räddades av ${tag}.`,
+      lost: (tag, remaining) =>
+        `${tag} försökte rädda sprinten men lämnade ${remaining} okontrollerad${remaining === 1 ? "" : "e"} kodblock kvar.`,
     },
     hud: {
       unchecked: "Okontrollerad kod på golvet",

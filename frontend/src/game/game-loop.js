@@ -44,6 +44,7 @@ export async function startGame(canvas, input, ui = {}) {
   const logList = ui.logList || null;
   const poImage = ui.poImage || null;
   const initialStrings = ui.strings || null;
+  const onGameEnd = typeof ui.onGameEnd === "function" ? ui.onGameEnd : null;
   const state = {
     sessionId: null,
     durationSeconds: 120,
@@ -179,7 +180,14 @@ export async function startGame(canvas, input, ui = {}) {
       } else {
         audio.playSfx("gameOver");
       }
-      await endSession(state.sessionId, state.fomoState === "defeated" ? "won" : "lost");
+      const result = state.fomoState === "defeated" ? "won" : "lost";
+      await endSession(state.sessionId, result);
+      if (onGameEnd) {
+        onGameEnd({
+          result,
+          remainingUnchecked,
+        });
+      }
       return;
     }
 

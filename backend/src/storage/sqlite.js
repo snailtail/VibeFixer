@@ -50,6 +50,13 @@ function initSchema(database) {
       abandoned_count INTEGER NOT NULL,
       latest_completed_at TEXT
     );
+    CREATE TABLE IF NOT EXISTS high_scores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL,
+      player_tag TEXT NOT NULL,
+      result TEXT NOT NULL,
+      remaining_unchecked INTEGER NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS schema_version (
       version INTEGER PRIMARY KEY
     );

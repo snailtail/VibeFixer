@@ -220,6 +220,64 @@
         margin: 0;
         line-height: 1.5;
       }
+      .high-score-prompt {
+        max-width: 505px;
+        margin: 16px auto 0;
+        padding: 16px 18px;
+        background: rgba(12, 12, 24, 0.75);
+        border: 2px solid #2b4b6f;
+        box-shadow: inset 0 0 0 2px #0a0a14;
+        color: #dbe5ff;
+      }
+      .high-score-prompt.hidden {
+        display: none;
+      }
+      .high-score-prompt h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #5fd1ff;
+      }
+      .high-score-prompt p {
+        margin: 0 0 12px;
+        font-size: 13px;
+      }
+      .high-score-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .high-score-form label {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .high-score-form input {
+        background: #101425;
+        color: #f5f5f5;
+        border: 1px solid #2b4b6f;
+        padding: 6px 8px;
+        font-family: monospace;
+      }
+      .high-score-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .high-score-actions button {
+        background: rgba(12, 12, 24, 0.7);
+        border: 2px solid #2b4b6f;
+        color: #f5f5f5;
+        padding: 6px 12px;
+        font-family: monospace;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .high-score-actions button:active {
+        background: rgba(95, 209, 255, 0.25);
+      }
       #game-wrap {
         width: 1024px;
         position: relative;
@@ -293,6 +351,38 @@
         max-width: 1280px;
         margin: 24px auto 0;
         padding: 0 12px 24px;
+      }
+      .high-scores {
+        max-width: 1280px;
+        margin: 24px auto 0;
+        padding: 0 12px 24px;
+      }
+      .high-scores h3 {
+        margin-bottom: 12px;
+        font-size: 16px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #5fd1ff;
+      }
+      .high-scores ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #c9d4f0;
+      }
+      .high-scores li {
+        background: rgba(12, 12, 24, 0.7);
+        border: 2px solid #2b4b6f;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .high-scores .score-time {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        color: #9fb2e6;
       }
       .cast h3, .credits h3 {
         margin-bottom: 12px;
@@ -399,6 +489,18 @@
           <li><span id="system-stats-started-label">Backend started</span>: <span id="system-stats-started">—</span></li>
         </ul>
       </div>
+      <div id="high-score-prompt" class="high-score-prompt hidden">
+        <h3 id="high-score-prompt-title">Save Your Run</h3>
+        <p id="high-score-prompt-message">You saved the sprint! Add your gamer tag?</p>
+        <form id="high-score-form" class="high-score-form">
+          <label id="high-score-name-label" for="high-score-name">Gamer tag</label>
+          <input id="high-score-name" type="text" maxlength="24" autocomplete="off" />
+          <div class="high-score-actions">
+            <button id="high-score-save" type="submit">Save</button>
+            <button id="high-score-skip" type="button">Skip</button>
+          </div>
+        </form>
+      </div>
       <section class="intro-story">
         <h3 id="story-title">Story</h3>
         <p id="story-text">
@@ -447,6 +549,10 @@
           <li id="credits-bg">kommun_bg.png background — CC0 by Magnus.</li>
           <li id="credits-authors">Co-authors: Magnus &amp; Codex.</li>
         </ul>
+      </section>
+      <section class="high-scores">
+        <h3 id="high-scores-title">High Scores</h3>
+        <ul id="high-scores-list"></ul>
       </section>
     </div>
     <script type="module" src="/src/app.js"></script>
