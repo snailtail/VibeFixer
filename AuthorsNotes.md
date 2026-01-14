@@ -20,10 +20,13 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-_None._
+- Now that we have logging implemented - especially after the OWASP hardening. Should we create some way for an admin to inspect these logs? Draft a spec and a plan for this scenario.
 
 ## Done
 
+- Add system stats to `/api/system/stats`: backend started at, uptime seconds. (2026-01-14 10:30 UTC)
+- Add system stats to `/api/system/stats`: total sessions created, active sessions, ended sessions. (2026-01-14 10:30 UTC)
+- Add system stats to `/api/system/stats`: timestamp of latest activity (any session event). (2026-01-14 10:30 UTC)
 - The `latestCompletedAt` value from the api/sessions/stats should not include timestamps from  abandoned sessions, only completed games/sessions such that the session has been ended "properly" via the API by the frontend or whatever client. (2026-01-14 08:06 UTC)
 - Toaster message for when the second Vibe coder is about to spawn needs to be shown 2 seconds longer. (2026-01-14 08:06 UTC)
 - I think a session should not be treated as activated/created until the player has pressed the action key to "start" the game. or else any time one visits the app's webpage, there will be a new session, and it will probably time out after 120 seconds of inactivity, and that complicates things for saving stats for sessions if the session has already timed out before the game has ended. (2026-01-14 08:18 UTC)
@@ -33,3 +36,8 @@ _None._
 - gamer name/tag in the high score list should be glowing in a green neon color so that it stands out clearly against the surrounding colors. glowing like the timestamp is but a green neon color of suitable rgb values. (2026-01-14 09:11 UTC)
 - player speed needs to increase by 20% so it is slightly easier to win - as it is now it's almost impossible to win a game. (2026-01-14 09:11 UTC)
 - Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. If you find vulnerabilities or things that need to be fixed, document them separately as Todo tasks in an OWASP_TODO.md file - we will plan this and implement later. (see also https://owasp.org/Top10/2025/ ) (2026-01-14 09:37 UTC)
+
+## Rejected
+
+- Add system stats to `/api/system/stats`: completed vs abandoned session counts (for dashboards). (This is too close to the api/sessions/stats existing functionality)
+- Add system stats to `/api/system/stats`: timestamp of latest completed session. (This is too close to the api/sessions/stats existing functionality)
