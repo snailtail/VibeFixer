@@ -21,6 +21,17 @@ async function bootstrap() {
   const systemStats = {
     started: document.getElementById("system-stats-started"),
   };
+  const highScorePrompt = {
+    container: document.getElementById("high-score-prompt"),
+    title: document.getElementById("high-score-prompt-title"),
+    message: document.getElementById("high-score-prompt-message"),
+    form: document.getElementById("high-score-form"),
+    input: document.getElementById("high-score-name"),
+    label: document.getElementById("high-score-name-label"),
+    save: document.getElementById("high-score-save"),
+    skip: document.getElementById("high-score-skip"),
+  };
+  const highScoresList = document.getElementById("high-scores-list");
   const touchControls = {
     left: document.getElementById("touch-left"),
     right: document.getElementById("touch-right"),
@@ -43,7 +54,12 @@ async function bootstrap() {
   preloadAssets();
   const initialLanguage = loadLanguage();
   const strings = getStrings(initialLanguage);
-  const gameApi = await startGame(canvas, input, { logList, poImage, strings });
+  const gameApi = await startGame(canvas, input, {
+    logList,
+    poImage,
+    strings,
+    onGameEnd: (payload) => handleGameEnd(payload),
+  });
 
   function setText(id, value, { allowNewlines = false } = {}) {
     const element = document.getElementById(id);
@@ -125,6 +141,22 @@ async function bootstrap() {
     setText("credits-audio", nextStrings.credits.items[1]);
     setText("credits-bg", nextStrings.credits.items[2]);
     setText("credits-authors", nextStrings.credits.items[3]);
+    setText("high-scores-title", nextStrings.ui.highScoresTitle);
+    if (highScorePrompt.title) {
+      highScorePrompt.title.textContent = nextStrings.ui.highScorePromptTitle;
+    }
+    if (highScorePrompt.label) {
+      highScorePrompt.label.textContent = nextStrings.ui.highScoreNameLabel;
+    }
+    if (highScorePrompt.input) {
+      highScorePrompt.input.placeholder = nextStrings.ui.highScoreNamePlaceholder;
+    }
+    if (highScorePrompt.save) {
+      highScorePrompt.save.textContent = nextStrings.ui.highScoreSave;
+    }
+    if (highScorePrompt.skip) {
+      highScorePrompt.skip.textContent = nextStrings.ui.highScoreSkip;
+    }
   }
 
   function updateLanguageSelector(nextStrings) {
@@ -152,6 +184,7 @@ async function bootstrap() {
     if (gameApi && typeof gameApi.setStrings === "function") {
       gameApi.setStrings(nextStrings);
     }
+    fetchHighScores();
   }
 
   applyLanguage(initialLanguage);
@@ -282,6 +315,124 @@ async function bootstrap() {
 
   fetchSystemStats();
   setInterval(fetchSystemStats, 20000);
+
+  function formatHighScore(entry, nextStrings) {
+    const scoreStrings = nextStrings?.highScores || {};
+    if (entry.result === "won" && typeof scoreStrings.won === "function") {
+      return scoreStrings.won(entry.playerTag);
+    }
+    if (entry.result === "lost" && typeof scoreStrings.lost === "function") {
+      return scoreStrings.lost(entry.playerTag, entry.remainingUnchecked);
+    }
+    return entry.playerTag;
+  }
+
+  function renderHighScores(entries, nextStrings) {
+    if (!highScoresList) {
+      return;
+    }
+    highScoresList.innerHTML = "";
+    if (!entries || entries.length === 0) {
+      const empty = document.createElement("li");
+      empty.textContent = nextStrings?.ui?.highScoreEmpty || "No high scores yet.";
+      highScoresList.appendChild(empty);
+      return;
+    }
+    entries.forEach((entry) => {
+      const item = document.createElement("li");
+      const message = document.createElement("div");
+      message.textContent = formatHighScore(entry, nextStrings);
+      item.appendChild(message);
+      if (entry.createdAt) {
+        const time = document.createElement("span");
+        time.className = "score-time";
+        time.textContent = new Date(entry.createdAt).toLocaleString();
+        item.appendChild(time);
+      }
+      highScoresList.appendChild(item);
+    });
+  }
+
+  async function fetchHighScores() {
+    try {
+      const response = await fetch("/api/high-scores");
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      renderHighScores(data.scores || [], getStrings(loadLanguage()));
+    } catch (error) {
+      // Ignore transient failures.
+    }
+  }
+
+  fetchHighScores();
+  setInterval(fetchHighScores, 15000);
+
+  function hideHighScorePrompt() {
+    if (highScorePrompt.container) {
+      highScorePrompt.container.classList.add("hidden");
+    }
+  }
+
+  function showHighScorePrompt({ result, remainingUnchecked }) {
+    if (!highScorePrompt.container || !highScorePrompt.message || !highScorePrompt.input) {
+      return;
+    }
+    const nextStrings = getStrings(loadLanguage());
+    const message = result === "won"
+      ? nextStrings.ui.highScorePromptWon
+      : nextStrings.ui.highScorePromptLost;
+    highScorePrompt.message.textContent = message;
+    highScorePrompt.container.dataset.result = result;
+    highScorePrompt.container.dataset.remainingUnchecked = String(remainingUnchecked ?? 0);
+    highScorePrompt.input.value = "";
+    highScorePrompt.container.classList.remove("hidden");
+    highScorePrompt.input.focus();
+  }
+
+  async function submitHighScore() {
+    if (!highScorePrompt.container || !highScorePrompt.input) {
+      return;
+    }
+    const playerTag = highScorePrompt.input.value.trim();
+    if (!playerTag) {
+      highScorePrompt.input.focus();
+      return;
+    }
+    const result = highScorePrompt.container.dataset.result || "lost";
+    const remainingUnchecked = Number(highScorePrompt.container.dataset.remainingUnchecked || 0);
+    try {
+      const response = await fetch("/api/high-scores", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerTag, result, remainingUnchecked }),
+      });
+      if (response.ok) {
+        hideHighScorePrompt();
+        fetchHighScores();
+      }
+    } catch (error) {
+      // Ignore transient failures.
+    }
+  }
+
+  function handleGameEnd(payload) {
+    if (!payload || (payload.result !== "won" && payload.result !== "lost")) {
+      return;
+    }
+    showHighScorePrompt(payload);
+  }
+
+  if (highScorePrompt.form) {
+    highScorePrompt.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitHighScore();
+    });
+  }
+  if (highScorePrompt.skip) {
+    highScorePrompt.skip.addEventListener("click", () => hideHighScorePrompt());
+  }
 }
 
 window.addEventListener("DOMContentLoaded", bootstrap);

@@ -177,6 +177,52 @@ Base URL: `https://<your-domain>` (proxied to backend)
 }
 ```
 
+### High scores
+
+`GET /api/high-scores`
+
+**Response** `200`:
+
+```json
+{
+  "scores": [
+    {
+      "id": 1,
+      "createdAt": "2026-01-14T12:34:56.000Z",
+      "playerTag": "VibeFixer",
+      "result": "won",
+      "remainingUnchecked": 0
+    }
+  ]
+}
+```
+
+`POST /api/high-scores`
+
+**Request body**:
+
+```json
+{
+  "playerTag": "VibeFixer",
+  "result": "won",
+  "remainingUnchecked": 0
+}
+```
+
+**Response** `201`:
+
+```json
+{
+  "score": {
+    "id": 1,
+    "createdAt": "2026-01-14T12:34:56.000Z",
+    "playerTag": "VibeFixer",
+    "result": "won",
+    "remainingUnchecked": 0
+  }
+}
+```
+
 ### Health check
 
 `GET /health`

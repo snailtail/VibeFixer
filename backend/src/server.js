@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { handleSessions } = require("./api/sessions");
 const { handleSystemStats } = require("./api/system");
+const { handleHighScores } = require("./api/high-scores");
 const sessionStore = require("./game/session-store");
 const sessionRepo = require("./storage/session-repo");
 
@@ -30,6 +31,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (handleSystemStats(req, res, url)) {
+    return;
+  }
+
+  if (handleHighScores(req, res, url)) {
     return;
   }
 
