@@ -9,6 +9,7 @@ const stats = {
   wonCount: 0,
   lostCount: 0,
   abandonedCount: 0,
+  latestCompletedAt: null,
 };
 
 const STALE_MULTIPLIER = 2;
@@ -69,6 +70,7 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
   session.endedAt = new Date().toISOString();
   session.endReason = reason;
   session.result = result;
+  stats.latestCompletedAt = session.endedAt;
   sessions.delete(sessionId);
   stats.endedCount += 1;
   if (reason === "stale") {
@@ -109,6 +111,7 @@ function getSessionStats() {
     wonCount: stats.wonCount,
     lostCount: stats.lostCount,
     abandonedCount: stats.abandonedCount,
+    latestCompletedAt: stats.latestCompletedAt,
   };
 }
 
