@@ -88,7 +88,7 @@ const STRINGS = {
       },
       root: {
         name: "Root",
-        bio: "An unseen force refining code-fu in the shadows, waiting for the perfect merge.",
+        bio: "An unseen force practicing code-fu in the shadows, while waiting for the perfect merge.",
         alt: "Root",
       },
     },

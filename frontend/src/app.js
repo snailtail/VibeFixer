@@ -366,6 +366,10 @@ async function bootstrap() {
     }
     entries.forEach((entry) => {
       const item = document.createElement("li");
+      const time = document.createElement("span");
+      time.className = "score-time";
+      time.textContent = entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "—";
+      item.appendChild(time);
       const message = document.createElement("div");
       const messageText = formatHighScore(entry, nextStrings);
       const tagIndex = messageText.indexOf(entry.playerTag);
@@ -386,12 +390,6 @@ async function bootstrap() {
         message.textContent = messageText;
       }
       item.appendChild(message);
-      if (entry.createdAt) {
-        const time = document.createElement("span");
-        time.className = "score-time";
-        time.textContent = new Date(entry.createdAt).toLocaleString();
-        item.appendChild(time);
-      }
       highScoresList.appendChild(item);
     });
   }
