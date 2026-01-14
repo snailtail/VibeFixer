@@ -165,7 +165,7 @@ async function handleSessions(req, res, url) {
     }
     const body = parsed.data;
     const artifactIdCheck = requireString(body && body.artifactId, { maxLength: 80 });
-    const statusCheck = requireEnum(body && body.status, ["ground", "inAir", "flying", "deposited"]);
+    const statusCheck = requireEnum(body && body.status, ["ground", "inAir", "flying", "deposited", "carried"]);
     if (!artifactIdCheck.ok || !statusCheck.ok) {
       logSecurityEvent("validation_failed", context, { reason: "invalid_artifact_status" });
       sendError(res, 400, "artifactId and valid status are required");
