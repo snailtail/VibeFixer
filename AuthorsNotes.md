@@ -20,7 +20,7 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-- Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. (see https://owasp.org/Top10/2025/ )
+_None._
 
 ## Done
 
@@ -32,3 +32,4 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 - High score list should have an 80s arcade neon look with a retro font. (2026-01-14 09:02 UTC)
 - gamer name/tag in the high score list should be glowing in a green neon color so that it stands out clearly against the surrounding colors. glowing like the timestamp is but a green neon color of suitable rgb values. (2026-01-14 09:11 UTC)
 - player speed needs to increase by 20% so it is slightly easier to win - as it is now it's almost impossible to win a game. (2026-01-14 09:11 UTC)
+- Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. If you find vulnerabilities or things that need to be fixed, document them separately as Todo tasks in an OWASP_TODO.md file - we will plan this and implement later. (see also https://owasp.org/Top10/2025/ ) (2026-01-14 09:37 UTC)
