@@ -1,4 +1,4 @@
-const MOVE_SPEED = 270;
+const MOVE_SPEED = 324;
 const JUMP_SPEED = -480;
 const GRAVITY = 900;
 

@@ -341,7 +341,24 @@ async function bootstrap() {
     entries.forEach((entry) => {
       const item = document.createElement("li");
       const message = document.createElement("div");
-      message.textContent = formatHighScore(entry, nextStrings);
+      const messageText = formatHighScore(entry, nextStrings);
+      const tagIndex = messageText.indexOf(entry.playerTag);
+      if (tagIndex >= 0) {
+        const before = messageText.slice(0, tagIndex);
+        const after = messageText.slice(tagIndex + entry.playerTag.length);
+        if (before) {
+          message.appendChild(document.createTextNode(before));
+        }
+        const tagSpan = document.createElement("span");
+        tagSpan.className = "score-tag";
+        tagSpan.textContent = entry.playerTag;
+        message.appendChild(tagSpan);
+        if (after) {
+          message.appendChild(document.createTextNode(after));
+        }
+      } else {
+        message.textContent = messageText;
+      }
       item.appendChild(message);
       if (entry.createdAt) {
         const time = document.createElement("span");
