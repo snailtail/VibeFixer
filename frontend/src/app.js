@@ -136,6 +136,9 @@ async function bootstrap() {
     setText("cast-po-name", nextStrings.cast.po.name);
     setText("cast-po-bio", nextStrings.cast.po.bio);
     setAlt("cast-po-img", nextStrings.cast.po.alt);
+    setText("cast-root-name", nextStrings.cast.root.name);
+    setText("cast-root-bio", nextStrings.cast.root.bio);
+    setAlt("cast-root-img", nextStrings.cast.root.alt);
     setText("credits-title", nextStrings.credits.title);
     setText("credits-kenney", nextStrings.credits.items[0]);
     setText("credits-audio", nextStrings.credits.items[1]);

@@ -86,6 +86,11 @@ const STRINGS = {
         bio: "Guardian of scope and sanity, happiest when blockers hit zero.",
         alt: "Product Owner",
       },
+      root: {
+        name: "Root",
+        bio: "An unseen force refining code-fu in the shadows, waiting for the perfect merge.",
+        alt: "Root",
+      },
     },
     credits: {
       title: "Credits",
@@ -230,6 +235,11 @@ const STRINGS = {
         name: "Product Owner",
         bio: "Vaktar scope och sinnesro, lyckligast när blockers är noll.",
         alt: "Product Owner",
+      },
+      root: {
+        name: "Root",
+        bio: "En osedd kraft som slipar code-fu i skuggorna och vantar pa den perfekta mergningen.",
+        alt: "Root",
       },
     },
     credits: {

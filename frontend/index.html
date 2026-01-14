@@ -374,6 +374,11 @@
         margin: 24px auto 0;
         padding: 0 12px 24px;
       }
+      .intro-story .cast {
+        max-width: none;
+        margin: 16px 0 0;
+        padding: 0;
+      }
       .high-scores {
         max-width: 1280px;
         margin: 24px auto 0;
@@ -447,6 +452,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
+      }
+      .intro-story .cast-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       }
       .cast-card {
         background: rgba(12, 12, 24, 0.7);
@@ -557,36 +565,45 @@
           Clear blockers to keep the Product Owner calm, but beware Imp Ediment, who teleports in to stack new obstacles.
           Smash a blocker from below to break it, or vault over it if you care more about speed than the PO’s blood pressure.
         </p>
-      </section>
-      <section class="cast">
-        <h3 id="cast-title">Cast</h3>
-        <div class="cast-grid">
-          <div class="cast-card">
-            <img id="cast-fixer-img" src="/assets/kenney/Sprites/Characters/Double/character_green_idle.png" alt="The Fixer" />
-            <h4 id="cast-fixer-name">The Fixer</h4>
-            <p id="cast-fixer-bio">Municipality hero, fast on the keyboard and faster on the cleanup.</p>
+        <section class="cast">
+          <h3 id="cast-title">Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-card">
+              <img id="cast-fixer-img" src="/assets/kenney/Sprites/Characters/Double/character_green_idle.png" alt="The Fixer" />
+              <h4 id="cast-fixer-name">The Fixer</h4>
+              <p id="cast-fixer-bio">Municipality hero, fast on the keyboard and faster on the cleanup.</p>
+            </div>
+            <div class="cast-card">
+              <img id="cast-coder-img" src="/assets/kenney/Sprites/Enemies/Default/barnacle_attack_a.png" alt="Vibe Coder" />
+              <h4 id="cast-coder-name">Vibe Coder</h4>
+              <p id="cast-coder-bio">Top-floor chaos agent dropping unchecked code at the worst times.</p>
+            </div>
+            <div class="cast-card">
+              <img id="cast-imp-img" src="/src/assets/imp_ediment.png" alt="Imp Ediment" />
+              <h4 id="cast-imp-name">Imp Ediment</h4>
+              <p id="cast-imp-bio">Teleporting mischief-maker who stacks blockers in your way.</p>
+            </div>
+            <div class="cast-card">
+              <img id="cast-fomo-img" src="/src/assets/fomo_demon.png" alt="FOMO Demon" />
+              <h4 id="cast-fomo-name">FOMO Demon</h4>
+              <p id="cast-fomo-bio">Feeds on lingering code. Defeat it by keeping the ground clean.</p>
+            </div>
+            <div class="cast-card">
+              <img id="cast-po-img" src="/src/assets/po_happy.png" alt="Product Owner" />
+              <h4 id="cast-po-name">Product Owner</h4>
+              <p id="cast-po-bio">Guardian of scope and sanity, happiest when blockers hit zero.</p>
+            </div>
+            <div class="cast-card">
+              <img
+                id="cast-root-img"
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'><rect width='96' height='96' fill='%23101425'/><rect x='6' y='6' width='84' height='84' fill='%23182036' stroke='%235fd1ff' stroke-width='2'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='56' fill='%23d7e2ff' font-family='monospace'>?</text></svg>"
+                alt="Root"
+              />
+              <h4 id="cast-root-name">Root</h4>
+              <p id="cast-root-bio">An unseen force refining code-fu in the shadows, waiting for the perfect merge.</p>
+            </div>
           </div>
-          <div class="cast-card">
-            <img id="cast-coder-img" src="/assets/kenney/Sprites/Enemies/Default/barnacle_attack_a.png" alt="Vibe Coder" />
-            <h4 id="cast-coder-name">Vibe Coder</h4>
-            <p id="cast-coder-bio">Top-floor chaos agent dropping unchecked code at the worst times.</p>
-          </div>
-          <div class="cast-card">
-            <img id="cast-imp-img" src="/src/assets/imp_ediment.png" alt="Imp Ediment" />
-            <h4 id="cast-imp-name">Imp Ediment</h4>
-            <p id="cast-imp-bio">Teleporting mischief-maker who stacks blockers in your way.</p>
-          </div>
-          <div class="cast-card">
-            <img id="cast-fomo-img" src="/src/assets/fomo_demon.png" alt="FOMO Demon" />
-            <h4 id="cast-fomo-name">FOMO Demon</h4>
-            <p id="cast-fomo-bio">Feeds on lingering code. Defeat it by keeping the ground clean.</p>
-          </div>
-          <div class="cast-card">
-            <img id="cast-po-img" src="/src/assets/po_happy.png" alt="Product Owner" />
-            <h4 id="cast-po-name">Product Owner</h4>
-            <p id="cast-po-bio">Guardian of scope and sanity, happiest when blockers hit zero.</p>
-          </div>
-        </div>
+        </section>
       </section>
       <section class="credits">
         <h3 id="credits-title">Credits</h3>
