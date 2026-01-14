@@ -25,8 +25,14 @@ function handleAdminHighScores(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/admin/high-scores") {
-    const limit = Number(url.searchParams.get("limit"));
-    const scores = highScoreRepo.listHighScores(Number.isFinite(limit) ? limit : undefined);
+    let limit;
+    if (url.searchParams.has("limit")) {
+      const parsedLimit = Number(url.searchParams.get("limit"));
+      if (Number.isFinite(parsedLimit)) {
+        limit = parsedLimit;
+      }
+    }
+    const scores = highScoreRepo.listHighScores(limit);
     sendJson(res, 200, { scores });
     return true;
   }
