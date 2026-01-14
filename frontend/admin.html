@@ -26,7 +26,18 @@
         </nav>
         <p class="admin-status" id="admin-status">Checking session...</p>
       </section>
+      <section class="admin-panel">
+        <h3>System Stats</h3>
+        <ul class="admin-stats" id="admin-system-stats">
+          <li><span>Backend started</span><span id="admin-system-stats-started">—</span></li>
+          <li><span>Uptime</span><span id="admin-system-stats-uptime">—</span></li>
+          <li><span>Sessions started</span><span id="admin-system-stats-sessions-started">0</span></li>
+          <li><span>Sessions active</span><span id="admin-system-stats-sessions-active">0</span></li>
+          <li><span>Sessions ended</span><span id="admin-system-stats-sessions-ended">0</span></li>
+          <li><span>Latest activity</span><span id="admin-system-stats-latest-activity">—</span></li>
+        </ul>
+      </section>
     </main>
-    <script type="module" src="/src/admin/session.js"></script>
+    <script type="module" src="/src/admin/overview.js"></script>
   </body>
 </html>

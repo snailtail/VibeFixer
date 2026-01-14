@@ -32,12 +32,13 @@
         text-align: center;
         font-size: 42px;
         letter-spacing: 4px;
-        color: #f5f5f5;
+        color: #7df9ff;
+        font-family: "Press Start 2P", monospace;
         text-transform: uppercase;
         text-shadow:
-          2px 2px 0 #0a0a14,
-          4px 4px 0 #2f2f44,
-          0 0 12px rgba(255, 255, 255, 0.2);
+          0 0 6px rgba(125, 249, 255, 0.8),
+          0 0 16px rgba(125, 249, 255, 0.6),
+          2px 2px 0 #0a0a14;
       }
       .logo span {
         display: inline-block;
@@ -240,29 +241,6 @@
       }
       #session-stats li {
         margin: 0;
-      }
-      #system-stats {
-        max-width: 505px;
-        margin: 12px auto 0;
-        padding: 12px 14px;
-        background: rgba(12, 12, 24, 0.7);
-        border: 2px solid #2b4b6f;
-        box-shadow: inset 0 0 0 2px #0a0a14;
-        font-size: 12px;
-        color: #d7e2ff;
-      }
-      #system-stats h3 {
-        margin: 0 0 8px;
-        font-size: 14px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: #5fd1ff;
-      }
-      #system-stats ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        line-height: 1.5;
       }
       .high-score-prompt {
         max-width: 505px;
@@ -544,17 +522,6 @@
           <li><span id="session-stats-latest-label">Latest ended</span>: <span id="session-stats-latest">—</span></li>
           </ul>
         </div>
-      </div>
-      <div id="system-stats">
-        <h3 id="system-stats-title">System Stats</h3>
-        <ul>
-          <li><span id="system-stats-started-label">Backend started</span>: <span id="system-stats-started">—</span></li>
-          <li><span id="system-stats-uptime-label">Uptime</span>: <span id="system-stats-uptime">—</span></li>
-          <li><span id="system-stats-sessions-started-label">Sessions started</span>: <span id="system-stats-sessions-started">0</span></li>
-          <li><span id="system-stats-sessions-active-label">Sessions active</span>: <span id="system-stats-sessions-active">0</span></li>
-          <li><span id="system-stats-sessions-ended-label">Sessions ended</span>: <span id="system-stats-sessions-ended">0</span></li>
-          <li><span id="system-stats-latest-activity-label">Latest activity</span>: <span id="system-stats-latest-activity">—</span></li>
-        </ul>
       </div>
       <div id="high-score-prompt" class="high-score-prompt hidden">
         <h3 id="high-score-prompt-title">Save Your Run</h3>
