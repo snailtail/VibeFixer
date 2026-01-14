@@ -1,4 +1,5 @@
 import { depositArtifact, updateArtifactStatus } from "./session-api.js";
+import { triggerRateLimitToast } from "./toast.js";
 
 function distance(a, b) {
   const dx = a.x - b.x;
@@ -68,7 +69,9 @@ export async function handleAction(state) {
         state.score = response.score;
         state.remainingArtifacts = response.remainingArtifacts;
       } catch (error) {
-        // Ignore transient API failures to keep the loop running.
+        if (error && error.status === 429) {
+          triggerRateLimitToast(state);
+        }
       }
       return "trash";
     }
@@ -83,7 +86,9 @@ export async function handleAction(state) {
       try {
         await updateArtifactStatus(state.sessionId, artifact.id, "ground");
       } catch (error) {
-        // Ignore transient API failures to keep the loop running.
+        if (error && error.status === 429) {
+          triggerRateLimitToast(state);
+        }
       }
     }
     state.carriedArtifactId = null;
@@ -109,7 +114,9 @@ export async function handleAction(state) {
     try {
       await updateArtifactStatus(state.sessionId, nearest.id, "carried");
     } catch (error) {
-      // Ignore transient API failures to keep the loop running.
+      if (error && error.status === 429) {
+        triggerRateLimitToast(state);
+      }
     }
     return "pickup";
   }

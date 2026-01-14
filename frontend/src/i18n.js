@@ -98,6 +98,7 @@ const STRINGS = {
         "Kenney New Platformer Pack (CC0) — sprites for characters and tiles.",
         "OpenGameArt CC0 audio — chiptune music and sound effects.",
         "kommun_bg.png background — CC0 by Magnus.",
+        "Custom sprites (PO + bosses) — Magnus.",
         "Co-authors: Magnus & Codex.",
       ],
     },
@@ -132,6 +133,7 @@ const STRINGS = {
     toast: {
       secondCoderWarning: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
       impWarning: "Oh no Imp Ediment is out and about placing blockers, look out!",
+      rateLimit: "Too many actions at once - slow down a bit.",
     },
     gameOver: {
       defeated: "FOMO Demon defeated! The code is clean.",
@@ -248,6 +250,7 @@ const STRINGS = {
         "Kenney New Platformer Pack (CC0) — sprites för karaktärer och tiles.",
         "OpenGameArt CC0-ljud — chiptune-musik och ljudeffekter.",
         "kommun_bg.png bakgrund — CC0 av Magnus.",
+        "Egna sprites (PO + bossar) — Magnus.",
         "Medskapare: Magnus & Codex.",
       ],
     },
@@ -282,6 +285,7 @@ const STRINGS = {
     toast: {
       secondCoderWarning: "Aj då, kunden har hyrt in en till vibe-kodare. Försök hänga med!",
       impWarning: "Åh nej, Imp Ediment är ute och placerar blockers, akta dig!",
+      rateLimit: "For manga handlingar samtidigt - sakta ner lite.",
     },
     gameOver: {
       defeated: "FOMO-demonen besegrad! Koden är ren.",

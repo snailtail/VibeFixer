@@ -1,4 +1,5 @@
 import { startSession, endSession, spawnArtifact, updateArtifactStatus } from "./session-api.js";
+import { triggerRateLimitToast } from "./toast.js";
 import { renderGame } from "./renderer.js";
 import { handleAction } from "./interactions.js";
 import { applyPhysics } from "./physics.js";
@@ -431,7 +432,9 @@ async function updateArtifactDrops(state, dt, audio) {
           );
         }
       } catch (error) {
-        // Ignore transient API failures to keep the loop running.
+        if (error && error.status === 429) {
+          triggerRateLimitToast(state);
+        }
       }
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
@@ -451,8 +454,10 @@ async function updateArtifactDrops(state, dt, audio) {
       artifact.position.y = landingY;
       artifact.velocityY = 0;
       artifact.status = "ground";
-      updateArtifactStatus(state.sessionId, artifact.id, "ground").catch(() => {
-        // Ignore transient API failures to keep the loop running.
+      updateArtifactStatus(state.sessionId, artifact.id, "ground").catch((error) => {
+        if (error && error.status === 429) {
+          triggerRateLimitToast(state);
+        }
       });
     }
   }

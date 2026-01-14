@@ -143,7 +143,8 @@ async function bootstrap() {
     setText("credits-kenney", nextStrings.credits.items[0]);
     setText("credits-audio", nextStrings.credits.items[1]);
     setText("credits-bg", nextStrings.credits.items[2]);
-    setText("credits-authors", nextStrings.credits.items[3]);
+    setText("credits-custom", nextStrings.credits.items[3]);
+    setText("credits-authors", nextStrings.credits.items[4]);
     setText("high-scores-title", nextStrings.ui.highScoresTitle);
     if (highScorePrompt.title) {
       highScorePrompt.title.textContent = nextStrings.ui.highScorePromptTitle;
