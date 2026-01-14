@@ -20,7 +20,7 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-- Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. (see https://owasp.org/Top10/2025/ )
+- Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. If you find vulnerabilities or things that need to be fixed, document them separately as Todo tasks in an OWASP_TODO.md file (see also https://owasp.org/Top10/2025/ )
 
 ## Done
 
