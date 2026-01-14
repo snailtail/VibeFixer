@@ -141,6 +141,8 @@ const STRINGS = {
       secondCoderWarning: "Uh oh, the customer has hired another vibe coder. Let’s try to keep up!",
       impWarning: "Oh no Imp Ediment is out and about placing blockers, look out!",
       rateLimit: "Too many actions at once - slow down a bit.",
+      cAllergy:
+        "Oh no, you used C, the vibe coders are allergic to C, they will surely not perform as fast now...",
     },
     gameOver: {
       defeated: "FOMO Demon defeated! The code is clean.",
@@ -155,6 +157,7 @@ const STRINGS = {
       coderStunned: (id) => `Vibe coder #${id} stunned.`,
       coderRecovered: (id) => `Vibe coder #${id} recovered.`,
       poMoodChange: (label) => `PO mood is now ${label}.`,
+      cAllergy: () => "C allergy triggered: coders slowed.",
       impAppeared: (count) =>
         `Imp Ediment appeared: placing ${count} blocker${count === 1 ? "" : "s"}.`,
       fomoRise: "The FOMO Demon rises. Unchecked code feeds its rage.",
@@ -303,6 +306,8 @@ const STRINGS = {
       secondCoderWarning: "Aj då, kunden har hyrt in en till vibe-kodare. Försök hänga med!",
       impWarning: "Åh nej, Imp Ediment är ute och placerar blockers, akta dig!",
       rateLimit: "For manga handlingar samtidigt - sakta ner lite.",
+      cAllergy:
+        "Aj nej, du anvande C, vibe-kodarna ar allergiska mot C, de kommer inte vara lika snabba nu...",
     },
     gameOver: {
       defeated: "FOMO-demonen besegrad! Koden är ren.",
@@ -317,6 +322,7 @@ const STRINGS = {
       coderStunned: (id) => `Vibe-kodare #${id} är paralyserad.`,
       coderRecovered: (id) => `Vibe-kodare #${id} är tillbaka.`,
       poMoodChange: (label) => `PO är nu ${label}.`,
+      cAllergy: () => "C-allergi aktiverad: kodarna saktar ner.",
       impAppeared: (count) =>
         `Imp Ediment dök upp: placerar ${count} blocker${count === 1 ? "" : "s"}.`,
       fomoRise: "FOMO-demonen reser sig. Okontrollerad kod göder dess raseri.",
