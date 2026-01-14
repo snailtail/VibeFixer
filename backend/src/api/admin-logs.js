@@ -35,6 +35,9 @@ function normalizeRange({ start, end }) {
 }
 
 function normalizeLimit(limitRaw) {
+  if (limitRaw === null) {
+    return SECURITY_POLICY.adminLogDefaultLimit;
+  }
   const parsed = Number(limitRaw);
   if (!Number.isFinite(parsed)) {
     return SECURITY_POLICY.adminLogDefaultLimit;
