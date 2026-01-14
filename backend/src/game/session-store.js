@@ -102,16 +102,15 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
   session.result = result;
   sessions.delete(sessionId);
   stats.endedCount += 1;
-  if (reason === "ended") {
-    stats.latestCompletedAt = session.endedAt;
-  }
   if (reason === "stale") {
     stats.staleEndedCount += 1;
     stats.abandonedCount += 1;
   } else if (result === "won") {
     stats.wonCount += 1;
+    stats.latestCompletedAt = session.endedAt;
   } else if (result === "lost") {
     stats.lostCount += 1;
+    stats.latestCompletedAt = session.endedAt;
   } else {
     stats.abandonedCount += 1;
   }
