@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { handleSessions } = require("./api/sessions");
+const { handleSystemStats } = require("./api/system");
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_ROOT = path.resolve(__dirname, "..", "..", "frontend");
@@ -20,6 +21,10 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === "/health") {
     sendJson(res, 200, { status: "ok" });
+    return;
+  }
+
+  if (handleSystemStats(req, res, url)) {
     return;
   }
 

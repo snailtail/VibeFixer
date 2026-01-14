@@ -160,7 +160,20 @@ Base URL: `https://<your-domain>` (proxied to backend)
   "staleEndedCount": 0,
   "wonCount": 0,
   "lostCount": 0,
-  "abandonedCount": 0
+  "abandonedCount": 0,
+  "latestCompletedAt": "2026-01-14T12:34:56.000Z"
+}
+```
+
+### System stats
+
+`GET /api/system/stats`
+
+**Response** `200`:
+
+```json
+{
+  "startedAt": "2026-01-14T12:00:00.000Z"
 }
 ```
 

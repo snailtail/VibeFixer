@@ -16,6 +16,10 @@ async function bootstrap() {
     won: document.getElementById("session-stats-won"),
     lost: document.getElementById("session-stats-lost"),
     abandoned: document.getElementById("session-stats-abandoned"),
+    latest: document.getElementById("session-stats-latest"),
+  };
+  const systemStats = {
+    started: document.getElementById("system-stats-started"),
   };
   const touchControls = {
     left: document.getElementById("touch-left"),
@@ -88,6 +92,9 @@ async function bootstrap() {
     setText("session-stats-won-label", nextStrings.ui.sessionStatsWon);
     setText("session-stats-lost-label", nextStrings.ui.sessionStatsLost);
     setText("session-stats-abandoned-label", nextStrings.ui.sessionStatsAbandoned);
+    setText("session-stats-latest-label", nextStrings.ui.sessionStatsLatest);
+    setText("system-stats-title", nextStrings.ui.systemStatsTitle);
+    setText("system-stats-started-label", nextStrings.ui.systemStatsStarted);
     setAriaLabel(touchControls.left, nextStrings.ui.touchLeft);
     setAriaLabel(touchControls.right, nextStrings.ui.touchRight);
     setAriaLabel(touchControls.jump, nextStrings.ui.touchJump);
@@ -224,6 +231,13 @@ async function bootstrap() {
     if (sessionStats.abandoned) {
       sessionStats.abandoned.textContent = String(data.abandonedCount ?? 0);
     }
+    if (sessionStats.latest) {
+      if (data.latestCompletedAt) {
+        sessionStats.latest.textContent = new Date(data.latestCompletedAt).toLocaleString();
+      } else {
+        sessionStats.latest.textContent = "—";
+      }
+    }
   }
 
   async function fetchSessionStats() {
@@ -241,6 +255,33 @@ async function bootstrap() {
 
   fetchSessionStats();
   setInterval(fetchSessionStats, 10000);
+
+  function updateSystemStats(data) {
+    if (!data) {
+      return;
+    }
+    if (systemStats.started) {
+      systemStats.started.textContent = data.startedAt
+        ? new Date(data.startedAt).toLocaleString()
+        : "—";
+    }
+  }
+
+  async function fetchSystemStats() {
+    try {
+      const response = await fetch("/api/system/stats");
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      updateSystemStats(data);
+    } catch (error) {
+      // Ignore transient failures.
+    }
+  }
+
+  fetchSystemStats();
+  setInterval(fetchSystemStats, 20000);
 }
 
 window.addEventListener("DOMContentLoaded", bootstrap);
