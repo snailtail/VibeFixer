@@ -5,6 +5,7 @@ export function createInputState() {
     jump: false,
     action: false,
     toggleMute: false,
+    triggerAllergy: false,
   };
 
   function updateKey(event, isDown) {
@@ -44,6 +45,11 @@ export function createInputState() {
         if (isDown && !event.repeat) {
           event.preventDefault();
           state.toggleMute = true;
+        }
+        break;
+      case "KeyC":
+        if (isDown && !event.repeat) {
+          state.triggerAllergy = true;
         }
         break;
       default:

@@ -20,6 +20,8 @@ const TOAST_LEAD_TIME = 3;
 const TOAST_DURATION = 3.5;
 const SECOND_CODER_TOAST_DURATION = TOAST_DURATION + 2;
 const CODER_STUN_DURATION = 10;
+const ALLERGY_DOUBLE_TAP_WINDOW_MS = 1000;
+const ALLERGY_SPEED_MULTIPLIER = 0.6;
 const CODER_SPAWN_BUFFER = 90;
 const CODER_SPAWN_GAP = 140;
 const IMP_FIRST_APPEAR_MIN = 10;
@@ -79,6 +81,8 @@ export async function startGame(canvas, input, ui = {}) {
     playerSpeedPercent: 100,
     strings: initialStrings,
     loadingSession: false,
+    allergyActive: false,
+    lastAllergyTapAt: 0,
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -214,6 +218,7 @@ export async function startGame(canvas, input, ui = {}) {
       audio.playSfx("jump");
     }
 
+    handleAllergyEasterEgg(state);
     updateCoderStuns(state);
     tryStunCoder(state);
     updateVibeCoders(state, dt, audio);
@@ -328,8 +333,8 @@ function updatePlayerAnimation(state, dt) {
   }
 }
 
-function createVibeCoder({ x, direction }) {
-  const speed = randomCoderSpeed();
+function createVibeCoder({ x, direction, speedMultiplier = 1 }) {
+  const speed = randomCoderSpeed() * speedMultiplier;
   return {
     position: { x, y: TOP_FLOOR_Y },
     direction,
@@ -341,6 +346,7 @@ function createVibeCoder({ x, direction }) {
     nextDropAt: 0,
     nextSpeedChangeAt: 0,
     stunnedUntil: 0,
+    speedMultiplier,
   };
 }
 
@@ -400,6 +406,37 @@ function tryStunCoder(state) {
   });
 }
 
+function handleAllergyEasterEgg(state) {
+  if (!state.input.triggerAllergy || state.allergyActive) {
+    state.input.triggerAllergy = false;
+    return;
+  }
+  const nowMs = performance.now();
+  const lastTap = state.lastAllergyTapAt || 0;
+  state.lastAllergyTapAt = nowMs;
+  state.input.triggerAllergy = false;
+  if (nowMs - lastTap > ALLERGY_DOUBLE_TAP_WINDOW_MS) {
+    return;
+  }
+  state.allergyActive = true;
+  state.vibecoders.forEach((coder) => {
+    coder.speedMultiplier = ALLERGY_SPEED_MULTIPLIER;
+    coder.speed *= ALLERGY_SPEED_MULTIPLIER;
+  });
+  const toastStrings = state.strings?.toast || {};
+  state.toast = {
+    message:
+      toastStrings.cAllergy ||
+      "Oh no, you used C, the vibe coders are allergic to C, they will surely not perform as fast now...",
+    until: performance.now() + TOAST_DURATION * 1000,
+  };
+  const logStrings = state.strings?.log || {};
+  const message = typeof logStrings.cAllergy === "function"
+    ? logStrings.cAllergy()
+    : "C allergy triggered: coders slowed.";
+  addEventLog(state, message);
+}
+
 function updateVibeCoders(state, dt, audio) {
   const elapsed = (performance.now() - state.startTime) / 1000;
   const now = performance.now() / 1000;
@@ -407,7 +444,8 @@ function updateVibeCoders(state, dt, audio) {
   if (!state.vibecoders.length) {
     const spawnX = pickSpawnX(state.levelWidth);
     const direction = Math.random() < 0.5 ? -1 : 1;
-    state.vibecoders.push(createVibeCoder({ x: spawnX, direction }));
+    const speedMultiplier = state.allergyActive ? ALLERGY_SPEED_MULTIPLIER : 1;
+    state.vibecoders.push(createVibeCoder({ x: spawnX, direction, speedMultiplier }));
   }
 
   if (!state.secondCoderEnabled && !state.toast && elapsed >= state.secondCoderTime - TOAST_LEAD_TIME) {
@@ -427,7 +465,8 @@ function updateVibeCoders(state, dt, audio) {
     const firstDirection = state.vibecoders[0]?.direction || 1;
     const avoidX = state.vibecoders[0]?.position?.x ?? null;
     const spawnX = pickSpawnX(state.levelWidth, avoidX);
-    state.vibecoders.push(createVibeCoder({ x: spawnX, direction: firstDirection * -1 }));
+    const speedMultiplier = state.allergyActive ? ALLERGY_SPEED_MULTIPLIER : 1;
+    state.vibecoders.push(createVibeCoder({ x: spawnX, direction: firstDirection * -1, speedMultiplier }));
     state.secondCoderEnabled = true;
     const logStrings = state.strings?.log || {};
     addEventLog(state, logStrings.secondJoined || "Vibe coder #2 joined the chaos.");
@@ -446,7 +485,7 @@ function updateVibeCoders(state, dt, audio) {
     if (!coder.nextSpeedChangeAt) {
       coder.nextSpeedChangeAt = elapsed + randomInRange(CODER_SPEED_CHANGE_MIN, CODER_SPEED_CHANGE_MAX);
     } else if (elapsed >= coder.nextSpeedChangeAt) {
-      coder.speed = randomCoderSpeed();
+      coder.speed = randomCoderSpeed() * (coder.speedMultiplier || 1);
       coder.nextSpeedChangeAt = elapsed + randomInRange(CODER_SPEED_CHANGE_MIN, CODER_SPEED_CHANGE_MAX);
     }
     coder.position.x += coder.direction * coder.speed * dt;
