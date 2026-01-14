@@ -99,6 +99,8 @@ async function bootstrap() {
     }
     setText("controls-label", nextStrings.ui.controlsLabel);
     setText("controls-text", nextStrings.ui.controlsText, { allowNewlines: true });
+    setText("instructions-title", nextStrings.ui.instructionsTitle);
+    setText("instructions-text", nextStrings.ui.instructionsText, { allowNewlines: true });
     setText("language-label", nextStrings.ui.languageLabel);
     setText("game-events-title", nextStrings.ui.gameEventsTitle);
     setText("po-status-title", nextStrings.ui.poStatusTitle);
