@@ -2,7 +2,7 @@ const { generateLevel } = require("./level-generator");
 const { validateLevel } = require("./level-validator");
 
 const sessions = new Map();
-const stats = {
+let stats = {
   startedCount: 0,
   endedCount: 0,
   staleEndedCount: 0,
@@ -11,9 +11,29 @@ const stats = {
   abandonedCount: 0,
   latestCompletedAt: null,
 };
+let repository = null;
 
 const STALE_MULTIPLIER = 2;
 const CLEANUP_INTERVAL_MS = 30_000;
+
+function setRepository(repo) {
+  repository = repo;
+}
+
+function initSessionStore() {
+  if (!repository) {
+    return;
+  }
+  const loadedStats = repository.loadStats();
+  if (loadedStats) {
+    stats = { ...stats, ...loadedStats };
+  }
+  const activeSessions = repository.loadActiveSessions();
+  sessions.clear();
+  activeSessions.forEach((session) => {
+    sessions.set(session.id, session);
+  });
+}
 
 function createSession({ durationSeconds = 60 } = {}) {
   cleanupStaleSessions();
@@ -38,6 +58,10 @@ function createSession({ durationSeconds = 60 } = {}) {
 
   stats.startedCount += 1;
   sessions.set(sessionId, session);
+  if (repository) {
+    repository.saveSession(session);
+    repository.saveStats(stats);
+  }
   return session;
 }
 
@@ -53,11 +77,17 @@ function updateSession(sessionId, updates) {
 
   const updated = { ...session, ...updates };
   sessions.set(sessionId, updated);
+  if (repository) {
+    repository.saveSession(updated);
+  }
   return updated;
 }
 
 function saveSession(session) {
   sessions.set(session.id, session);
+  if (repository) {
+    repository.saveSession(session);
+  }
   return session;
 }
 
@@ -82,6 +112,10 @@ function endSession(sessionId, { reason = "ended", result = null } = {}) {
     stats.lostCount += 1;
   } else {
     stats.abandonedCount += 1;
+  }
+  if (repository) {
+    repository.saveSession(session);
+    repository.saveStats(stats);
   }
   return session;
 }
@@ -127,4 +161,6 @@ module.exports = {
   endSession,
   cleanupStaleSessions,
   getSessionStats,
+  initSessionStore,
+  setRepository,
 };

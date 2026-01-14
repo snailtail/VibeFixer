@@ -13,13 +13,20 @@ This guide explains how to develop, maintain, and deploy VibeFixer. The frontend
 
 ### Run the app locally
 
-1. Start the backend:
+1. Install backend dependencies:
 
 ```bash
-node /Users/magnus/src/Work/VibeFixer/backend/src/server.js
+cd /Users/magnus/src/Work/VibeFixer/backend
+npm install
 ```
 
-2. Open the game in a browser at:
+2. Start the backend:
+
+```bash
+VIBEFIXER_DB_PATH=/Users/magnus/src/Work/VibeFixer/.data/vibefixer.sqlite node /Users/magnus/src/Work/VibeFixer/backend/src/server.js
+```
+
+3. Open the game in a browser at:
 
 ```
 http://localhost:3000
@@ -28,6 +35,11 @@ http://localhost:3000
 The backend serves the frontend assets directly.
 Session stats are available at `http://localhost:3000/api/sessions/stats`.
 System stats are available at `http://localhost:3000/api/system/stats`.
+
+## Persistence Notes
+
+- Docker uses a named volume `vibefixer-data` mounted at `/data` inside the container.
+- The database file path is controlled by `VIBEFIXER_DB_PATH`.
 
 ## Adding Features or Fixing Bugs
 

@@ -1,0 +1,9 @@
+{
+  "name": "vibefixer-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/server.js",
+  "dependencies": {
+    "better-sqlite3": "^9.4.0"
+  }
+}
