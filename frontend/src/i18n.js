@@ -31,13 +31,13 @@ const STRINGS = {
       systemStatsStarted: "Backend started",
       highScoresTitle: "High Scores",
       highScorePromptTitle: "Save Your Run",
-      highScorePromptWon: "You saved the sprint! Add your gamer tag?",
-      highScorePromptLost: "You fought bravely. Add your gamer tag?",
+      highScorePromptWon: "Sprint saved! Add your gamer tag?",
+      highScorePromptLost: "Tough sprint. Add your gamer tag anyway?",
       highScoreNameLabel: "Gamer tag",
       highScoreNamePlaceholder: "Enter your name",
       highScoreSave: "Save",
       highScoreSkip: "Skip",
-      highScoreEmpty: "No high scores yet.",
+      highScoreEmpty: "No runs saved yet.",
     },
     story: {
       title: "Story",
@@ -86,7 +86,7 @@ const STRINGS = {
       ],
     },
     highScores: {
-      won: (tag) => `Hooray, the sprint was saved by ${tag}.`,
+      won: (tag) => `Sprint saved by ${tag}.`,
       lost: (tag, remaining) =>
         `${tag} tried to clear the sprint but left ${remaining} unchecked code block${remaining === 1 ? "" : "s"} behind.`,
     },
@@ -165,13 +165,13 @@ const STRINGS = {
       systemStatsStarted: "Backend startad",
       highScoresTitle: "Topplista",
       highScorePromptTitle: "Spara ditt försök",
-      highScorePromptWon: "Du räddade sprinten! Lägg till ditt gamer-tag?",
-      highScorePromptLost: "Du kämpade tappert. Lägg till ditt gamer-tag?",
+      highScorePromptWon: "Sprinten är räddad! Lägg till ditt gamer-tag?",
+      highScorePromptLost: "Tuff sprint. Lägg till ditt gamer-tag ändå?",
       highScoreNameLabel: "Gamer-tag",
       highScoreNamePlaceholder: "Skriv ditt namn",
       highScoreSave: "Spara",
       highScoreSkip: "Hoppa över",
-      highScoreEmpty: "Inga topplistor ännu.",
+      highScoreEmpty: "Inga sparade försök ännu.",
     },
     story: {
       title: "Historia",
@@ -220,7 +220,7 @@ const STRINGS = {
       ],
     },
     highScores: {
-      won: (tag) => `Hurra, sprinten räddades av ${tag}.`,
+      won: (tag) => `Sprinten räddades av ${tag}.`,
       lost: (tag, remaining) =>
         `${tag} försökte rädda sprinten men lämnade ${remaining} okontrollerad${remaining === 1 ? "" : "e"} kodblock kvar.`,
     },

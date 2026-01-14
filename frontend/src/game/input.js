@@ -8,6 +8,17 @@ export function createInputState() {
   };
 
   function updateKey(event, isDown) {
+    const target = event.target;
+    if (
+      target &&
+      (target.isContentEditable ||
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT")
+    ) {
+      return;
+    }
+
     switch (event.code) {
       case "ArrowLeft":
         event.preventDefault();
