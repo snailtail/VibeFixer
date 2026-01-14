@@ -20,6 +20,7 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
+- instruktionerna i DEVELOPMENT.md måste "avpersonifieras", de måste få korrekta portnummer och uppdateras så de stämmer med nuvarande tech-stack (ge instruktioner för den som vill köra lokalt med hjälp av docker compose också som alternativ) och man måste även få hjälp med hur man klonar repo't och kommer igång med "spec-kit" om man vill använda AI-assistans i CLI-verktyg så som jag har gjort.
 
 
 ## Done
