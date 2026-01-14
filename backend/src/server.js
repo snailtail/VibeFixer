@@ -109,7 +109,12 @@ function isRateLimitedWrite(req, url) {
 }
 
 async function serveStatic(requestPath, res) {
-  const safePath = requestPath === "/" ? "/index.html" : requestPath;
+  const safePath =
+    requestPath === "/"
+      ? "/index.html"
+      : requestPath === "/admin"
+        ? "/admin.html"
+        : requestPath;
   const filePath = path.normalize(path.join(FRONTEND_ROOT, safePath));
 
   if (!filePath.startsWith(FRONTEND_ROOT)) {

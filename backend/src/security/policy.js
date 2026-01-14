@@ -8,6 +8,9 @@ const SECURITY_POLICY = {
   adminLogMaxLimit: 500,
   adminUser: process.env.ADMIN_USER || "",
   adminPassword: process.env.ADMIN_PASSWORD || "",
+  adminAuthMaxFailures: 5,
+  adminAuthWindowMs: 10 * 60 * 1000,
+  adminAuthBlockMs: 15 * 60 * 1000,
 };
 
 module.exports = {

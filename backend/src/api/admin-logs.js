@@ -1,5 +1,6 @@
 const { SECURITY_POLICY } = require("../security/policy");
 const { requireAdminAuth } = require("../security/admin-auth");
+const { buildRequestContext } = require("../security/context");
 const logRepo = require("../storage/log-repo");
 
 function sendJson(res, statusCode, payload, headers = {}) {
@@ -56,7 +57,8 @@ function handleAdminLogs(req, res, url) {
     return false;
   }
 
-  if (!requireAdminAuth(req, res)) {
+  const context = buildRequestContext(req, url);
+  if (!requireAdminAuth(req, res, context)) {
     return true;
   }
 

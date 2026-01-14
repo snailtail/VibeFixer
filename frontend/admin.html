@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VibeFixer Admin Logs</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #0b0f1d;
+        color: #d7e2ff;
+        font-family: "Press Start 2P", monospace;
+      }
+      #admin-logs {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        background: rgba(12, 12, 24, 0.7);
+        border: 2px solid #2b4b6f;
+        box-shadow: inset 0 0 0 2px #0a0a14;
+        font-size: 12px;
+        color: #d7e2ff;
+      }
+      #admin-logs h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #5fd1ff;
+      }
+      .admin-log-auth,
+      .admin-log-filters,
+      .admin-log-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .admin-log-auth input,
+      .admin-log-filters input,
+      .admin-log-filters select {
+        background: #101425;
+        color: #f5f5f5;
+        border: 1px solid #2b4b6f;
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+      .admin-log-actions button {
+        background: #243b63;
+        color: #d7e2ff;
+        border: 1px solid #5fd1ff;
+        padding: 6px 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+      #admin-logs-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        line-height: 1.5;
+        max-height: 420px;
+        overflow-y: auto;
+      }
+      #admin-logs-list li {
+        margin-bottom: 8px;
+        border-bottom: 1px dashed rgba(95, 209, 255, 0.25);
+        padding-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="admin-logs">
+      <h3 id="admin-logs-title">Admin Logs</h3>
+      <div class="admin-log-auth">
+        <input id="admin-logs-user" type="text" placeholder="Username" />
+        <input id="admin-logs-pass" type="password" placeholder="Password" />
+        <button id="admin-logs-login" type="button">Connect</button>
+      </div>
+      <div class="admin-log-filters">
+        <input id="admin-logs-start" type="datetime-local" />
+        <input id="admin-logs-end" type="datetime-local" />
+        <select id="admin-logs-category">
+          <option value="">All categories</option>
+          <option value="security">Security</option>
+          <option value="gameplay">Gameplay</option>
+        </select>
+        <select id="admin-logs-severity">
+          <option value="">All severities</option>
+          <option value="info">Info</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <input id="admin-logs-query" type="text" placeholder="Search" />
+      </div>
+      <div class="admin-log-actions">
+        <button id="admin-logs-refresh" type="button">Refresh</button>
+        <button id="admin-logs-export" type="button">Export</button>
+        <span id="admin-logs-status">Not connected</span>
+      </div>
+      <ul id="admin-logs-list"></ul>
+    </section>
+    <script type="module" src="/src/admin.js"></script>
+  </body>
+</html>

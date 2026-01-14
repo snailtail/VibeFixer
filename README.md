@@ -187,9 +187,10 @@ Base URL: `https://<your-domain>` (proxied to backend)
 
 ### Admin log viewer
 
-- Admin log access is protected by username and password via HTTP Basic Auth.
+- Admin log access is available at `/admin` and is protected by username and password via HTTP Basic Auth.
 - Set `ADMIN_USER` and `ADMIN_PASSWORD` environment variables in deployment.
 - Logs include security and gameplay events with a 7-day view window.
+- Repeated failed login attempts are temporarily blocked to slow brute-force attempts.
 
 ### System stats
 
