@@ -60,11 +60,12 @@ const STRINGS = {
     story: {
       title: "Story",
       text:
-        "The Vibe Coders have seized the City Hall’s top floor, raining unchecked code into the basement. " +
-        "You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends. " +
-        "If the backlog piles up, the customers’ FOMO Demon wakes and the sprint turns grim. " +
-        "Clear blockers to keep the Product Owner calm, but beware Imp Ediment, who teleports in to stack new obstacles. " +
-        "Smash a blocker from below to break it, or vault over it if you care more about speed than the PO’s blood pressure.",
+        "The Vibe Coders roam free in the top floor of City Hall." +
+        "They have a habit of raining unchecked code down into the basement." +
+        "You are the Vibe Fixer — sprint fast, review faster, and keep the code moving before the timer ends." +
+        "If the backlog piles up, the customers’ FOMO Demon awakens and the sprint turns grim." +
+        "" +
+        "You can try to clear blockers to keep the Product Owner calm, but beware the tiny demon Imp Ediment, who teleports in to stack up new obstacles. Smash a blocker from below to break it, or vault over it if you care more about speed than the Product Owners blood pressure...",
     },
     cast: {
       title: "Cast",
@@ -224,11 +225,12 @@ const STRINGS = {
     story: {
       title: "Historia",
       text:
-        "Vibe-kodarna har intagit Stadshusets övre våning och det regnar ner okontrollerad kod i källaren. " +
+        "Vibekodarna springer lösa på Stadshusets övre våning." +
+        "De har för vana att kasta ner okontrollerad kod till källaren. " +
         "Du är Vibe Fixer — spring snabbt, granska snabbare och håll flödet igång innan sprinten tar slut. " +
         "Om backloggen växer vaknar kundernas FOMO-demon och sprinten blir till ett mörker. " +
-        "Röj undan blockers för att hålla Product Owner lugn, men se upp för Imp Ediment som teleporterar in och sätter upp nya blockers. " +
-        "Slå sönder en blocker underifrån, eller hoppa över den om du bryr dig mer om fart än PO:ns blodtryck.",
+        "Röj undan blockers för att hålla Product Owner lugn, men se upp för mini-demonen Imp Ediment som teleporterar in och sätter upp nya blockers. " +
+        "Slå sönder en blocker underifrån, eller hoppa över den om du bryr dig mer om fart än Produktägarens blodtryck.",
     },
     cast: {
       title: "Rollista",

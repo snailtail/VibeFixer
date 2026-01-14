@@ -25,6 +25,7 @@
         display: block;
         border: 0;
         background: #1e1e2f;
+        box-shadow: 0 0 0 2px #2b4b6f, inset 0 0 0 2px #0a0a14;
       }
       .logo {
         max-width: 1024px;
@@ -186,10 +187,11 @@
       }
       #side-panel {
         width: 260px;
-        height: 683px;
+        height: calc(683px + 4px);
         display: flex;
         flex-direction: column;
         gap: 12px;
+        margin-top: -2px;
       }
       #event-log,
       #po-status {
@@ -214,6 +216,17 @@
       #po-status {
         display: flex;
         flex-direction: column;
+        position: relative;
+      }
+      #po-status::before {
+        content: "";
+        position: absolute;
+        left: -16px;
+        top: 20px;
+        width: 16px;
+        height: 2px;
+        background: #2b4b6f;
+        box-shadow: inset 0 0 0 1px #0a0a14;
       }
       #po-status img {
         max-width: 100%;

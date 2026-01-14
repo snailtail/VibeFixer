@@ -51,9 +51,9 @@ export async function startGame(canvas, input, ui = {}) {
   const onGameEnd = typeof ui.onGameEnd === "function" ? ui.onGameEnd : null;
   const state = {
     sessionId: null,
-    durationSeconds: 120,
+    durationSeconds: 60,
     startTime: 0,
-    timeRemaining: 120,
+    timeRemaining: 60,
     score: 0,
     artifacts: [],
     terrain: [],
