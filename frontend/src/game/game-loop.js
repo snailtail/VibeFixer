@@ -74,6 +74,7 @@ export async function startGame(canvas, input, ui = {}) {
     fomoState: null,
     gameOverMessage: "",
     strings: initialStrings,
+    loadingSession: false,
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -98,7 +99,6 @@ export async function startGame(canvas, input, ui = {}) {
     }, 0);
     state.sessionId = session.sessionId;
     state.durationSeconds = session.durationSeconds;
-    state.startTime = null;
     state.timeRemaining = session.durationSeconds;
     state.score = 0;
     state.artifacts = session.artifacts.map((artifact) => ({
@@ -119,7 +119,6 @@ export async function startGame(canvas, input, ui = {}) {
     state.player.walkFrame = 0;
     state.player.walkTimer = 0;
     state.ended = false;
-    state.started = false;
     state.vibecoders = [];
     state.toast = null;
     state.secondCoderEnabled = false;
@@ -136,8 +135,6 @@ export async function startGame(canvas, input, ui = {}) {
     updatePOMood(state, poImage);
   }
 
-  await loadSession();
-
   let lastFrame = performance.now();
 
   async function update(dt) {
@@ -152,10 +149,13 @@ export async function startGame(canvas, input, ui = {}) {
     }
 
     if (!state.started) {
-      if (state.input.action && !state.lastAction) {
+      if (state.input.action && !state.lastAction && !state.loadingSession) {
+        state.loadingSession = true;
+        await loadSession();
         state.started = true;
         state.startTime = performance.now();
         audio.setGameStarted();
+        state.loadingSession = false;
       }
       state.lastAction = state.input.action;
       return;
