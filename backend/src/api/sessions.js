@@ -7,8 +7,14 @@ const {
   getSessionStats,
 } = require("../game/session-store");
 const { SECURITY_POLICY } = require("../security/policy");
-const { parseJsonBody, requireString, optionalNumber, requireEnum } = require("../security/validate");
-const { sendError } = require("../security/errors");
+const {
+  parseJsonBody,
+  requireString,
+  optionalNumber,
+  requireEnum,
+  recordValidationFailure,
+} = require("../security/validate");
+const { sendError, sendDbError } = require("../security/errors");
 const { logSecurityEvent } = require("../security/logger");
 const { buildRequestContext } = require("../security/context");
 
@@ -42,7 +48,11 @@ async function handleSessions(req, res, url) {
   const context = buildRequestContext(req, url);
 
   if (req.method === "GET" && url.pathname === "/api/sessions/stats") {
-    sendJson(res, 200, getSessionStats());
+    try {
+      sendJson(res, 200, getSessionStats());
+    } catch (error) {
+      sendDbError(res, context, error);
+    }
     return true;
   }
 
@@ -50,11 +60,13 @@ async function handleSessions(req, res, url) {
     const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
     if (parsed.error === "payload_too_large") {
       logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      recordValidationFailure("payload_too_large");
       sendError(res, 413, "Payload too large");
       return true;
     }
     if (parsed.error === "invalid_json") {
       logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      recordValidationFailure("invalid_json");
       sendError(res, 400, "Invalid JSON");
       return true;
     }
@@ -66,11 +78,16 @@ async function handleSessions(req, res, url) {
     const durationCheck = optionalNumber(durationSeconds, { min: 10, max: 600 });
     if (!durationCheck.ok) {
       logSecurityEvent("validation_failed", context, { reason: "invalid_duration" });
+      recordValidationFailure("invalid_duration");
       sendError(res, 400, "requestedDurationSeconds must be between 10 and 600");
       return true;
     }
-    const session = createSession({ durationSeconds: durationCheck.value ?? undefined });
-    sendJson(res, 201, serializeSession(session));
+    try {
+      const session = createSession({ durationSeconds: durationCheck.value ?? undefined });
+      sendJson(res, 201, serializeSession(session));
+    } catch (error) {
+      sendDbError(res, context, error);
+    }
     return true;
   }
 
@@ -92,11 +109,13 @@ async function handleSessions(req, res, url) {
     const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
     if (parsed.error === "payload_too_large") {
       logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      recordValidationFailure("payload_too_large");
       sendError(res, 413, "Payload too large");
       return true;
     }
     if (parsed.error === "invalid_json") {
       logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      recordValidationFailure("invalid_json");
       sendError(res, 400, "Invalid JSON");
       return true;
     }
@@ -105,12 +124,19 @@ async function handleSessions(req, res, url) {
       const resultCheck = requireEnum(body.result, ["won", "lost"]);
       if (!resultCheck.ok) {
         logSecurityEvent("validation_failed", context, { reason: "invalid_result" });
+        recordValidationFailure("invalid_result");
         sendError(res, 400, "result must be won or lost");
         return true;
       }
     }
     const normalizedResult = body && body.result ? body.result.toLowerCase() : null;
-    const ended = endSession(sessionId, { reason: "ended", result: normalizedResult });
+    let ended = null;
+    try {
+      ended = endSession(sessionId, { reason: "ended", result: normalizedResult });
+    } catch (error) {
+      sendDbError(res, context, error);
+      return true;
+    }
     if (!ended) {
       sendJson(res, 404, { error: "Session not found" });
       return true;
@@ -124,17 +150,20 @@ async function handleSessions(req, res, url) {
     const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
     if (parsed.error === "payload_too_large") {
       logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      recordValidationFailure("payload_too_large");
       sendError(res, 413, "Payload too large");
       return true;
     }
     if (parsed.error === "invalid_json") {
       logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      recordValidationFailure("invalid_json");
       sendError(res, 400, "Invalid JSON");
       return true;
     }
     const body = parsed.data;
     if (!body || typeof body.x !== "number" || typeof body.y !== "number") {
       logSecurityEvent("validation_failed", context, { reason: "missing_coordinates" });
+      recordValidationFailure("missing_coordinates");
       sendError(res, 400, "x and y are required");
       return true;
     }
@@ -146,7 +175,12 @@ async function handleSessions(req, res, url) {
     };
     session.artifacts.push(artifact);
     session.remainingArtifactCount = session.artifacts.filter((item) => item.status !== "deposited").length;
-    saveSession(session);
+    try {
+      saveSession(session);
+    } catch (error) {
+      sendDbError(res, context, error);
+      return true;
+    }
     sendJson(res, 201, { artifact });
     return true;
   }
@@ -155,11 +189,13 @@ async function handleSessions(req, res, url) {
     const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
     if (parsed.error === "payload_too_large") {
       logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      recordValidationFailure("payload_too_large");
       sendError(res, 413, "Payload too large");
       return true;
     }
     if (parsed.error === "invalid_json") {
       logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      recordValidationFailure("invalid_json");
       sendError(res, 400, "Invalid JSON");
       return true;
     }
@@ -168,6 +204,7 @@ async function handleSessions(req, res, url) {
     const statusCheck = requireEnum(body && body.status, ["ground", "inAir", "flying", "deposited", "carried"]);
     if (!artifactIdCheck.ok || !statusCheck.ok) {
       logSecurityEvent("validation_failed", context, { reason: "invalid_artifact_status" });
+      recordValidationFailure("invalid_artifact_status");
       sendError(res, 400, "artifactId and valid status are required");
       return true;
     }
@@ -178,7 +215,12 @@ async function handleSessions(req, res, url) {
     }
     artifact.status = statusCheck.value;
     session.remainingArtifactCount = session.artifacts.filter((item) => item.status !== "deposited").length;
-    saveSession(session);
+    try {
+      saveSession(session);
+    } catch (error) {
+      sendDbError(res, context, error);
+      return true;
+    }
     sendJson(res, 200, { ok: true });
     return true;
   }
@@ -186,11 +228,13 @@ async function handleSessions(req, res, url) {
   const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
   if (parsed.error === "payload_too_large") {
     logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+    recordValidationFailure("payload_too_large");
     sendError(res, 413, "Payload too large");
     return true;
   }
   if (parsed.error === "invalid_json") {
     logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+    recordValidationFailure("invalid_json");
     sendError(res, 400, "Invalid JSON");
     return true;
   }
@@ -198,6 +242,7 @@ async function handleSessions(req, res, url) {
   const artifactIdCheck = requireString(body && body.artifactId, { maxLength: 80 });
   if (!artifactIdCheck.ok) {
     logSecurityEvent("validation_failed", context, { reason: "missing_artifact_id" });
+    recordValidationFailure("missing_artifact_id");
     sendError(res, 400, "artifactId is required");
     return true;
   }
@@ -211,7 +256,12 @@ async function handleSessions(req, res, url) {
   artifact.status = "deposited";
   session.remainingArtifactCount = Math.max(0, session.remainingArtifactCount - 1);
   session.score = session.artifacts.filter((item) => item.status === "ground").length;
-  saveSession(session);
+  try {
+    saveSession(session);
+  } catch (error) {
+    sendDbError(res, context, error);
+    return true;
+  }
 
   sendJson(res, 200, {
     score: session.score,

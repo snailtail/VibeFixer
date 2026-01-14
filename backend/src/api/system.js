@@ -7,11 +7,20 @@ function sendJson(res, statusCode, payload) {
   res.end(body);
 }
 
-const systemStartedAt = new Date().toISOString();
+const { getSystemSessionStats } = require("../game/session-store");
+
+const systemStartedAtMs = Date.now();
+const systemStartedAt = new Date(systemStartedAtMs).toISOString();
 
 function getSystemStats() {
+  const sessionStats = getSystemSessionStats();
   return {
     startedAt: systemStartedAt,
+    uptimeSeconds: Math.floor((Date.now() - systemStartedAtMs) / 1000),
+    sessionsStarted: sessionStats.startedCount,
+    sessionsActive: sessionStats.activeCount,
+    sessionsEnded: sessionStats.endedCount,
+    latestActivityAt: sessionStats.latestActivityAt,
   };
 }
 

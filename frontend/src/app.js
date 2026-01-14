@@ -20,6 +20,11 @@ async function bootstrap() {
   };
   const systemStats = {
     started: document.getElementById("system-stats-started"),
+    uptime: document.getElementById("system-stats-uptime"),
+    sessionsStarted: document.getElementById("system-stats-sessions-started"),
+    sessionsActive: document.getElementById("system-stats-sessions-active"),
+    sessionsEnded: document.getElementById("system-stats-sessions-ended"),
+    latestActivity: document.getElementById("system-stats-latest-activity"),
   };
   const highScorePrompt = {
     container: document.getElementById("high-score-prompt"),
@@ -111,6 +116,11 @@ async function bootstrap() {
     setText("session-stats-latest-label", nextStrings.ui.sessionStatsLatest);
     setText("system-stats-title", nextStrings.ui.systemStatsTitle);
     setText("system-stats-started-label", nextStrings.ui.systemStatsStarted);
+    setText("system-stats-uptime-label", nextStrings.ui.systemStatsUptime);
+    setText("system-stats-sessions-started-label", nextStrings.ui.systemStatsSessionsStarted);
+    setText("system-stats-sessions-active-label", nextStrings.ui.systemStatsSessionsActive);
+    setText("system-stats-sessions-ended-label", nextStrings.ui.systemStatsSessionsEnded);
+    setText("system-stats-latest-activity-label", nextStrings.ui.systemStatsLatestActivity);
     setAriaLabel(touchControls.left, nextStrings.ui.touchLeft);
     setAriaLabel(touchControls.right, nextStrings.ui.touchRight);
     setAriaLabel(touchControls.jump, nextStrings.ui.touchJump);
@@ -296,6 +306,24 @@ async function bootstrap() {
     if (systemStats.started) {
       systemStats.started.textContent = data.startedAt
         ? new Date(data.startedAt).toLocaleString()
+        : "—";
+    }
+    if (systemStats.uptime) {
+      systemStats.uptime.textContent =
+        typeof data.uptimeSeconds === "number" ? `${data.uptimeSeconds}s` : "—";
+    }
+    if (systemStats.sessionsStarted) {
+      systemStats.sessionsStarted.textContent = String(data.sessionsStarted ?? 0);
+    }
+    if (systemStats.sessionsActive) {
+      systemStats.sessionsActive.textContent = String(data.sessionsActive ?? 0);
+    }
+    if (systemStats.sessionsEnded) {
+      systemStats.sessionsEnded.textContent = String(data.sessionsEnded ?? 0);
+    }
+    if (systemStats.latestActivity) {
+      systemStats.latestActivity.textContent = data.latestActivityAt
+        ? new Date(data.latestActivityAt).toLocaleString()
         : "—";
     }
   }

@@ -182,6 +182,8 @@ Base URL: `https://<your-domain>` (proxied to backend)
 - Write endpoints enforce 60 requests/minute per IP.
 - Request bodies over 100 KB return `413 Payload Too Large`.
 - Validation failures return `400` with a safe JSON error.
+- Automated dependency audits run on every main-branch update and weekly.
+- No admin or moderation endpoints are exposed in the current scope.
 
 ### System stats
 
@@ -191,7 +193,12 @@ Base URL: `https://<your-domain>` (proxied to backend)
 
 ```json
 {
-  "startedAt": "2026-01-14T12:00:00.000Z"
+  "startedAt": "2026-01-14T12:00:00.000Z",
+  "uptimeSeconds": 12345,
+  "sessionsStarted": 0,
+  "sessionsActive": 0,
+  "sessionsEnded": 0,
+  "latestActivityAt": "2026-01-14T12:34:56.000Z"
 }
 ```
 

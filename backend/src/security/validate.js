@@ -77,4 +77,10 @@ module.exports = {
   requireString,
   optionalNumber,
   requireEnum,
+  recordValidationFailure,
 };
+const { recordFailure } = require("./alerts");
+
+function recordValidationFailure(reason) {
+  recordFailure("validation_failed", { reason });
+}

@@ -10,6 +10,11 @@ function logSecurityEvent(eventType, context = {}, details = {}) {
   console.log(JSON.stringify(entry));
 }
 
+function logSecurityAlert(alertType, context = {}, details = {}) {
+  logSecurityEvent("security_alert", context, { alertType, ...details });
+}
+
 module.exports = {
   logSecurityEvent,
+  logSecurityAlert,
 };
