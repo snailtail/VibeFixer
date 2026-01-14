@@ -145,6 +145,8 @@ const STRINGS = {
       coderDrop: (id) => `Vibe coder #${id} dropped unchecked code.`,
       warningSecond: "Warning: vibe coder #2 is about to join.",
       secondJoined: "Vibe coder #2 joined the chaos.",
+      coderStunned: (id) => `Vibe coder #${id} stunned.`,
+      coderRecovered: (id) => `Vibe coder #${id} recovered.`,
       poMoodChange: (label) => `PO mood is now ${label}.`,
       impAppeared: (count) =>
         `Imp Ediment appeared: placing ${count} blocker${count === 1 ? "" : "s"}.`,
@@ -298,6 +300,8 @@ const STRINGS = {
       coderDrop: (id) => `Vibe-kodare #${id} släppte ny okontrollerad kod.`,
       warningSecond: "Varning: vibe-kodare #2 är på väg in.",
       secondJoined: "Vibe-kodare #2 anslöt till kaoset.",
+      coderStunned: (id) => `Vibe-kodare #${id} är paralyserad.`,
+      coderRecovered: (id) => `Vibe-kodare #${id} är tillbaka.`,
       poMoodChange: (label) => `PO är nu ${label}.`,
       impAppeared: (count) =>
         `Imp Ediment dök upp: placerar ${count} blocker${count === 1 ? "" : "s"}.`,
