@@ -29,7 +29,35 @@
       <section class="admin-panel">
         <h3>Score Entries</h3>
         <p class="admin-status" id="admin-high-scores-status">Loading...</p>
-        <ul class="admin-list" id="admin-high-scores-list"></ul>
+        <div class="admin-split">
+          <ul class="admin-list admin-select-list" id="admin-high-scores-list"></ul>
+          <div class="admin-editor" id="admin-high-scores-editor">
+            <h4 id="admin-high-score-title">Select a high score</h4>
+            <small class="admin-muted" id="admin-high-score-created">Created: —</small>
+            <div class="admin-grid">
+              <label class="admin-field">
+                <span>Player Tag</span>
+                <input id="admin-high-score-player-tag" type="text" />
+              </label>
+              <label class="admin-field">
+                <span>Result</span>
+                <select id="admin-high-score-result">
+                  <option value="won">won</option>
+                  <option value="lost">lost</option>
+                </select>
+              </label>
+              <label class="admin-field">
+                <span>Remaining Unchecked</span>
+                <input id="admin-high-score-remaining" type="number" min="0" max="500" />
+              </label>
+            </div>
+            <div class="admin-actions">
+              <button id="admin-high-score-save" type="button">Save</button>
+              <button id="admin-high-score-delete" type="button">Delete</button>
+              <span class="admin-status" id="admin-high-score-editor-status"></span>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
     <script type="module" src="/src/admin/high-scores.js"></script>

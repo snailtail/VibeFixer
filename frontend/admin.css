@@ -131,6 +131,23 @@ body {
   gap: 10px;
 }
 
+.admin-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px 12px;
+}
+
+.admin-stats li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .admin-list-item {
   border: 1px dashed rgba(95, 209, 255, 0.35);
   padding: 10px;
@@ -145,6 +162,13 @@ body {
   color: var(--admin-muted);
   display: block;
   margin-bottom: 6px;
+}
+
+.admin-muted {
+  color: var(--admin-muted);
+  font-size: 11px;
+  display: block;
+  margin-bottom: 8px;
 }
 
 .admin-log-list {
@@ -166,6 +190,38 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.admin-split {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 2fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.admin-select-list li {
+  padding: 0;
+}
+
+.admin-select-list button {
+  width: 100%;
+  text-align: left;
+  background: #101425;
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  padding: 8px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.admin-select-list button.active {
+  background: #3c5585;
+  border-color: var(--admin-accent);
+}
+
+.admin-editor {
+  border: 1px dashed rgba(95, 209, 255, 0.35);
+  padding: 12px;
 }
 
 .admin-nav a.active {
@@ -190,5 +246,9 @@ body {
 @media (max-width: 680px) {
   body {
     padding: 16px;
+  }
+
+  .admin-split {
+    grid-template-columns: 1fr;
   }
 }

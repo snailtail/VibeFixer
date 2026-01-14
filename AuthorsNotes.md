@@ -20,14 +20,13 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-- Change the Logo of the game, i want the same font and color feel as the header for the High Scores - neon and retro. but we need to keep it in touch with the rest of the game interfaces colors, so just adjust the text - let the border keep it's current color.
 
-- Perhaps the system stats panel in the frontend GUI is better suited in the admin gui. Let's move it over there - if that somehow duplicates some of the existing stats shown in the admin gui let's not make duplicates - make sure there is only one of each "stat" shown there.
-
-- The admin page for high scores only shows the latest high score - i need it to show me a list of all of them, and let me choose which one to edit or delete.
 
 ## Done
 
+- Change the Logo of the game, i want the same font and color feel as the header for the High Scores - neon and retro. but we need to keep it in touch with the rest of the game interfaces colors, so just adjust the text - let the border keep it's current color. (2026-01-14 14:34 UTC)
+- Perhaps the system stats panel in the frontend GUI is better suited in the admin gui. Let's move it over there - if that somehow duplicates some of the existing stats shown in the admin gui let's not make duplicates - make sure there is only one of each "stat" shown there. (2026-01-14 14:34 UTC)
+- The admin page for high scores only shows the latest high score - i need it to show me a list of all of them, and let me choose which one to edit or delete. (2026-01-14 14:34 UTC)
 - Now that we have logging implemented - especially after the OWASP hardening. Should we create some way for an admin to inspect these logs? Draft a spec and a plan for this scenario. (2026-01-14 13:00 UTC)
 - Add system stats to `/api/system/stats`: backend started at, uptime seconds. (2026-01-14 10:30 UTC)
 - Add system stats to `/api/system/stats`: total sessions created, active sessions, ended sessions. (2026-01-14 10:30 UTC)
