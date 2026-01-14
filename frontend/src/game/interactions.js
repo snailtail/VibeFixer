@@ -63,9 +63,13 @@ export async function handleAction(state) {
         artifact.target = { ...trashCenter };
       }
       state.carriedArtifactId = null;
-      const response = await depositArtifact(state.sessionId, artifactId);
-      state.score = response.score;
-      state.remainingArtifacts = response.remainingArtifacts;
+      try {
+        const response = await depositArtifact(state.sessionId, artifactId);
+        state.score = response.score;
+        state.remainingArtifacts = response.remainingArtifacts;
+      } catch (error) {
+        // Ignore transient API failures to keep the loop running.
+      }
       return "trash";
     }
 
@@ -76,7 +80,11 @@ export async function handleAction(state) {
         x: state.player.position.x,
         y: state.player.position.y,
       };
-      await updateArtifactStatus(state.sessionId, artifact.id, "ground");
+      try {
+        await updateArtifactStatus(state.sessionId, artifact.id, "ground");
+      } catch (error) {
+        // Ignore transient API failures to keep the loop running.
+      }
     }
     state.carriedArtifactId = null;
     return "drop";
@@ -98,7 +106,11 @@ export async function handleAction(state) {
   if (nearest && nearestDistance <= 15) {
     nearest.status = "carried";
     state.carriedArtifactId = nearest.id;
-    await updateArtifactStatus(state.sessionId, nearest.id, "carried");
+    try {
+      await updateArtifactStatus(state.sessionId, nearest.id, "carried");
+    } catch (error) {
+      // Ignore transient API failures to keep the loop running.
+    }
     return "pickup";
   }
 

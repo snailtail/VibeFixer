@@ -410,24 +410,28 @@ async function updateArtifactDrops(state, dt, audio) {
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
     if (now >= coder.nextDropAt) {
-      const spawnResponse = await spawnArtifact(state.sessionId, {
-        x: coder.position.x,
-        y: coder.position.y + 8,
-      });
-      if (spawnResponse && spawnResponse.artifact) {
-        state.artifacts.push({
-          ...spawnResponse.artifact,
-          velocityY: 0,
+      try {
+        const spawnResponse = await spawnArtifact(state.sessionId, {
+          x: coder.position.x,
+          y: coder.position.y + 8,
         });
-        audio.playSfx("drop");
-        const logStrings = state.strings?.log || {};
-        const coderDrop = logStrings.coderDrop;
-        addEventLog(
-          state,
-          typeof coderDrop === "function"
-            ? coderDrop(index + 1)
-            : `Vibe coder #${index + 1} dropped unchecked code.`
-        );
+        if (spawnResponse && spawnResponse.artifact) {
+          state.artifacts.push({
+            ...spawnResponse.artifact,
+            velocityY: 0,
+          });
+          audio.playSfx("drop");
+          const logStrings = state.strings?.log || {};
+          const coderDrop = logStrings.coderDrop;
+          addEventLog(
+            state,
+            typeof coderDrop === "function"
+              ? coderDrop(index + 1)
+              : `Vibe coder #${index + 1} dropped unchecked code.`
+          );
+        }
+      } catch (error) {
+        // Ignore transient API failures to keep the loop running.
       }
       coder.nextDropAt = now + CODER_DROP_INTERVAL;
     }
@@ -447,7 +451,9 @@ async function updateArtifactDrops(state, dt, audio) {
       artifact.position.y = landingY;
       artifact.velocityY = 0;
       artifact.status = "ground";
-      updateArtifactStatus(state.sessionId, artifact.id, "ground");
+      updateArtifactStatus(state.sessionId, artifact.id, "ground").catch(() => {
+        // Ignore transient API failures to keep the loop running.
+      });
     }
   }
 

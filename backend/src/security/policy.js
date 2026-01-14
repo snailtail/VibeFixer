@@ -1,5 +1,5 @@
 const SECURITY_POLICY = {
-  writeRateLimitPerIpPerMinute: 60,
+  writeRateLimitPerIpPerMinute: 600,
   maxRequestBytes: 100 * 1024,
   retentionSessionsDays: 30,
   retentionHighScoresDays: 180,
