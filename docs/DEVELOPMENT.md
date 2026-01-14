@@ -83,6 +83,6 @@ docker-compose up -d --no-build
 ## Documentation Updates
 
 - Update `README.md` when architecture, API, or deployment changes.
-- Keep API reference in sync with `backend/src/api/sessions.js`.
+- Keep API reference in sync with `backend/src/api/sessions.js` and `backend/src/api/high-scores.js`.
 - If session stats or outcomes change, update the stats response example.
 - If system stats change, update the system stats response example.
