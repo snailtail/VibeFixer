@@ -1,5 +1,7 @@
 const { generateLevel } = require("./level-generator");
 const { validateLevel } = require("./level-validator");
+const { SECURITY_POLICY } = require("../security/policy");
+const highScoreRepo = require("../storage/high-score-repo");
 
 const sessions = new Map();
 let stats = {
@@ -15,6 +17,8 @@ let repository = null;
 
 const STALE_MULTIPLIER = 2;
 const CLEANUP_INTERVAL_MS = 30_000;
+const RETENTION_CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
+let lastRetentionCleanup = 0;
 
 function setRepository(repo) {
   repository = repo;
@@ -133,6 +137,14 @@ function cleanupStaleSessions(nowMs = Date.now()) {
     }
   });
   staleIds.forEach((sessionId) => endSession(sessionId, { reason: "stale" }));
+  if (repository && nowMs - lastRetentionCleanup >= RETENTION_CLEANUP_INTERVAL_MS) {
+    const removedSessions = repository.cleanupEndedSessions(SECURITY_POLICY.retentionSessionsDays);
+    const removedScores = highScoreRepo.cleanupHighScores(SECURITY_POLICY.retentionHighScoresDays);
+    if (removedSessions || removedScores) {
+      // Retention cleanup is best-effort; no action needed beyond cleanup.
+    }
+    lastRetentionCleanup = nowMs;
+  }
   return staleIds.length;
 }
 

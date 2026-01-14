@@ -4,11 +4,24 @@ const path = require("path");
 const { handleSessions } = require("./api/sessions");
 const { handleSystemStats } = require("./api/system");
 const { handleHighScores } = require("./api/high-scores");
+const { SECURITY_POLICY } = require("./security/policy");
+const { createRateLimiter } = require("./security/rate-limit");
+const { sendError } = require("./security/errors");
+const { logSecurityEvent } = require("./security/logger");
+const { buildRequestContext } = require("./security/context");
 const sessionStore = require("./game/session-store");
 const sessionRepo = require("./storage/session-repo");
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_ROOT = path.resolve(__dirname, "..", "..", "frontend");
+const rateLimiter = createRateLimiter({
+  windowMs: 60_000,
+  max: SECURITY_POLICY.writeRateLimitPerIpPerMinute,
+});
+
+const WRITE_ENDPOINTS = new RegExp(
+  "^/api/sessions$|^/api/sessions/[^/]+/(deposit|spawn|artifact-status|end)$|^/api/high-scores$"
+);
 
 function sendJson(res, statusCode, payload) {
   const body = JSON.stringify(payload);
@@ -24,31 +37,70 @@ sessionStore.initSessionStore();
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  const context = buildRequestContext(req, url);
 
-  if (url.pathname === "/health") {
-    sendJson(res, 200, { status: "ok" });
-    return;
+  applySecurityHeaders(res);
+
+  try {
+    if (isRateLimitedWrite(req, url)) {
+      const limitResult = rateLimiter.check(context.ip);
+      if (!limitResult.allowed) {
+        res.setHeader("Retry-After", Math.ceil((limitResult.resetAt - Date.now()) / 1000));
+        logSecurityEvent("rate_limit", context, { remaining: limitResult.remaining });
+        sendError(res, 429, "Rate limit exceeded");
+        return;
+      }
+    }
+
+    if (url.pathname === "/health") {
+      sendJson(res, 200, { status: "ok" });
+      return;
+    }
+
+    if (handleSystemStats(req, res, url)) {
+      return;
+    }
+
+    if (handleHighScores(req, res, url)) {
+      return;
+    }
+
+    const handled = await handleSessions(req, res, url);
+    if (handled) {
+      return;
+    }
+
+    if (await serveStatic(url.pathname, res)) {
+      return;
+    }
+
+    sendJson(res, 404, { error: "Not Found" });
+  } catch (error) {
+    logSecurityEvent("server_error", context, { message: "Unhandled server error" });
+    sendError(res, 500, "Internal Server Error");
   }
-
-  if (handleSystemStats(req, res, url)) {
-    return;
-  }
-
-  if (handleHighScores(req, res, url)) {
-    return;
-  }
-
-  const handled = await handleSessions(req, res, url);
-  if (handled) {
-    return;
-  }
-
-  if (await serveStatic(url.pathname, res)) {
-    return;
-  }
-
-  sendJson(res, 404, { error: "Not Found" });
 });
+
+function applySecurityHeaders(res) {
+  const csp = [
+    "default-src 'self'",
+    "img-src 'self' data:",
+    "media-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self'",
+  ].join("; ");
+  res.setHeader("Content-Security-Policy", csp);
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+}
+
+function isRateLimitedWrite(req, url) {
+  return req.method === "POST" && WRITE_ENDPOINTS.test(url.pathname);
+}
 
 async function serveStatic(requestPath, res) {
   const safePath = requestPath === "/" ? "/index.html" : requestPath;

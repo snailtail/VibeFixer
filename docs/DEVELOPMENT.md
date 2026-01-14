@@ -86,3 +86,9 @@ docker-compose up -d --no-build
 - Keep API reference in sync with `backend/src/api/sessions.js` and `backend/src/api/high-scores.js`.
 - If session stats or outcomes change, update the stats response example.
 - If system stats change, update the system stats response example.
+
+## Security Maintenance
+
+- Run `npm audit --omit=dev` in `backend/` after dependency updates.
+- Keep `backend/package-lock.json` committed and updated with dependency changes.
+- CI security audit runs via `.github/workflows/security-audit.yml`.

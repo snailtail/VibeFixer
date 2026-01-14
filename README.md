@@ -42,7 +42,13 @@ VibeFixer is a browser-based arcade game with a lightweight Node.js backend. Thi
    - After a won/lost game, the frontend optionally posts a gamer tag to `POST /api/high-scores`.
    - The high score list is read from `GET /api/high-scores` and rendered below the credits.
 
-6. **Deployment updates**
+6. **Security controls**
+   - Write endpoints are rate-limited to 60 requests/minute per IP.
+   - Requests over 100 KB are rejected with a safe error response.
+   - Responses include baseline security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy).
+   - Completed sessions are retained for 30 days; high scores for 180 days.
+
+7. **Deployment updates**
    - On pushes to `main`, GitHub Actions syncs the repo to `~/vibefixerapp`.
    - Docker rebuilds and runs the backend, exposing port 3333.
 
@@ -170,6 +176,12 @@ Base URL: `https://<your-domain>` (proxied to backend)
 ```
 
 `latestCompletedAt` only updates for completed games (`won` or `lost`).
+
+### Security behavior
+
+- Write endpoints enforce 60 requests/minute per IP.
+- Request bodies over 100 KB return `413 Payload Too Large`.
+- Validation failures return `400` with a safe JSON error.
 
 ### System stats
 

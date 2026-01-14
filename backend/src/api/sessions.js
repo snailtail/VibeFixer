@@ -6,6 +6,11 @@ const {
   cleanupStaleSessions,
   getSessionStats,
 } = require("../game/session-store");
+const { SECURITY_POLICY } = require("../security/policy");
+const { parseJsonBody, requireString, optionalNumber, requireEnum } = require("../security/validate");
+const { sendError } = require("../security/errors");
+const { logSecurityEvent } = require("../security/logger");
+const { buildRequestContext } = require("../security/context");
 
 function sendJson(res, statusCode, payload) {
   const body = JSON.stringify(payload);
@@ -14,26 +19,6 @@ function sendJson(res, statusCode, payload) {
     "Content-Length": Buffer.byteLength(body),
   });
   res.end(body);
-}
-
-function collectJson(req) {
-  return new Promise((resolve) => {
-    let data = "";
-    req.on("data", (chunk) => {
-      data += chunk;
-    });
-    req.on("end", () => {
-      if (!data) {
-        resolve(null);
-        return;
-      }
-      try {
-        resolve(JSON.parse(data));
-      } catch (error) {
-        resolve({ __invalidJson: true });
-      }
-    });
-  });
 }
 
 function serializeSession(session) {
@@ -54,6 +39,7 @@ function serializeSession(session) {
 
 async function handleSessions(req, res, url) {
   cleanupStaleSessions();
+  const context = buildRequestContext(req, url);
 
   if (req.method === "GET" && url.pathname === "/api/sessions/stats") {
     sendJson(res, 200, getSessionStats());
@@ -61,16 +47,29 @@ async function handleSessions(req, res, url) {
   }
 
   if (req.method === "POST" && url.pathname === "/api/sessions") {
-    const body = await collectJson(req);
-    if (body && body.__invalidJson) {
-      sendJson(res, 400, { error: "Invalid JSON" });
+    const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
+    if (parsed.error === "payload_too_large") {
+      logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      sendError(res, 413, "Payload too large");
       return true;
     }
+    if (parsed.error === "invalid_json") {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      sendError(res, 400, "Invalid JSON");
+      return true;
+    }
+    const body = parsed.data;
 
     const durationSeconds = body && body.requestedDurationSeconds
       ? body.requestedDurationSeconds
       : undefined;
-    const session = createSession({ durationSeconds });
+    const durationCheck = optionalNumber(durationSeconds, { min: 10, max: 600 });
+    if (!durationCheck.ok) {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_duration" });
+      sendError(res, 400, "requestedDurationSeconds must be between 10 and 600");
+      return true;
+    }
+    const session = createSession({ durationSeconds: durationCheck.value ?? undefined });
     sendJson(res, 201, serializeSession(session));
     return true;
   }
@@ -90,13 +89,27 @@ async function handleSessions(req, res, url) {
   }
 
   if (action === "end") {
-    const body = await collectJson(req);
-    if (body && body.__invalidJson) {
-      sendJson(res, 400, { error: "Invalid JSON" });
+    const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
+    if (parsed.error === "payload_too_large") {
+      logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      sendError(res, 413, "Payload too large");
       return true;
     }
-    const result = body && typeof body.result === "string" ? body.result.toLowerCase() : null;
-    const normalizedResult = result === "won" || result === "lost" ? result : null;
+    if (parsed.error === "invalid_json") {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      sendError(res, 400, "Invalid JSON");
+      return true;
+    }
+    const body = parsed.data;
+    if (body && body.result != null) {
+      const resultCheck = requireEnum(body.result, ["won", "lost"]);
+      if (!resultCheck.ok) {
+        logSecurityEvent("validation_failed", context, { reason: "invalid_result" });
+        sendError(res, 400, "result must be won or lost");
+        return true;
+      }
+    }
+    const normalizedResult = body && body.result ? body.result.toLowerCase() : null;
     const ended = endSession(sessionId, { reason: "ended", result: normalizedResult });
     if (!ended) {
       sendJson(res, 404, { error: "Session not found" });
@@ -108,9 +121,21 @@ async function handleSessions(req, res, url) {
   }
 
   if (action === "spawn") {
-    const body = await collectJson(req);
-    if (!body || body.__invalidJson || typeof body.x !== "number" || typeof body.y !== "number") {
-      sendJson(res, 400, { error: "x and y are required" });
+    const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
+    if (parsed.error === "payload_too_large") {
+      logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      sendError(res, 413, "Payload too large");
+      return true;
+    }
+    if (parsed.error === "invalid_json") {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      sendError(res, 400, "Invalid JSON");
+      return true;
+    }
+    const body = parsed.data;
+    if (!body || typeof body.x !== "number" || typeof body.y !== "number") {
+      logSecurityEvent("validation_failed", context, { reason: "missing_coordinates" });
+      sendError(res, 400, "x and y are required");
       return true;
     }
 
@@ -127,9 +152,23 @@ async function handleSessions(req, res, url) {
   }
 
   if (action === "artifact-status") {
-    const body = await collectJson(req);
-    if (!body || body.__invalidJson || !body.artifactId || !body.status) {
-      sendJson(res, 400, { error: "artifactId and status are required" });
+    const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
+    if (parsed.error === "payload_too_large") {
+      logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+      sendError(res, 413, "Payload too large");
+      return true;
+    }
+    if (parsed.error === "invalid_json") {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+      sendError(res, 400, "Invalid JSON");
+      return true;
+    }
+    const body = parsed.data;
+    const artifactIdCheck = requireString(body && body.artifactId, { maxLength: 80 });
+    const statusCheck = requireEnum(body && body.status, ["ground", "inAir", "flying", "deposited"]);
+    if (!artifactIdCheck.ok || !statusCheck.ok) {
+      logSecurityEvent("validation_failed", context, { reason: "invalid_artifact_status" });
+      sendError(res, 400, "artifactId and valid status are required");
       return true;
     }
     const artifact = session.artifacts.find((item) => item.id === body.artifactId);
@@ -137,20 +176,33 @@ async function handleSessions(req, res, url) {
       sendJson(res, 404, { error: "Artifact not found" });
       return true;
     }
-    artifact.status = body.status;
+    artifact.status = statusCheck.value;
     session.remainingArtifactCount = session.artifacts.filter((item) => item.status !== "deposited").length;
     saveSession(session);
     sendJson(res, 200, { ok: true });
     return true;
   }
 
-  const body = await collectJson(req);
-  if (!body || body.__invalidJson || !body.artifactId) {
-    sendJson(res, 400, { error: "artifactId is required" });
+  const parsed = await parseJsonBody(req, { maxBytes: SECURITY_POLICY.maxRequestBytes });
+  if (parsed.error === "payload_too_large") {
+    logSecurityEvent("validation_failed", context, { reason: "payload_too_large" });
+    sendError(res, 413, "Payload too large");
+    return true;
+  }
+  if (parsed.error === "invalid_json") {
+    logSecurityEvent("validation_failed", context, { reason: "invalid_json" });
+    sendError(res, 400, "Invalid JSON");
+    return true;
+  }
+  const body = parsed.data;
+  const artifactIdCheck = requireString(body && body.artifactId, { maxLength: 80 });
+  if (!artifactIdCheck.ok) {
+    logSecurityEvent("validation_failed", context, { reason: "missing_artifact_id" });
+    sendError(res, 400, "artifactId is required");
     return true;
   }
 
-  const artifact = session.artifacts.find((item) => item.id === body.artifactId);
+  const artifact = session.artifacts.find((item) => item.id === artifactIdCheck.value);
   if (!artifact || artifact.status === "deposited") {
     sendJson(res, 400, { error: "Artifact not available" });
     return true;
