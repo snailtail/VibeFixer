@@ -24,6 +24,8 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 - Perhaps the system stats panel in the frontend GUI is better suited in the admin gui. Let's move it over there - if that somehow duplicates some of the existing stats shown in the admin gui let's not make duplicates - make sure there is only one of each "stat" shown there.
 
+- The admin page for high scores only shows the latest high score - i need it to show me a list of all of them, and let me choose which one to edit or delete.
+
 ## Done
 
 - Now that we have logging implemented - especially after the OWASP hardening. Should we create some way for an admin to inspect these logs? Draft a spec and a plan for this scenario. (2026-01-14 13:00 UTC)
