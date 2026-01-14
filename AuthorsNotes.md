@@ -2,10 +2,25 @@
 
 Well Co-author anyways...
 
+## Reflektioner
+
+Med spec-kit är det lite "stolpigare" att vibe:a, man får inte samma chattiga flow hela tiden, men samtidigt har jag känslan av att jag hela tiden har koll på specar, planer, val som görs, regler jag satt upp, och varje ny feature/iteration lagras med sin separata dokumentation. jag kan närsomhelst välja att bara vibe:a i Codex med chat och förbigå spec-kit's promptar om jag vill. Jag har testat lite av varje. Men när det kommer till att lägga till en ny feature t ex så känns det stabilt att välja att göra en specify först, och sen planera, skapa tasks steg för steg. Ibland har jag låtit codex köra på själv med minimal input från mig, ibland har jag valt att gå in och redigera .md filerna manuellt innan nästa steg. Någon gång testade jag clarify för att bena i vissa vägval och reda ut edge-cases. 
+
+Det går snabbt, ibland blir det fel - men har man en tydlig målbild och vet var man vill hamna så blir det ofta ganska rätt ganska snabbt så länge man klarar av att uttrycka sitt behov.  
+Jag gillar att man formulerar user stories, det alignar ju bra med hur vi skulle kunna ta in uppdrag från verksamheten när det är lite större saker, att bygga user stories tillsammans, som blir basen för AI-assisterat utvecklad produkt.  
+Dessutom har jag testat att avsluta mitt vibe:ande och påbörja det igen lite senare, för att se hur det funkar att fortsätta från "där man lämnade sist" och det är inga problem.
+
+Och är man klar med features, har sin repo incheckad i nån versionshantering, och kommer på att man behöver lägga till eller ändra något så är det ju bara att checka ut det hela och låta codex gå loss igen. Även om man inte har en gammal session som går att återuppta lokalt - den kommer ju ha alla specs, vägval, regler, kodbasen, ja allt. Det tar säkert en stund att analysera och ett gäng tokens går åt till att komma igång igen, men sen är det nog bara att tuta och köra.
+
+Vad gäller kodkvaliteten så i detta fallet lät jag den välja tech-stack själv, det blev javascript vilket jag inte normalt sett jobbar med. Så jag har inte suttit och granskat koden som sådan. Skulle detta vara någon enterprise app för produktion hade jag kanske styrt upp att det skulle vara enligt våra riktlinjer med våra föredragna stack:ar i botten, och då även kunnat enklare göra kodgranskning.
+
+Däremot tycker jag att jag har haft bra överblick över vad codex gjort, jag får ju bekräfta eller neka saker den försöker göra - den ber om lov innan den gör saker som kan vara disruptiva på något vis.
+
+I början förde jag löpande noteringar vid sidan av, för att inte störa processen när jag kom på buggar eller nya grejer jag ville ha. För att inte blanda in orelaterade saker i en pågående featurebranch så att säga. Sen lade jag in ett eget .md dokument för AuthorsNotes - där jag lägger in Todo items, och har bett codex att gå igenom det och fixa dem - samt flytta de färdiga items till Done istället i samma fil. Denna fil. Det har fungerat väl för att hålla småfix på en plats, men ändå noterat vad som gjorts och när, och sen hålla större grejer som features i egna branches och med egna subfolders här för specs och dylikt.
 
 ## Todo
 
-_None._
+- Go through the OWASP Top 10:2025 list and make sure we are not vulnerable. (see https://owasp.org/Top10/2025/ )
 
 ## Done
 
