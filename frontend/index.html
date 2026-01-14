@@ -77,6 +77,48 @@
         font-size: 14px;
         color: #d7d7df;
       }
+      .basement-notices {
+        max-width: 1024px;
+        margin: 12px auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 12px;
+      }
+      .basement-notice {
+        background: rgba(12, 12, 24, 0.8);
+        border: 2px solid #5fd1ff;
+        box-shadow: inset 0 0 0 2px #0a0a14;
+        padding: 12px 14px;
+        font-size: 12px;
+        color: #dbe5ff;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .basement-notice h4 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #7df9ff;
+      }
+      .basement-notice p {
+        margin: 0;
+        line-height: 1.5;
+      }
+      .basement-notice button {
+        align-self: flex-start;
+        background: rgba(12, 12, 24, 0.7);
+        border: 2px solid #2b4b6f;
+        color: #f5f5f5;
+        padding: 4px 10px;
+        font-family: monospace;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
       .info-panels {
         max-width: 505px;
         margin: 12px auto 0;
@@ -449,6 +491,7 @@
   <body>
     <div class="page">
       <div class="logo"><span>Vibe Fixer</span></div>
+      <div id="basement-notices" class="basement-notices"></div>
       <div id="game-shell">
         <aside id="side-panel">
           <div id="event-log">

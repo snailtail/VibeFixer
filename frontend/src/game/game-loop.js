@@ -74,6 +74,7 @@ export async function startGame(canvas, input, ui = {}) {
     isMuted: false,
     fomoState: null,
     gameOverMessage: "",
+    playerSpeedPercent: 100,
     strings: initialStrings,
     loadingSession: false,
     player: {
@@ -102,6 +103,7 @@ export async function startGame(canvas, input, ui = {}) {
     state.durationSeconds = session.durationSeconds;
     state.timeRemaining = session.durationSeconds;
     state.score = 0;
+    state.playerSpeedPercent = session.playerSpeedPercent ?? 100;
     state.artifacts = session.artifacts.map((artifact) => ({
       ...artifact,
       status: "ground",

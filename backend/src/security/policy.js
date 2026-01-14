@@ -11,6 +11,9 @@ const SECURITY_POLICY = {
   adminAuthMaxFailures: 5,
   adminAuthWindowMs: 10 * 60 * 1000,
   adminAuthBlockMs: 15 * 60 * 1000,
+  adminSessionTtlMs: 30 * 60 * 1000,
+  adminSessionCookieName: "vibefixer_admin_session",
+  adminSessionSecure: process.env.NODE_ENV === "production",
 };
 
 module.exports = {

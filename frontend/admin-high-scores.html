@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>VibeFixer Admin</title>
+    <title>Admin High Scores</title>
     <link rel="stylesheet" href="/admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,18 +15,23 @@
   <body>
     <main class="admin-wrap">
       <section class="admin-panel">
-        <h2>Admin Console</h2>
-        <p>Choose a section to manage game operations.</p>
+        <h2>High Scores</h2>
         <nav class="admin-nav" id="admin-nav">
+          <a href="/admin" data-nav>Overview</a>
           <a href="/admin/logs" data-nav>Logs</a>
-          <a href="/admin/high-scores" data-nav>High Scores</a>
+          <a href="/admin/high-scores" data-nav class="active">High Scores</a>
           <a href="/admin/notices" data-nav>Notices</a>
           <a href="/admin/game-settings" data-nav>Game Settings</a>
           <button type="button" id="admin-logout">Log Out</button>
         </nav>
-        <p class="admin-status" id="admin-status">Checking session...</p>
+      </section>
+
+      <section class="admin-panel">
+        <h3>Score Entries</h3>
+        <p class="admin-status" id="admin-high-scores-status">Loading...</p>
+        <ul class="admin-list" id="admin-high-scores-list"></ul>
       </section>
     </main>
-    <script type="module" src="/src/admin/session.js"></script>
+    <script type="module" src="/src/admin/high-scores.js"></script>
   </body>
 </html>

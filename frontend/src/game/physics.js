@@ -6,12 +6,16 @@ export function applyPhysics(state, dt) {
   const { player, input } = state;
   player.justJumped = false;
 
+  const speedPercent = Number.isFinite(state.playerSpeedPercent) ? state.playerSpeedPercent : 100;
+  const speedMultiplier = Math.min(Math.max(speedPercent, 50), 150) / 100;
+  const moveSpeed = MOVE_SPEED * speedMultiplier;
+
   player.velocity.x = 0;
   if (input.left) {
-    player.velocity.x = -MOVE_SPEED;
+    player.velocity.x = -moveSpeed;
   }
   if (input.right) {
-    player.velocity.x = MOVE_SPEED;
+    player.velocity.x = moveSpeed;
   }
 
   player.isMoving = player.velocity.x !== 0;
