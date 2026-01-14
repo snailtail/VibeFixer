@@ -71,6 +71,16 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
 
+      - name: Write admin credentials
+        if: steps.secrets.outputs.skip != 'true'
+        run: |
+          ssh "$SSH_USER@$SSH_HOST" "cd ~/vibefixerapp && printf \"ADMIN_USER=%s\nADMIN_PASSWORD=%s\n\" \"$ADMIN_USER\" \"$ADMIN_PASSWORD\" > .env && chmod 600 .env"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
       - name: Restart services
         if: steps.secrets.outputs.skip != 'true'
         run: |

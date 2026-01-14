@@ -4,6 +4,7 @@ const path = require("path");
 const { handleSessions } = require("./api/sessions");
 const { handleSystemStats } = require("./api/system");
 const { handleHighScores } = require("./api/high-scores");
+const { handleAdminLogs } = require("./api/admin-logs");
 const { SECURITY_POLICY } = require("./security/policy");
 const { createRateLimiter } = require("./security/rate-limit");
 const { sendError } = require("./security/errors");
@@ -63,6 +64,10 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (handleHighScores(req, res, url)) {
+      return;
+    }
+
+    if (handleAdminLogs(req, res, url)) {
       return;
     }
 
