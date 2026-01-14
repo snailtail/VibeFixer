@@ -9,7 +9,14 @@ const STRINGS = {
       languageEnglish: "English",
       languageSwedish: "Swedish",
       controlsLabel: "Controls:",
-      controlsText: "← Move left\n→ Move right\n↑ Jump\nSpace Action (Pick up / Drop)\nJump into a vibe coder while carrying code to stun them\nM Mute",
+      controlsText: "← Move left\n→ Move right\n↑ Jump\nSpace Action (Pick up / Drop)\nM Mute",
+      instructionsTitle: "Instructions",
+      instructionsText:
+        "Your mission is to pick up all code blocks dropped by the vibe coders, bring them to the Code review bin and drop them there.\n" +
+        "You can only pick up and carry one code block at a time.\n" +
+        "You can crush blockers to make the PO less worried, though this has no direct impact on the game other than possibly making it easier to get to the code blocks.\n" +
+        "Try to keep the level clear of unchecked code blocks. To win you need to have 0 code blocks unchecked when the timer ends.\n" +
+        "If you hold a code block and can jump high enough to touch a vibe coder with it, the vibe coder will be temporarily stunned.",
       gameEventsTitle: "Game Events",
       poStatusTitle: "PO Status",
       sessionStatsTitle: "Session Stats",
@@ -164,7 +171,14 @@ const STRINGS = {
       languageEnglish: "Engelska",
       languageSwedish: "Svenska",
       controlsLabel: "Kontroller:",
-      controlsText: "← Gå vänster\n→ Gå höger\n↑ Hoppa\nMellanslag Åtgärd (Plocka upp / Släpp)\nHoppa in i en vibe-kodare med kod for att bedova dem\nM Ljud av/på",
+      controlsText: "← Gå vänster\n→ Gå höger\n↑ Hoppa\nMellanslag Åtgärd (Plocka upp / Släpp)\nM Ljud av/på",
+      instructionsTitle: "Instruktioner",
+      instructionsText:
+        "Ditt uppdrag ar att plocka upp alla kodblock som vibe-kodarna slapper, ta dem till Code review bin och slapp dem dar.\n" +
+        "Du kan bara plocka upp och bara ett kodblock at gangen.\n" +
+        "Du kan krossa blockers for att fa PO att bli mindre orolig, men det paverkar inte spelet direkt forutom att det kan bli enklare att komma at kodblocken.\n" +
+        "Forsok att halla banan fri fran okontrollerade kodblock. For att vinna maste du ha 0 okontrollerade kodblock nar timern tar slut.\n" +
+        "Om du haller ett kodblock och kan hoppa tillrackligt hogt for att nudda en vibe-kodare med det, blir vibe-kodaren tillfalligt paralyserad.",
       gameEventsTitle: "Spelhändelser",
       poStatusTitle: "PO-status",
       sessionStatsTitle: "Sessionstatistik",
