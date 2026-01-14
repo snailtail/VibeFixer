@@ -5,5 +5,11 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3333
+      - VIBEFIXER_DB_PATH=/data/vibefixer.sqlite
     ports:
       - "3333:3333"
+    volumes:
+      - vibefixer-data:/data
+
+volumes:
+  vibefixer-data:

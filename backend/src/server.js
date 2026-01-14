@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const { handleSessions } = require("./api/sessions");
 const { handleSystemStats } = require("./api/system");
+const sessionStore = require("./game/session-store");
+const sessionRepo = require("./storage/session-repo");
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_ROOT = path.resolve(__dirname, "..", "..", "frontend");
@@ -15,6 +17,9 @@ function sendJson(res, statusCode, payload) {
   });
   res.end(body);
 }
+
+sessionStore.setRepository(sessionRepo);
+sessionStore.initSessionStore();
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);

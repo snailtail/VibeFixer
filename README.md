@@ -201,6 +201,10 @@ Deployment is handled by GitHub Actions using SSH secrets and Docker.
 
 **Runtime port**: `3333` (exposed by Docker).
 
+## Persistence
+
+Session and stats data are stored in a SQLite file on a Docker volume (`vibefixer-data`) mounted at `/data`. The DB path is configured with `VIBEFIXER_DB_PATH` and defaults to `/data/vibefixer.sqlite` in production.
+
 ## Development Guide
 
 See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for:

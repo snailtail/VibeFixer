@@ -8,6 +8,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-13
 - JavaScript (Node.js 20+ for backend, ES modules in browser) + None (vanilla JS, Node.js built-ins) (005-randomize-coder-drops)
 - JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins) (008-deploy-ssh-action)
 - In-memory session store (no external DB) (008-deploy-ssh-action)
+- Node.js 20 (current runtime) + SQLite driver for Node.js (selected in research), existing Node HTTP server (017-persist-session-storage)
+- SQLite database file on a host-mounted volume (017-persist-session-storage)
 
 - JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering (001-build-vibefixer-game)
 
@@ -27,9 +29,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 017-persist-session-storage: Added Node.js 20 (current runtime) + SQLite driver for Node.js (selected in research), existing Node HTTP server
 - 012-language-toggle: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 - 011-intro-story: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
-- 010-tech-docs: Added JavaScript (ES2022) for client; Node.js 20+ for server + None (vanilla JS, Node.js built-ins)
 
 
 <!-- MANUAL ADDITIONS START -->

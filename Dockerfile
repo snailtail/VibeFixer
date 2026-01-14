@@ -2,6 +2,13 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache python3 make g++
+
+COPY backend/package.json ./backend/package.json
+WORKDIR /app/backend
+RUN npm install --omit=dev
+
+WORKDIR /app
 COPY backend ./backend
 COPY frontend ./frontend
 
