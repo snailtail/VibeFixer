@@ -346,6 +346,9 @@
         z-index: 5;
         pointer-events: none;
         display: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
       #touch-controls.visible {
         display: block;
@@ -375,7 +378,10 @@
         font-size: 14px;
         text-transform: uppercase;
         touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
         user-select: none;
+        -webkit-tap-highlight-color: transparent;
       }
       .touch-button:active {
         background: rgba(95, 209, 255, 0.35);
