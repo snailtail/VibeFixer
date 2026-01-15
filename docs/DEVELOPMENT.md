@@ -50,6 +50,10 @@ The backend serves the frontend assets directly.
 Session stats are available at `http://localhost:3333/api/sessions/stats`.
 System stats are available at `http://localhost:3333/api/system/stats`.
 
+### Gameplay notes
+
+- Background toggle: press `B` to switch between kommun and danger backgrounds. The selection is stored per device.
+
 ### Run the app locally (Docker Compose)
 
 1. Set admin credentials (shell env or `.env` file):

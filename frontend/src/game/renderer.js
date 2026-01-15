@@ -5,6 +5,10 @@ const COLORS = {
   background: "#1e1e2f",
   uiText: "#f5f5f5",
 };
+const BACKGROUND_ASSETS = {
+  kommun: "backgroundKommun",
+  danger: "backgroundDanger",
+};
 
 function drawTiled(ctx, image, x, y, width, height, tileSize) {
   if (!image) {
@@ -171,7 +175,12 @@ function drawFomoEnragedOverlay(ctx, state, strings) {
 
 export function renderGame(ctx, state) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  const background = getAsset("background");
+  const assetKey = BACKGROUND_ASSETS[state.backgroundKey] || BACKGROUND_ASSETS.kommun;
+  const fallbackKey = BACKGROUND_ASSETS.kommun;
+  const selectedBackground = getAsset(assetKey);
+  const fallbackBackground = assetKey !== fallbackKey ? getAsset(fallbackKey) : null;
+  const background = selectedBackground || fallbackBackground;
+  const backgroundFallback = Boolean(!selectedBackground && fallbackBackground);
   if (background) {
     ctx.drawImage(background, 0, 0, ctx.canvas.width, ctx.canvas.height);
   } else {

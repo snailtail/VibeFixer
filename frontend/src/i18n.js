@@ -9,7 +9,7 @@ const STRINGS = {
       languageEnglish: "English",
       languageSwedish: "Swedish",
       controlsLabel: "Controls:",
-      controlsText: "← Move left\n→ Move right\n↑ Jump\nSpace Action (Pick up / Drop)\nM Mute",
+      controlsText: "← Move left\n→ Move right\n↑ Jump\nSpace Action (Pick up / Drop)\nM Mute\nB Background",
       instructionsTitle: "Instructions",
       instructionsText:
         "Your mission is to pick up all code blocks dropped by the vibe coders, bring them to the Code review bin and drop them there.\n" +
@@ -174,7 +174,7 @@ const STRINGS = {
       languageEnglish: "Engelska",
       languageSwedish: "Svenska",
       controlsLabel: "Kontroller:",
-      controlsText: "← Gå vänster\n→ Gå höger\n↑ Hoppa\nMellanslag Åtgärd (Plocka upp / Släpp)\nM Ljud av/på",
+      controlsText: "← Gå vänster\n→ Gå höger\n↑ Hoppa\nMellanslag Åtgärd (Plocka upp / Släpp)\nM Ljud av/på\nB Bakgrund",
       instructionsTitle: "Instruktioner",
       instructionsText:
         "Ditt uppdrag är att plocka upp alla kodblock som vibe-kodarna släpper, ta dem till Code review bin och släpp dem där.\n" +

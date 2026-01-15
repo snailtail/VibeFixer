@@ -1,4 +1,26 @@
 const BASE_URL = "";
+const BACKGROUND_STORAGE_KEY = "vibefixer:background";
+const VALID_BACKGROUNDS = new Set(["kommun", "danger"]);
+
+export function loadBackgroundPreference() {
+  try {
+    const stored = localStorage.getItem(BACKGROUND_STORAGE_KEY);
+    return VALID_BACKGROUNDS.has(stored) ? stored : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export function saveBackgroundPreference(background) {
+  if (!VALID_BACKGROUNDS.has(background)) {
+    return;
+  }
+  try {
+    localStorage.setItem(BACKGROUND_STORAGE_KEY, background);
+  } catch (error) {
+    // Ignore storage errors to keep the game playable.
+  }
+}
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
