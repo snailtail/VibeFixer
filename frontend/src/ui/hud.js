@@ -1,6 +1,17 @@
 const HUD_HEIGHT = 32;
-
-export function drawHud(ctx, { score, timeRemaining, isGameOver, blockerCount = 0, gameOverMessage = "", fomoState = "", soundOn = true, strings }) {
+export function drawHud(
+  ctx,
+  {
+    score,
+    timeRemaining,
+    isGameOver,
+    blockerCount = 0,
+    gameOverMessage = "",
+    fomoState = "",
+    soundOn = true,
+    strings,
+  }
+) {
   const hudStrings = strings?.hud || {};
   const uncheckedLabel = hudStrings.unchecked || "Unchecked code on ground";
   const blockersLabel = hudStrings.blockers || "Blockers";
@@ -25,8 +36,9 @@ export function drawHud(ctx, { score, timeRemaining, isGameOver, blockerCount = 
 
   ctx.textAlign = "left";
   ctx.fillText(scoreText, 16, HUD_HEIGHT / 2);
+  const rightEdge = ctx.canvas.width - 16;
   ctx.textAlign = "right";
-  ctx.fillText(timeText, ctx.canvas.width - 16, HUD_HEIGHT / 2);
+  ctx.fillText(timeText, rightEdge, HUD_HEIGHT / 2);
 
   const blockerWidth = ctx.measureText(blockerText).width;
   const mid = ctx.canvas.width / 2;
@@ -48,5 +60,6 @@ export function drawHud(ctx, { score, timeRemaining, isGameOver, blockerCount = 
     ctx.fillText(reloadLabel, ctx.canvas.width / 2, ctx.canvas.height / 2 + 22);
     ctx.textAlign = "left";
   }
+
   ctx.restore();
 }

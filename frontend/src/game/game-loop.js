@@ -1,4 +1,4 @@
-import { startSession, endSession, spawnArtifact, updateArtifactStatus } from "./session-api.js";
+import { startSession, endSession, spawnArtifact, updateArtifactStatus, loadBackgroundPreference, saveBackgroundPreference } from "./session-api.js";
 import { triggerRateLimitToast } from "./toast.js";
 import { renderGame } from "./renderer.js";
 import { handleAction } from "./interactions.js";
@@ -36,6 +36,8 @@ const IMP_PLACEMENT_INTERVAL = 0.35;
 const IMP_OBSTACLE_SIZE = 32;
 const IMP_VISIBILITY_SECONDS = 4.0;
 const IMP_MAX_HEIGHT_TILES = 7;
+const DEFAULT_BACKGROUND = "kommun";
+const BACKGROUNDS = ["kommun", "danger"];
 const PO_IMAGES = {
   happy: "/src/assets/po_happy.png",
   content: "/src/assets/po_content.png",
@@ -83,6 +85,7 @@ export async function startGame(canvas, input, ui = {}) {
     loadingSession: false,
     allergyActive: false,
     lastAllergyTapAt: 0,
+    backgroundKey: loadBackgroundPreference() || DEFAULT_BACKGROUND,
     player: {
       position: { x: 60, y: canvas.height - 60 },
       velocity: { x: 0, y: 0 },
@@ -144,6 +147,14 @@ export async function startGame(canvas, input, ui = {}) {
     updatePOMood(state, poImage);
   }
 
+  function toggleBackground() {
+    const currentIndex = BACKGROUNDS.indexOf(state.backgroundKey);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % BACKGROUNDS.length;
+    state.backgroundKey = BACKGROUNDS[nextIndex] || DEFAULT_BACKGROUND;
+    // Visual-only change; do not alter session timing or gameplay state.
+    saveBackgroundPreference(state.backgroundKey);
+  }
+
   let lastFrame = performance.now();
 
   async function update(dt) {
@@ -155,6 +166,11 @@ export async function startGame(canvas, input, ui = {}) {
       audio.toggleMute();
       state.input.toggleMute = false;
       state.isMuted = audio.isMuted();
+    }
+
+    if (state.input.toggleBackground) {
+      toggleBackground();
+      state.input.toggleBackground = false;
     }
 
     if (!state.started) {

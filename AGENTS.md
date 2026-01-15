@@ -14,6 +14,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-13
 - SQLite for sessions/high scores (existing) (018-security-hardening)
 - JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage (019-owasp-hardening)
 - SQLite database on persistent volume (019-owasp-hardening)
+- JavaScript (ES2022) for client, Node.js 20 for server + None (vanilla JS, Node.js standard library) (027-background-switch)
+- Local device preference (client-side) (027-background-switch)
 
 - JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering (001-build-vibefixer-game)
 
@@ -33,9 +35,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 027-background-switch: Added JavaScript (ES2022) for client, Node.js 20 for server + None (vanilla JS, Node.js standard library)
+- 027-background-switch: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 021-admin-console: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
-- 019-owasp-hardening: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
-- 018-security-hardening: Added JavaScript (Node.js 20) + Node.js built-in HTTP server; better-sqlite3 (existing)
 
 
 <!-- MANUAL ADDITIONS START -->
