@@ -18,6 +18,14 @@ Däremot tycker jag att jag har haft bra överblick över vad codex gjort, jag f
 
 I början förde jag löpande noteringar vid sidan av, för att inte störa processen när jag kom på buggar eller nya grejer jag ville ha. För att inte blanda in orelaterade saker i en pågående featurebranch så att säga. Sen lade jag in ett eget .md dokument för AuthorsNotes - där jag lägger in Todo items, och har bett codex att gå igenom det och fixa dem - samt flytta de färdiga items till Done istället i samma fil. Denna fil. Det har fungerat väl för att hålla småfix på en plats, men ändå noterat vad som gjorts och när, och sen hålla större grejer som features i egna branches och med egna subfolders här för specs och dylikt.
 
+
+### Samarbeta på flera maskiner / flera utvecklare samtidigt
+
+Jag har testat att klona repot på en annan maskin, med annat OS och andra förutsättningar. Installera codex-cli och "specify" på den, och komma igång. Det var inte så svårt.  
+Jag märkte dock att den inte fattade var i numreringen på features man var, utan den började om från 001 då. Oklart om det är nån git-ignorerad lokal fil som hållt bättre koll på det på min mac, som inte finns i github repo't. Men det var ju bara att uppmärksamma codex på att så var fallet så fixade den till det.
+
+Eftersom jag varit själv i repot så har jag inte fått några anledningar att vara vaksam på att rebase:a mot main eller något sådant, men det kan tänkas att man behöver specificera sin branch-strategi i constitution.md tillsammans med sina andra preferenser och regler - och då tycker jag att codex (eller motsvarande) borde respektera och göra vettiga git-val utifrån det. Man lär ju behöva kolla om main driftat iväg innan man gör en pr - bättre att rebase:a och ha en up to date feature branch innan man begär en pr tänker jag?
+
 ## Todo
 
 

@@ -22,6 +22,7 @@ function getSystemStats() {
     sessionsStarted: sessionStats.startedCount,
     sessionsActive: sessionStats.activeCount,
     sessionsEnded: sessionStats.endedCount,
+    sessionsToday: sessionStats.sessionsToday,
     latestActivityAt: sessionStats.latestActivityAt,
     serverVersion: APP_VERSION,
   };

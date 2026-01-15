@@ -1,0 +1,49 @@
+openapi: 3.0.3
+info:
+  title: System Stats API
+  version: 1.0.0
+paths:
+  /api/system/stats:
+    get:
+      summary: Get system statistics for the admin dashboard
+      responses:
+        "200":
+          description: System stats payload
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - startedAt
+                  - uptimeSeconds
+                  - sessionsStarted
+                  - sessionsActive
+                  - sessionsEnded
+                  - sessionsToday
+                  - latestActivityAt
+                  - serverVersion
+                properties:
+                  startedAt:
+                    type: string
+                    format: date-time
+                  uptimeSeconds:
+                    type: integer
+                    minimum: 0
+                  sessionsStarted:
+                    type: integer
+                    minimum: 0
+                  sessionsActive:
+                    type: integer
+                    minimum: 0
+                  sessionsEnded:
+                    type: integer
+                    minimum: 0
+                  sessionsToday:
+                    type: integer
+                    minimum: 0
+                  latestActivityAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  serverVersion:
+                    type: string

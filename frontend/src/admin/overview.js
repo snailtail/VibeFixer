@@ -7,6 +7,7 @@ const systemStats = {
   sessionsStarted: document.getElementById("admin-system-stats-sessions-started"),
   sessionsActive: document.getElementById("admin-system-stats-sessions-active"),
   sessionsEnded: document.getElementById("admin-system-stats-sessions-ended"),
+  sessionsToday: document.getElementById("admin-system-stats-sessions-today"),
   latestActivity: document.getElementById("admin-system-stats-latest-activity"),
 };
 
@@ -31,6 +32,9 @@ function updateSystemStats(data) {
   }
   if (systemStats.sessionsEnded) {
     systemStats.sessionsEnded.textContent = String(data.sessionsEnded ?? 0);
+  }
+  if (systemStats.sessionsToday) {
+    systemStats.sessionsToday.textContent = String(data.sessionsToday ?? 0);
   }
   if (systemStats.latestActivity) {
     systemStats.latestActivity.textContent = data.latestActivityAt

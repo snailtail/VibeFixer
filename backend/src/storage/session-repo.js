@@ -94,6 +94,15 @@ function cleanupEndedSessions(retentionDays) {
   return result.changes || 0;
 }
 
+function countSessionsStartedBetween(startIso, endIso) {
+  const db = getDb();
+  // Inclusive start, exclusive end matches day-boundary expectations.
+  const row = db
+    .prepare("SELECT COUNT(*) AS count FROM sessions WHERE started_at >= ? AND started_at < ?")
+    .get(startIso, endIso);
+  return row ? row.count : 0;
+}
+
 module.exports = {
   loadActiveSessions,
   loadStats,
@@ -101,4 +110,5 @@ module.exports = {
   saveSession,
   saveManySessions,
   cleanupEndedSessions,
+  countSessionsStartedBetween,
 };
