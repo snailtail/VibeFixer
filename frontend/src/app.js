@@ -62,6 +62,9 @@ async function bootstrap() {
     strings,
     onGameEnd: (payload) => handleGameEnd(payload),
   });
+  const MULTI_TAP_MAX_DURATION_MS = 350;
+  const MULTI_TAP_MAX_MOVE_PX = 24;
+  let multiTapGesture = null;
 
   function setText(id, value, { allowNewlines = false } = {}) {
     const element = document.getElementById(id);
@@ -276,6 +279,73 @@ async function bootstrap() {
   bindTouchButton(touchControls.right, "right");
   bindTouchButton(touchControls.jump, "jump");
   bindTouchButton(touchControls.action, "action");
+
+  function recordMultiTapPositions(touches, positions) {
+    positions.clear();
+    Array.from(touches).forEach((touch) => {
+      positions.set(touch.identifier, { x: touch.clientX, y: touch.clientY });
+    });
+  }
+
+  function handleMultiTapStart(event) {
+    const count = event.touches.length;
+    if (count !== 2 && count !== 3) {
+      return;
+    }
+    if (!multiTapGesture) {
+      multiTapGesture = { count, startTime: performance.now(), positions: new Map() };
+    } else {
+      multiTapGesture.count = count;
+    }
+    recordMultiTapPositions(event.touches, multiTapGesture.positions);
+    event.preventDefault();
+  }
+
+  function handleMultiTapMove(event) {
+    if (!multiTapGesture) {
+      return;
+    }
+    for (const touch of Array.from(event.touches)) {
+      const start = multiTapGesture.positions.get(touch.identifier);
+      if (!start) {
+        continue;
+      }
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      if (Math.hypot(dx, dy) > MULTI_TAP_MAX_MOVE_PX) {
+        multiTapGesture = null;
+        return;
+      }
+    }
+    event.preventDefault();
+  }
+
+  function handleMultiTapEnd(event) {
+    if (!multiTapGesture) {
+      return;
+    }
+    if (event.touches.length !== 0) {
+      event.preventDefault();
+      return;
+    }
+    const duration = performance.now() - multiTapGesture.startTime;
+    if (duration <= MULTI_TAP_MAX_DURATION_MS) {
+      if (multiTapGesture.count === 2) {
+        input.toggleMute = true;
+      } else if (multiTapGesture.count === 3) {
+        input.toggleBackground = true;
+      }
+    }
+    multiTapGesture = null;
+    event.preventDefault();
+  }
+
+  if (canvas) {
+    canvas.addEventListener("touchstart", handleMultiTapStart, { passive: false });
+    canvas.addEventListener("touchmove", handleMultiTapMove, { passive: false });
+    canvas.addEventListener("touchend", handleMultiTapEnd, { passive: false });
+    canvas.addEventListener("touchcancel", handleMultiTapEnd, { passive: false });
+  }
 
   function updateTouchToggleLabel(nextStrings) {
     if (!touchToggleButton || !touchOverlay || !nextStrings) {
