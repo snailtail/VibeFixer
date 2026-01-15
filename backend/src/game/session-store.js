@@ -186,6 +186,26 @@ function getSystemSessionStats() {
   };
 }
 
+function getActiveSessionSummaries(nowMs = Date.now()) {
+  const summaries = [];
+  sessions.forEach((session) => {
+    if (session.status !== "active") {
+      return;
+    }
+    const elapsedSeconds = Math.max(0, Math.floor((nowMs - session.startedAtMs) / 1000));
+    summaries.push({
+      sessionId: session.id,
+      status: session.status,
+      startedAt: session.startedAt,
+      elapsedSeconds,
+      score: session.score ?? 0,
+      remainingArtifacts: session.remainingArtifactCount ?? 0,
+      playerSpeedPercent: session.playerSpeedPercent ?? 100,
+    });
+  });
+  return summaries;
+}
+
 setInterval(() => {
   cleanupStaleSessions();
 }, CLEANUP_INTERVAL_MS).unref();
@@ -199,6 +219,7 @@ module.exports = {
   cleanupStaleSessions,
   getSessionStats,
   getSystemSessionStats,
+  getActiveSessionSummaries,
   initSessionStore,
   setRepository,
 };

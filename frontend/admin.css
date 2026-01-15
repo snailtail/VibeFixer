@@ -156,6 +156,42 @@ body {
   padding: 10px;
 }
 
+.admin-session-list {
+  gap: 12px;
+}
+
+.admin-session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-session-status {
+  font-size: 10px;
+  color: var(--admin-accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-session-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px 12px;
+  font-size: 11px;
+}
+
+.admin-session-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-session-field span {
+  color: var(--admin-muted);
+}
+
 .admin-list-item h4 {
   margin: 0 0 8px;
   font-size: 12px;

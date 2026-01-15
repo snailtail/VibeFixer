@@ -1,0 +1,55 @@
+openapi: 3.0.3
+info:
+  title: Active Sessions API
+  version: 1.0.0
+paths:
+  /api/admin/sessions/active:
+    get:
+      summary: List active game sessions
+      description: Returns a list of currently active game sessions for admins.
+      responses:
+        "200":
+          description: Active sessions list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ActiveSessionSummary"
+                required:
+                  - sessions
+        "401":
+          description: Not authenticated
+        "403":
+          description: Not authorized
+components:
+  schemas:
+    ActiveSessionSummary:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        status:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        elapsedSeconds:
+          type: number
+        score:
+          type: number
+        remainingArtifacts:
+          type: number
+        playerSpeedPercent:
+          type: number
+      required:
+        - sessionId
+        - status
+        - startedAt
+        - elapsedSeconds
+        - score
+        - remainingArtifacts
+        - playerSpeedPercent

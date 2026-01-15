@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Game Settings</title>
+    <title>Active Sessions</title>
     <link rel="stylesheet" href="/admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,33 +15,24 @@
   <body>
     <main class="admin-wrap">
       <section class="admin-panel">
-        <h2>Game Settings</h2>
+        <h2>Active Sessions</h2>
         <nav class="admin-nav" id="admin-nav">
           <a href="/admin" data-nav>Overview</a>
           <a href="/admin/logs" data-nav>Logs</a>
-          <a href="/admin/active-sessions" data-nav>Active Sessions</a>
+          <a href="/admin/active-sessions" data-nav class="active">Active Sessions</a>
           <a href="/admin/high-scores" data-nav>High Scores</a>
           <a href="/admin/notices" data-nav>Notices</a>
-          <a href="/admin/game-settings" data-nav class="active">Game Settings</a>
+          <a href="/admin/game-settings" data-nav>Game Settings</a>
           <button type="button" id="admin-logout">Log Out</button>
         </nav>
       </section>
 
       <section class="admin-panel">
-        <h3>Player Speed</h3>
-        <div class="admin-field">
-          <label for="admin-player-speed">Speed (50% - 150%)</label>
-          <div class="admin-slider">
-            <input id="admin-player-speed" type="range" min="50" max="150" step="1" />
-            <span id="admin-player-speed-value">100%</span>
-          </div>
-        </div>
-        <div class="admin-actions">
-          <button id="admin-player-speed-save" type="button">Save Settings</button>
-          <span class="admin-status" id="admin-game-settings-status"></span>
-        </div>
+        <h3>Live Sessions</h3>
+        <p class="admin-status" id="admin-active-sessions-status">Loading...</p>
+        <ul class="admin-list admin-session-list" id="admin-active-sessions-list"></ul>
       </section>
     </main>
-    <script type="module" src="/src/admin/game-settings.js"></script>
+    <script type="module" src="/src/admin/active-sessions.js"></script>
   </body>
 </html>
