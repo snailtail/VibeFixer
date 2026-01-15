@@ -6,6 +6,7 @@ const { handleSystemStats } = require("./api/system");
 const { handleHighScores } = require("./api/high-scores");
 const { handleAdminAuth } = require("./api/admin-auth");
 const { handleAdminLogs } = require("./api/admin-logs");
+const { handleAdminActiveSessions } = require("./api/admin-active-sessions");
 const { handleAdminHighScores } = require("./api/admin-high-scores");
 const { handleAdminNotices } = require("./api/admin-notices");
 const { handleNotices } = require("./api/notices");
@@ -80,6 +81,10 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (await handleAdminActiveSessions(req, res, url)) {
+      return;
+    }
+
     if (await handleAdminHighScores(req, res, url)) {
       return;
     }
@@ -138,6 +143,7 @@ async function serveStatic(requestPath, res) {
     "/admin": "admin.html",
     "/admin/login": "admin-login.html",
     "/admin/logs": "admin-logs.html",
+    "/admin/active-sessions": "admin-active-sessions.html",
     "/admin/high-scores": "admin-high-scores.html",
     "/admin/notices": "admin-notices.html",
     "/admin/game-settings": "admin-game-settings.html",

@@ -16,6 +16,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-13
 - SQLite database on persistent volume (019-owasp-hardening)
 - JavaScript (ES2022) for client, Node.js 20 for server + None (vanilla JS, Node.js standard library) (027-background-switch)
 - Local device preference (client-side) (027-background-switch)
+- JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, better-sqlite3, vanilla browser JS (028-active-session-list)
+- In-memory session store with SQLite-backed session persistence (existing) (028-active-session-list)
 
 - JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering (001-build-vibefixer-game)
 
@@ -35,9 +37,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 028-active-session-list: Added JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, better-sqlite3, vanilla browser JS
 - 027-background-switch: Added JavaScript (ES2022) for client, Node.js 20 for server + None (vanilla JS, Node.js standard library)
 - 027-background-switch: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
-- 021-admin-console: Added JavaScript (Node.js 20.x) + Node.js standard library, `better-sqlite3` for storage
 
 
 <!-- MANUAL ADDITIONS START -->
