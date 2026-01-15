@@ -101,7 +101,7 @@ async function bootstrap() {
       return;
     }
     setText("controls-label", nextStrings.ui.controlsLabel);
-    setText("controls-text", nextStrings.ui.controlsText, { allowNewlines: true });
+    updateControlsText(nextStrings);
     setText("instructions-title", nextStrings.ui.instructionsTitle);
     setText("instructions-text", nextStrings.ui.instructionsText, { allowNewlines: true });
     setText("language-label", nextStrings.ui.languageLabel);
@@ -347,6 +347,15 @@ async function bootstrap() {
     canvas.addEventListener("touchcancel", handleMultiTapEnd, { passive: false });
   }
 
+  function updateControlsText(nextStrings) {
+    if (!nextStrings) {
+      return;
+    }
+    const showTouch = touchOverlay && touchOverlay.classList.contains("visible");
+    const text = showTouch ? (nextStrings.ui.controlsTextTouch || nextStrings.ui.controlsText) : nextStrings.ui.controlsText;
+    setText("controls-text", text, { allowNewlines: true });
+  }
+
   function updateTouchToggleLabel(nextStrings) {
     if (!touchToggleButton || !touchOverlay || !nextStrings) {
       return;
@@ -355,6 +364,7 @@ async function bootstrap() {
       ? nextStrings.ui.touchToggleHide
       : nextStrings.ui.touchToggleShow;
     touchToggleButton.textContent = label;
+    updateControlsText(nextStrings);
   }
 
   if (touchToggleButton && touchOverlay) {
