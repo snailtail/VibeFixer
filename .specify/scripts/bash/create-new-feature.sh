@@ -197,12 +197,9 @@ generate_branch_name() {
         if ! echo "$word" | grep -qiE "$stop_words"; then
             if [ ${#word} -ge 3 ]; then
                 meaningful_words+=("$word")
-            else
-                word_upper=$(echo "$word" | tr '[:lower:]' '[:upper:]')
-                if echo "$description" | grep -q "\b${word_upper}\b"; then
-                    # Keep short words if they appear as uppercase in original (likely acronyms)
-                    meaningful_words+=("$word")
-                fi
+            elif echo "$description" | grep -q "\b${word^^}\b"; then
+                # Keep short words if they appear as uppercase in original (likely acronyms)
+                meaningful_words+=("$word")
             fi
         fi
     done
@@ -235,22 +232,6 @@ if [ -n "$SHORT_NAME" ]; then
 else
     # Generate from description with smart filtering
     BRANCH_SUFFIX=$(generate_branch_name "$FEATURE_DESCRIPTION")
-fi
-
-# Determine next available number for validation when a manual number is supplied.
-if [ -n "$BRANCH_NUMBER" ]; then
-    if [ "$HAS_GIT" = true ]; then
-        NEXT_AVAILABLE_NUMBER=$(check_existing_branches "$SPECS_DIR")
-    else
-        HIGHEST=$(get_highest_from_specs "$SPECS_DIR")
-        NEXT_AVAILABLE_NUMBER=$((HIGHEST + 1))
-    fi
-
-    if [ "$BRANCH_NUMBER" -lt "$NEXT_AVAILABLE_NUMBER" ]; then
-        echo "Error: --number $BRANCH_NUMBER is below the next available number ($NEXT_AVAILABLE_NUMBER)." >&2
-        echo "Use --number $NEXT_AVAILABLE_NUMBER or omit --number to auto-select." >&2
-        exit 1
-    fi
 fi
 
 # Determine branch number

@@ -18,6 +18,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-13
 - Local device preference (client-side) (027-background-switch)
 - JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, better-sqlite3, vanilla browser JS (028-active-session-list)
 - In-memory session store with SQLite-backed session persistence (existing) (028-active-session-list)
+- JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, `better-sqlite3` (029-sessions-today-count)
+- SQLite database file (sessions table on persistent volume) (029-sessions-today-count)
 
 - JavaScript (ES2022) for client; Node.js 20 for server + Minimal HTTP server framework; browser Canvas 2D rendering (001-build-vibefixer-game)
 
@@ -37,9 +39,9 @@ npm test && npm run lint
 JavaScript (ES2022) for client; Node.js 20 for server: Follow standard conventions
 
 ## Recent Changes
+- 029-sessions-today-count: Added JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, `better-sqlite3`
 - 028-active-session-list: Added JavaScript (Node.js 20 for backend, ES2022 for frontend) + Node.js standard library, better-sqlite3, vanilla browser JS
 - 027-background-switch: Added JavaScript (ES2022) for client, Node.js 20 for server + None (vanilla JS, Node.js standard library)
-- 027-background-switch: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
 
 <!-- MANUAL ADDITIONS START -->

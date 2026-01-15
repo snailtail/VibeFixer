@@ -4,6 +4,7 @@ const { SECURITY_POLICY } = require("../security/policy");
 const highScoreRepo = require("../storage/high-score-repo");
 const gameSettingsRepo = require("../storage/game-settings-repo");
 const { logGameplayEvent } = require("../security/logger");
+const { getTodayWindow } = require("./day-boundary");
 
 const sessions = new Map();
 let stats = {
@@ -178,10 +179,16 @@ function getSessionStats() {
 }
 
 function getSystemSessionStats() {
+  let sessionsToday = 0;
+  if (repository && repository.countSessionsStartedBetween) {
+    const { startAt, endAt } = getTodayWindow();
+    sessionsToday = repository.countSessionsStartedBetween(startAt, endAt);
+  }
   return {
     activeCount: sessions.size,
     startedCount: stats.startedCount,
     endedCount: stats.endedCount,
+    sessionsToday,
     latestActivityAt: stats.latestActivityAt,
   };
 }
