@@ -10,31 +10,66 @@ This guide explains how to develop, maintain, and deploy VibeFixer. The frontend
 
 - Node.js 20+
 - Git
+- Docker (optional, for Docker Compose)
 
-### Run the app locally
+### Clone the repo
+
+```bash
+git clone <repo-url> vibefixer
+cd vibefixer
+```
+
+### Run the app locally (Node.js)
+
+1. Create a local data directory:
+
+```bash
+mkdir -p .data
+```
 
 1. Install backend dependencies:
 
 ```bash
-cd /Users/magnus/src/Work/VibeFixer/backend
+cd backend
 npm install
 ```
 
 2. Start the backend:
 
 ```bash
-VIBEFIXER_DB_PATH=/Users/magnus/src/Work/VibeFixer/.data/vibefixer.sqlite node /Users/magnus/src/Work/VibeFixer/backend/src/server.js
+PORT=3333 VIBEFIXER_DB_PATH=./.data/vibefixer.sqlite node ./backend/src/server.js
 ```
 
 3. Open the game in a browser at:
 
 ```
-http://localhost:3000
+http://localhost:3333
 ```
 
 The backend serves the frontend assets directly.
-Session stats are available at `http://localhost:3000/api/sessions/stats`.
-System stats are available at `http://localhost:3000/api/system/stats`.
+Session stats are available at `http://localhost:3333/api/sessions/stats`.
+System stats are available at `http://localhost:3333/api/system/stats`.
+
+### Run the app locally (Docker Compose)
+
+1. Set admin credentials (shell env or `.env` file):
+
+```bash
+export ADMIN_USER=admin
+export ADMIN_PASSWORD=change-me
+```
+
+2. Build and run:
+
+```bash
+docker compose up --build
+```
+
+3. Open the game in a browser at:
+
+```
+http://localhost:3333
+```
 
 ## Persistence Notes
 
@@ -48,6 +83,18 @@ System stats are available at `http://localhost:3000/api/system/stats`.
 3. Update documentation when endpoints or runtime flows change.
 4. Test locally (manual smoke test).
 5. Open a PR to `main`.
+
+## Spec-kit workflow (Codex CLI)
+
+If you use Codex CLI with the spec-kit workflow:
+
+1. Start Codex CLI in the repo root.
+2. Run `/speckit.specify` to scaffold a new spec in `specs/`.
+3. Run `/speckit.plan` to generate the plan and supporting docs.
+4. Run `/speckit.tasks` to create the task list for implementation.
+
+Optional: run `.specify/scripts/bash/update-agent-context.sh` if you want to sync
+the spec-kit rules into other supported editors.
 
 ## Dependency & Maintenance Plan
 

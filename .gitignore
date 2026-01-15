@@ -11,6 +11,13 @@
 .codex/history.jsonl
 .codex/log/
 .codex/sessions/
+.codex/tmp/
+.codex/version.json
+
+# Local data
+.data/
+*.sqlite
+*.sqlite3
 
 # Node
 node_modules/

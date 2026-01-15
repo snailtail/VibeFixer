@@ -20,11 +20,10 @@ I början förde jag löpande noteringar vid sidan av, för att inte störa proc
 
 ## Todo
 
-- instruktionerna i DEVELOPMENT.md måste "avpersonifieras", de måste få korrekta portnummer och uppdateras så de stämmer med nuvarande tech-stack (ge instruktioner för den som vill köra lokalt med hjälp av docker compose också som alternativ) och man måste även få hjälp med hur man klonar repo't och kommer igång med "spec-kit" om man vill använda AI-assistans i CLI-verktyg så som jag har gjort.
-
 
 ## Done
 
+- instruktionerna i DEVELOPMENT.md måste "avpersonifieras", de måste få korrekta portnummer och uppdateras så de stämmer med nuvarande tech-stack (ge instruktioner för den som vill köra lokalt med hjälp av docker compose också som alternativ) och man måste även få hjälp med hur man klonar repo't och kommer igång med "spec-kit" om man vill använda AI-assistans i CLI-verktyg så som jag har gjort. (2026-01-15 06:27 UTC)
 - Instructions: We need a pane for instructions on how to play the game. It should be the same style as the Story pane, placed rigt above the Story pane - same width as the Story pane. We should remove the "jump into a vibe coder" instruction from the Controls pane. And then the instructions are as follow: Your mission is to pick up all code blocks dropped by the vibe coders, bring them to the Code review bin and drop them there. You can only pick up and carry one code block at a time. You can crush blockers to make the PO less worried, though this has no direct impact on the game other than possibly making it easier to get to the code blocks. Try to keep the level clear of unchecked code blocks. To win you need to have 0 code blocks unchecked when the timer ends. If you hold a code block and can jump high enough to touch a vibe coder with it, the vibe coder will be temporarily stunned. (2026-01-14 18:49 UTC)
 - Toaster message visibility - I feel that the toaster messages, for example the notice for Imp Ediment, and when the second coder is about to spawn, they are not visible enough. is there something we could do to make them less easy to "miss". Perhaps by color or something that makes them "pop" visually. (2026-01-14 18:49 UTC)
 - Change the Logo of the game, i want the same font and color feel as the header for the High Scores - neon and retro. but we need to keep it in touch with the rest of the game interfaces colors, so just adjust the text - let the border keep it's current color. (2026-01-14 14:34 UTC)
