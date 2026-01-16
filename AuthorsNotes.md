@@ -26,6 +26,15 @@ Jag märkte dock att den inte fattade var i numreringen på features man var, ut
 
 Eftersom jag varit själv i repot så har jag inte fått några anledningar att vara vaksam på att rebase:a mot main eller något sådant, men det kan tänkas att man behöver specificera sin branch-strategi i constitution.md tillsammans med sina andra preferenser och regler - och då tycker jag att codex (eller motsvarande) borde respektera och göra vettiga git-val utifrån det. Man lär ju behöva kolla om main driftat iväg innan man gör en pr - bättre att rebase:a och ha en up to date feature branch innan man begär en pr tänker jag?
 
+
+### Gemensam "constitution.md"
+
+Jag har testat lite att utifrån en bunt med specifikationer och principer som jag skissat på, för Skövde kommun, generera en Constitution.md som gäller och kan tillämpas för nya spec-kit drivna utvecklingsinitiativ. Det finns utmaningar här, inte minst att jag inte riktigt vet vad jag gör. Men bortsett från det:
+
+- Hålla den gemensamma specen up to date. Löses väl kanske genom att man har den i ett publikt (om det nu inte blir nåt hemligt eller känsligt i den) repo så man kan länka in den från skarpa utvecklingsrepon.
+- En Constitution.md baserad på alla principer, resonemang kring tekniska vägval, plattformsval, med mera blir väldigt bred och är kanske inte superlämplig för specify. Det vore bättre att bryta ner den i mer specifika Constitution.md för varje projekt. Åtminstone borde man kunna göra det för respektive typ av projekt man tror sig kunna behöva bygga: API, Bakgrundstjänst, Integration, Webapplikation, Data-pryl, etc. Dock skulle man nästan ha behövt script/automation för att göra dessa specifikationer så att man inte först måste skriva om grunddokumenten och därefter manuellt uppdatera alla specifikationsmallar för varje projekttyp. Oklart om det går att scripta - eller om det i sin tur vore en lämplig uppgift för en LLM/agent.
+- AI'n utvecklas ju konstant, även om den inte kommer kunna spränga singularitetsvallen än på ett tag i alla fall inte så länge man bara försöker mosa in mer data i, och få ut mer effekt av, LLM:erna - men oavsett det så utvecklas ju även verktygen runt omkring. Och det som är "bästa verktyget" idag, kanske inte är det om 6 månader. Så man får vara försiktig med att bygga in sig allt för detaljerat och lägga allt för mycket energi på något som kanske blir lite för inboxat, och på sikt överflödigt eller bara oanvändbart. Iofs är ju specifikationer och riktlinjer ändå en nödvändighet - men man får fundera kring hur mycket man ska kosta på sig runt omkring det. Eller om det är mer lönsamt totalt sett att bara utgå från dem och skapa projektspecifika implementationer av det mer eller mindre manuellt vid behov.
+
 ## Todo
 
 
